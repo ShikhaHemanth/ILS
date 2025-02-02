@@ -1,3 +1,7 @@
+-- Create database
+CREATE DATABASE IF NOT EXISTS individualized_learning;
+USE individualized_learning;
+
 -- Drop tables in reverse order of dependency
 DROP TABLE IF EXISTS Messages;
 DROP TABLE IF EXISTS Chat_rooms;
