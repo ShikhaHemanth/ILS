@@ -21,7 +21,7 @@ db.connect(err => {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/login.html');
+    res.sendFile(__dirname + '/public/main.html');
 });
 
 const PORT = process.env.PORT || 4000;
