@@ -1,24 +1,45 @@
-require('dotenv').config();
 const express = require('express');
-const mysql = require('mysql');
-const cors = require('cors');
+const bodyParser = require('body-parser');
+const db = require('./dataAccess'); // Import the database connection
+const path = require('path');
 
 const app = express();
-app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static('public')); // Serve static files like HTML
 
-const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME
+// Login API Route
+app.post('/login', (req, res) => {
+    const { email, password } = req.body;
+
+    const query = "SELECT role FROM Users WHERE email = ? AND password = ?";
+    db.query(query, [email, password], (err, results) => {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).send("Internal Server Error");
+        }
+
+        if (results.length > 0) {
+            const role = results[0].role;
+            switch (role) {
+                case 'student':
+                    return res.redirect('/student.html');
+                case 'teacher':
+                    return res.redirect('/teacher.html');
+                case 'counselor':
+                    return res.redirect('/counselor.html');
+                case 'parent':
+                    return res.redirect('/parent.html');
+                default:
+                    return res.status(403).send("Unauthorized role.");
+            }
+        } else {
+            return res.status(401).send("Invalid email or password.");
+        }
+    });
 });
 
-db.connect(err => {
-    if (err) console.error('Database connection failed:', err);
-    else console.log('Connected to MySQL');
-});
+
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/main.html');
