@@ -155,3 +155,9 @@ CREATE TABLE Messages (
     FOREIGN KEY (chatRoomID) REFERENCES Chat_rooms(chatRoomID),
     FOREIGN KEY (userID) REFERENCES Users(userID)
 );
+
+
+INSERT INTO `users` (`userID`, `name`, `email`, `password`, `role`) VALUES ('1', 'shikha', 'shk3784@rit.edu', 'test123', 'teacher');
+INSERT INTO `users` (`userID`, `name`, `email`, `password`, `role`) VALUES ('2', 'sandra', 'shk3784@rit.edu', 'test123', 'student');
+INSERT INTO `users` (`userID`, `name`, `email`, `password`, `role`) VALUES ('3', 'arya', 'as3826@rit.edu', 'test123', 'parent');
+INSERT INTO `users` (`userID`, `name`, `email`, `password`, `role`) VALUES ('4', 'sakshi', 'scs9086@rit.edu', 'test123', 'counselor');
