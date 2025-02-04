@@ -13,12 +13,13 @@ async function loginUser(email, password) {
 
         // const result = await bcrypt.compare(password, real_password);
         if (password == real_password) {
+
             let redirectUrl;
             switch (role) {
                 case 'student': redirectUrl = '/student_dashboard'; break;
-                case 'teacher': redirectUrl = '/teacher'; break;
-                case 'counselor': redirectUrl = '/counselor'; break;
-                case 'parent': redirectUrl = '/parent'; break;
+                case 'teacher': redirectUrl = '/teacher_dashboard'; break;
+                case 'counselor': redirectUrl = '/counselor_dashboard'; break;
+                case 'parent': redirectUrl = '/parent_dashboard'; break;
                 default: redirectUrl = '/';
             }
             return { success: true, message: 'Login successful', redirectUrl };

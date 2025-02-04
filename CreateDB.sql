@@ -158,6 +158,6 @@ CREATE TABLE Messages (
 
 
 INSERT INTO `users` (`userID`, `name`, `email`, `password`, `role`) VALUES ('1', 'shikha', 'shk3784@rit.edu', 'test123', 'teacher');
-INSERT INTO `users` (`userID`, `name`, `email`, `password`, `role`) VALUES ('2', 'sandra', 'shk3784@rit.edu', 'test123', 'student');
+INSERT INTO `users` (`userID`, `name`, `email`, `password`, `role`) VALUES ('2', 'sandra', 'sr6535@rit.edu', 'test123', 'student');
 INSERT INTO `users` (`userID`, `name`, `email`, `password`, `role`) VALUES ('3', 'arya', 'as3826@rit.edu', 'test123', 'parent');
 INSERT INTO `users` (`userID`, `name`, `email`, `password`, `role`) VALUES ('4', 'sakshi', 'scs9086@rit.edu', 'test123', 'counselor');
