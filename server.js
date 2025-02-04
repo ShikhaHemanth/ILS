@@ -84,8 +84,8 @@ app.use(session({
 }));
 
 // Set EJS as the view engine
-app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -120,7 +120,7 @@ app.post('/login', async (req, res) => {
 });
 
 // Dashboard routes
-app.get('/student', (req, res) => res.render('student'));
+app.get('/student_dashboard', (req, res) => res.render('student_dashboard'));
 app.get('/teacher', (req, res) => res.render('teacher'));
 app.get('/counselor', (req, res) => res.render('counselor'));
 app.get('/parent', (req, res) => res.render('parent'));
