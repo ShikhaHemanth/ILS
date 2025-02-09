@@ -1,30 +1,28 @@
 const bcrypt = require('bcrypt');
-const { Client } = require('pg');
+const db = require('./dataAccess'); // Using the MySQL connection from dataaccess.js
 
 async function encryptPasswords() {
-    const client = new Client({
-        host: "localhost",
-        user: "root",
-        port: 4000,
-        password: "Mysandra1&", 
-        database: "individualized_learning" 
-    });
-
     try {
-        await client.connect();
-        const res = await client.query('SELECT userid, password, is_pwd_encrypted FROM public.users WHERE is_pwd_encrypted = false;');
+        console.log("Starting password encryption process...");
 
-        for (let row of res.rows) {
-            const hashedPassword = await bcrypt.hash(row.password, 10); // The second parameter is the salt rounds
-            // Update the password and set is_pwd_encrypted to true
-            await client.query('UPDATE public.users SET password = $1, is_pwd_encrypted = true WHERE userid = $2;', [hashedPassword, row.userid]);
+        // Fetch users who haven't had their passwords encrypted yet
+        const [rows] = await db.query('SELECT userID, password FROM Users WHERE is_pwd_encrypted = 0');
+
+        if (rows.length === 0) {
+            console.log("No passwords need encryption.");
+            return;
+        }
+
+        for (let row of rows) {
+            const hashedPassword = await bcrypt.hash(row.password, 10); // Hash the password
+
+            // Update the password and mark as encrypted
+            await db.query('UPDATE Users SET password = ?, is_pwd_encrypted = 1 WHERE userID = ?', [hashedPassword, row.userID]);
         }
 
         console.log('All passwords were encrypted successfully!');
     } catch (err) {
         console.error('An error occurred during the encryption process:', err);
-    } finally {
-        await client.end();
     }
 }
 
