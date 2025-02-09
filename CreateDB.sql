@@ -158,7 +158,35 @@ CREATE TABLE Messages (
 );
 
 
-INSERT INTO `users` (`userID`, `name`, `email`, `password`, `role`) VALUES ('1', 'shikha', 'shk3784@rit.edu', 'test123', 'teacher');
-INSERT INTO `users` (`userID`, `name`, `email`, `password`, `role`) VALUES ('2', 'sandra', 'sr6535@rit.edu', 'test123', 'student');
-INSERT INTO `users` (`userID`, `name`, `email`, `password`, `role`) VALUES ('3', 'arya', 'as3826@rit.edu', 'test123', 'parent');
-INSERT INTO `users` (`userID`, `name`, `email`, `password`, `role`) VALUES ('4', 'sakshi', 'scs9086@rit.edu', 'test123', 'counselor');
+-- Insert dummy data
+INSERT INTO Users (name, email, password, role) VALUES
+('Shikha', 'shk3784@ils.edu', 'test123', 'teacher'),
+('Sandra', 'sr6535@ils.edu', 'test123', 'student'),
+('Arya', 'as3826@ils.edu', 'test123', 'parent'),
+('Sakshi', 'scs9086@ils.edu', 'test123', 'counselor'),
+('John Doe', 'johndoe@ils.edu', 'test123', 'student'),
+('Emma Smith', 'emmasmith@ils.edu', 'test123', 'teacher'),
+('Michael Brown', 'michaelb@ils.edu', 'test123', 'counselor');
+
+INSERT INTO Students (userID, gradeLevel) VALUES
+(2, 10),
+(5, 11);
+
+INSERT INTO Parents (userID, studentID) VALUES
+(3, 1);
+
+INSERT INTO Teachers (userID) VALUES
+(1),
+(6);
+
+INSERT INTO Counselors (userID) VALUES
+(4),
+(7);
+
+INSERT INTO Subjects (subjectName, teacherID) VALUES
+('Mathematics', 1),
+('Science', 2);
+
+INSERT INTO Sections (sectionName, subjectID) VALUES
+('Math Section A', 1),
+('Science Section B', 2);
