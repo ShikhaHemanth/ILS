@@ -20,13 +20,8 @@ async function setup() {
     }
 }
 
-function startServer() {
+async function startServer() {
     const app = express();
-
-    // Parse JSON and URL-encoded data
-    app.use(bodyParser.json());
-    app.use(express.urlencoded({ extended: true }));
-    app.use(express.static(__dirname));
 
     // Session setup
     app.use(session({
@@ -36,8 +31,13 @@ function startServer() {
     }));
 
     // Set EJS as the view engine
-    app.set('view engine', 'ejs');
     app.set('views', path.join(__dirname, 'views'));
+    app.set('view engine', 'ejs');
+
+    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(express.json());
+    app.use(express.static('views'));
+
 
     // Middleware to check authentication
     function isAuthenticated(req, res, next) {
@@ -62,32 +62,38 @@ function startServer() {
 
         try {
             const result = await loginUser(email, password);
+            const userData = await getUserByEmail(email);
             if (result.success) {
-                req.session.userId = result.userId; // Store user ID in session
-                return res.redirect(result.redirectUrl);
+                req.session.userId = userData.userID; // Store user ID in session
+                return res.json({ success: true, redirectUrl: result.redirectUrl });
             } else {
-                return res.render('login', { error: result.message });
+                return res.json({ success: false, message: result.message });
             }
         } catch (error) {
             console.error("Login error:", error);
-            return res.status(500).send("Internal Server Error");
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     });
 
     // Protected Routes
-    app.get('/student', isAuthenticated, (req, res) => res.render('student'));
-    app.get('/teacher', isAuthenticated, (req, res) => res.render('teacher'));
-    app.get('/counselor', isAuthenticated, (req, res) => res.render('counselor'));
-    app.get('/parent', isAuthenticated, (req, res) => res.render('parent'));
+    app.get('/student_dashboard', isAuthenticated, (req, res) => res.render('student_dashboard'));
+    app.get('/teacher_dashboard', isAuthenticated, (req, res) => res.render('teacher_dashboard'));
+    app.get('/counselor_dashboard', isAuthenticated, (req, res) => res.render('counselor_dashboard'));
+    app.get('/parent_dashboard', isAuthenticated, (req, res) => res.render('parent_dashboard'));
 
     // Connect to database and start server
-    connectToDatabase().then(() => {
+    try {
+        // Attempt to connect to the database before starting the server
+        await connectToDatabase();
+        console.log('Database connection successful.');
+        
+        // Start the server only after the database connection
         app.listen(4000, () => {
-            console.log('Server is running on http://localhost:4000/');
+            console.log('Server running on http://localhost:4000');
         });
-    }).catch(error => {
-        console.error("Database connection error:", error);
-    });
+    } catch (error) {
+        console.error('Error connecting to the database:', error);
+    }
 }
 
 // Run setup before starting the server

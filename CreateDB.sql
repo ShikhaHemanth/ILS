@@ -23,22 +23,23 @@ DROP TABLE IF EXISTS Users;
 
 -- Create tables
 CREATE TABLE Users (
-    userID INT PRIMARY KEY,
+    userID INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255),
     email VARCHAR(255) UNIQUE,
     password VARCHAR(255),
-    role VARCHAR(50)
+    role VARCHAR(50),
+    is_pwd_encrypted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE Students (
-    studentID INT PRIMARY KEY,
+    studentID INT AUTO_INCREMENT PRIMARY KEY,
     userID INT,
     gradeLevel INT,
     FOREIGN KEY (userID) REFERENCES Users(userID)
 );
 
 CREATE TABLE Parents (
-    parentID INT PRIMARY KEY,
+    parentID INT AUTO_INCREMENT PRIMARY KEY,
     userID INT,
     studentID INT,
     FOREIGN KEY (userID) REFERENCES Users(userID),
@@ -46,33 +47,33 @@ CREATE TABLE Parents (
 );
 
 CREATE TABLE Teachers (
-    teacherID INT PRIMARY KEY,
+    teacherID INT AUTO_INCREMENT PRIMARY KEY,
     userID INT,
     FOREIGN KEY (userID) REFERENCES Users(userID)
 );
 
 CREATE TABLE Counselors (
-    counselorID INT PRIMARY KEY,
+    counselorID INT AUTO_INCREMENT PRIMARY KEY,
     userID INT,
     FOREIGN KEY (userID) REFERENCES Users(userID)
 );
 
 CREATE TABLE Subjects (
-    subjectID INT PRIMARY KEY,
+    subjectID INT AUTO_INCREMENT PRIMARY KEY,
     subjectName VARCHAR(255),
     teacherID INT,
     FOREIGN KEY (teacherID) REFERENCES Teachers(teacherID)
 );
 
 CREATE TABLE Sections (
-    sectionID INT PRIMARY KEY,
+    sectionID INT AUTO_INCREMENT PRIMARY KEY,
     sectionName VARCHAR(255),
     subjectID INT,
     FOREIGN KEY (subjectID) REFERENCES Subjects(subjectID)
 );
 
 CREATE TABLE Student_section_map (
-    mapID INT PRIMARY KEY,
+    mapID INT AUTO_INCREMENT PRIMARY KEY,
     studentID INT,
     sectionID INT,
     FOREIGN KEY (studentID) REFERENCES Students(studentID),
@@ -80,7 +81,7 @@ CREATE TABLE Student_section_map (
 );
 
 CREATE TABLE Assignments (
-    assignmentID INT PRIMARY KEY,
+    assignmentID INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255),
     description TEXT,
     dueDate DATE,
@@ -89,7 +90,7 @@ CREATE TABLE Assignments (
 );
 
 CREATE TABLE Submissions (
-    submissionID INT PRIMARY KEY,
+    submissionID INT AUTO_INCREMENT PRIMARY KEY,
     assignmentID INT,
     studentID INT,
     fileURL VARCHAR(255),
@@ -100,7 +101,7 @@ CREATE TABLE Submissions (
 );
 
 CREATE TABLE Progress_reports (
-    reportID INT PRIMARY KEY,
+    reportID INT AUTO_INCREMENT PRIMARY KEY,
     studentID INT,
     generatedDate DATE,
     details TEXT,
@@ -108,7 +109,7 @@ CREATE TABLE Progress_reports (
 );
 
 CREATE TABLE Assessments (
-    assessmentID INT PRIMARY KEY,
+    assessmentID INT AUTO_INCREMENT PRIMARY KEY,
     studentID INT,
     counselorID INT,
     results TEXT,
@@ -117,7 +118,7 @@ CREATE TABLE Assessments (
 );
 
 CREATE TABLE Learning_plans (
-    learningPlanID INT PRIMARY KEY,
+    learningPlanID INT AUTO_INCREMENT PRIMARY KEY,
     studentID INT,
     adaptiveFeatures TEXT,
     progressSummary TEXT,
@@ -125,7 +126,7 @@ CREATE TABLE Learning_plans (
 );
 
 CREATE TABLE Quizzes (
-    quizID INT PRIMARY KEY,
+    quizID INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255),
     description TEXT,
     learningPlanID INT,
@@ -133,7 +134,7 @@ CREATE TABLE Quizzes (
 );
 
 CREATE TABLE Alerts (
-    alertID INT PRIMARY KEY,
+    alertID INT AUTO_INCREMENT PRIMARY KEY,
     userID INT,
     message TEXT,
     dateCreated TIMESTAMP,
@@ -141,13 +142,13 @@ CREATE TABLE Alerts (
 );
 
 CREATE TABLE Chat_rooms (
-    chatRoomID INT PRIMARY KEY,
+    chatRoomID INT AUTO_INCREMENT PRIMARY KEY,
     sectionID INT,
     FOREIGN KEY (sectionID) REFERENCES Sections(sectionID)
 );
 
 CREATE TABLE Messages (
-    messageID INT PRIMARY KEY,
+    messageID INT AUTO_INCREMENT PRIMARY KEY,
     chatRoomID INT,
     userID INT,
     content TEXT,

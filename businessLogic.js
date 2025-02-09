@@ -1,4 +1,4 @@
-// const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 const { getUserByEmail } = require('./dataAccess');
 
 async function loginUser(email, password) {
@@ -8,24 +8,29 @@ async function loginUser(email, password) {
             return { success: false, message: 'Invalid credentials' };
         }
 
-        const real_password = userData.password;
+        const hashedPassword = userData.password;
         const role = userData.role;
 
-        // const result = await bcrypt.compare(password, real_password);
-        if (password == real_password) {
-
-            let redirectUrl;
-            switch (role) {
-                case 'student': redirectUrl = '/student_dashboard'; break;
-                case 'teacher': redirectUrl = '/teacher_dashboard'; break;
-                case 'counselor': redirectUrl = '/counselor_dashboard'; break;
-                case 'parent': redirectUrl = '/parent_dashboard'; break;
-                default: redirectUrl = '/';
-            }
-            return { success: true, message: 'Login successful', redirectUrl };
-        } else {
-            return { success: false, message: 'Invalid credentials' };
-        }
+        return new Promise((resolve, reject) => {
+            bcrypt.compare(password, hashedPassword, function(err, result) {
+                if (err) {
+                    reject('An error occurred while comparing passwords.');
+                }
+                if (result) {
+                    let redirectUrl;
+                    switch (role) {
+                        case 'student': redirectUrl = '/student_dashboard'; break;
+                        case 'teacher': redirectUrl = '/teacher_dashboard'; break;
+                        case 'counselor': redirectUrl = '/counselor_dashboard'; break;
+                        case 'parent': redirectUrl = '/parent_dashboard'; break;
+                        default: redirectUrl = '/';
+                    }
+                    resolve({ success: true, message: 'Login successful', redirectUrl, userId: userData.userID });
+                } else {
+                    resolve({ success: false, message: 'Invalid credentials' });
+                }
+            });
+        });
     } catch (error) {
         throw error;
     }

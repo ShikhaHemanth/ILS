@@ -1,13 +1,26 @@
 const mysql = require('mysql');
 require('dotenv').config();
 
-const db = mysql.createPool({
-    host: process.env.DB_HOST || "localhost",
-    user: process.env.DB_USER || "root",
-    password: process.env.DB_PASS || "Mysandra1&",
-    database: process.env.DB_NAME || "individualized_learning",
-    connectionLimit: 10
+// Setup MySQL connection
+const db = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'Mysandra1&',
+    database: 'individualized_learning'
 });
+
+// Connect to the database
+function connectToDatabase() {
+    return new Promise((resolve, reject) => {
+        db.connect((err) => {
+            if (err) {
+                reject('Error connecting to MySQL: ' + err.stack);
+            } else {
+                resolve('Connected to MySQL database');
+            }
+        });
+    });
+}
 
 async function getUserByEmail(email) {
     return new Promise((resolve, reject) => {
@@ -22,4 +35,4 @@ async function getUserByEmail(email) {
     });
 }
 
-module.exports = { getUserByEmail };
+module.exports = { getUserByEmail, connectToDatabase };
