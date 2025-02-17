@@ -193,11 +193,11 @@ CREATE TABLE Messages (
 
 -- Insert data into Users
 INSERT INTO Users (userID, name, email, password, role) VALUES
-(1, 'Alice Johnson', 'alice@example.com', 'password123', 'student'),
-(2, 'Bob Smith', 'bob@example.com', 'password456', 'teacher'),
-(3, 'Charlie Davis', 'charlie@example.com', 'password789', 'parent'),
-(4, 'Dana White', 'dana@example.com', 'password321', 'counselor'),
-(5, 'Eve Black', 'eve@example.com', 'password654', 'student');
+(1, 'Alice Johnson', 'alice@ils.edu', 'password123', 'student'),
+(2, 'Bob Smith', 'bob@ils.edu', 'password456', 'teacher'),
+(3, 'Charlie Davis', 'charlie@ils.edu', 'password789', 'parent'),
+(4, 'Dana White', 'dana@ils.edu', 'password321', 'counselor'),
+(5, 'Eve Black', 'eve@ils.edu', 'password654', 'student');
 
 -- Insert data into Students
 INSERT INTO Students (studentID, userID, gradeLevel) VALUES
