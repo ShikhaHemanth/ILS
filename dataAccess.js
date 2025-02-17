@@ -5,7 +5,7 @@ require('dotenv').config();
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'Mysandra1&',
+    password: 'harshikha1619',
     database: 'individualized_learning'
 });
 
