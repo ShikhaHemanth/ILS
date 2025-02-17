@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maths Dashboard</title>
+    <title>Student Submission</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -48,32 +48,47 @@
         }
         .content {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: flex-start;
             margin-top: 20px;
+            flex-direction: column;
         }
         .left-section {
-            flex: 1;
             font-size: 30px;
             padding-left: 30px;
             padding-top: 20px;
         }
         .task-card {
-            background: #a7c7e7;
-            padding: 30px;
+            background: #E8A08E;
+            padding: 15px;
+            border-radius: 12px;
+            color: black;
+            font-size: 22px;
+            width: 250px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .file-upload {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .file-upload input {
+            display: none;
+        }
+        .custom-file-label, .upload-btn {
+            background: #E8A08E;
+            color: black;
+            padding: 8px 15px;
             border-radius: 8px;
-            color: white;
-            flex: 0.3;
-            margin-top: 30px; /* Added margin to move it down */
-            width: 500px;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+            text-align: center;
         }
-        .task-card a {
-            color: white;
-            text-decoration: none;
-            font-size: 20px;
-        }
-        .task-card a:hover {
-            text-decoration: underline;
+        .custom-file-label:hover, .upload-btn:hover {
+            background: #d78a79;
         }
     </style>
 </head>
@@ -90,10 +105,12 @@
         </div>
         <div class="content">
             <div class="left-section">
-                <h2><i>Welcome to Maths!</i></h2>
-                <div class="task-card">
-                    <p class="mb-0 fw-bold" style="color: red;">PENDING</p>
-                    <a href="#">Click here to complete Activity 1</a>
+                <h2><i>Submissions</i></h2>
+                <div class="task-card">Activity 2</div>
+                <div class="file-upload">
+                    <label for="file-upload" class="custom-file-label">Choose File</label>
+                    <input type="file" id="file-upload">
+                    <button class="upload-btn">Upload</button>
                 </div>
             </div>
         </div>

@@ -76,10 +76,10 @@ async function startServer() {
     });
 
     // Protected Routes
-    app.get('/student_dashboard', isAuthenticated, (req, res) => res.render('student_dashboard'));
-    app.get('/teacher_dashboard', isAuthenticated, (req, res) => res.render('teacher_dashboard'));
-    app.get('/counselor_dashboard', isAuthenticated, (req, res) => res.render('counselor_dashboard'));
-    app.get('/parent_dashboard', isAuthenticated, (req, res) => res.render('parent_dashboard'));
+    app.get('/student_dashboard', isAuthenticated, (req, res) => res.render('student/student_dashboard'));
+    app.get('/teacher_dashboard', isAuthenticated, (req, res) => res.render('teacher/teacher_dashboard'));
+    app.get('/counselor_dashboard', isAuthenticated, (req, res) => res.render('counselor/counselor_dashboard'));
+    app.get('/parent_dashboard', isAuthenticated, (req, res) => res.render('parent/parent_dashboard'));
 
     // Connect to database and start server
     try {
