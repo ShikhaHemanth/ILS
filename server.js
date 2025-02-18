@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const { encryptPasswords } = require('./encrypt');
 const { loginUser } = require('./businessLogic');
-const { getUserByEmail, connectToDatabase } = require('./dataAccess');
+const { connectToDatabase, getUserByEmail, getSubjectsForStudent } = require('./dataAccess');
 
 async function setup() {
     try {
@@ -76,10 +76,44 @@ async function startServer() {
     });
 
     // Protected Routes
-    app.get('/student_dashboard', isAuthenticated, (req, res) => res.render('student/student_dashboard'));
+    app.get('/student_dashboard', isAuthenticated, (req, res) => {
+        res.render('student/student_dashboard')
+        // if (!req.session.userId) {
+        //     return res.redirect('/login'); // Redirect if not logged in
+        // }
+
+        // try {
+        //     const studentID = req.session.userId;
+        //     console.log(studentID);
+        //     const subjects = await getSubjectsForStudent(studentID); // Fetch subjects
+        //     res.render('student/student_dashboard', { subjects }); // Pass subjects to the frontend
+        // } catch (error) {
+        //     console.error("Error fetching subjects:", error);
+        //     res.status(500).send("Internal Server Error");
+        // }
+    });
+
     app.get('/teacher_dashboard', isAuthenticated, (req, res) => res.render('teacher/teacher_dashboard'));
     app.get('/counselor_dashboard', isAuthenticated, (req, res) => res.render('counselor/counselor_dashboard'));
     app.get('/parent_dashboard', isAuthenticated, (req, res) => res.render('parent/parent_dashboard'));
+
+    app.get('/student_dashboard/subject', isAuthenticated, (req, res) => {
+        res.render('student/student_subject')
+    })
+
+    app.get('/student_dashboard/subject/activity', isAuthenticated, (req, res) => {
+        res.render('student/student_activity')
+    })
+
+    app.get('/student_dashboard/submission', isAuthenticated, (req, res) => {
+        res.render('student/student_submission')
+    })
+
+    app.get('/student_dashboard/feedback', isAuthenticated, (req, res) => {
+        res.render('student/student_feedback')
+    })
+
+
 
     // Connect to database and start server
     try {

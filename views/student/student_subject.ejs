@@ -38,13 +38,18 @@
             display: flex;
             gap: 300px;
         }
-        .nav-links a {
-            text-decoration: none;
+        .nav-links .active{
+            background: #bfd6ed;
+            border-radius: 5px;
+        }
+        .nav-links div {
+            padding: 5px;
             color: black;
             font-weight: bold;
         }
-        .nav-links a:hover {
-            text-decoration: underline;
+        .nav-links div:hover {
+            background: #bfd6ed;
+            border-radius: 5px;
         }
         .content {
             display: flex;
@@ -67,24 +72,28 @@
             margin-top: 30px; /* Added margin to move it down */
             width: 500px;
         }
-        .task-card a {
+        .task-card h3 {
             color: white;
             text-decoration: none;
-            font-size: 20px;
         }
-        .task-card a:hover {
+        .task-card h3:hover {
             text-decoration: underline;
+        }
+        .chat {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
         }
     </style>
 </head>
 <body>
     <div class="dashboard container-fluid">
         <div class="header">
-            <button class="btn btn-light">&#8592;</button>
+            <button class="btn btn-light" id="back">&#8592;</button>
             <div class="nav-links">
-                <a href="content.html">Content</a>
-                <a href="submissions.html">Submissions</a>
-                <a href="feedback.html">Feedback</a>
+                <div id="content" class="active">Content</div>
+                <div id="submissions">Submissions</div>
+                <div id="feedback">Feedback</div>
             </div>
             <button class="btn btn-light">⚙️</button>
         </div>
@@ -93,10 +102,30 @@
                 <h2><i>Welcome to Maths!</i></h2>
                 <div class="task-card">
                     <p class="mb-0 fw-bold" style="color: red;">PENDING</p>
-                    <a href="#">Click here to complete Activity 1</a>
+                    <h3 id="activity">Click here to complete Activity 1</h3>
                 </div>
             </div>
         </div>
+        <div class="chat">
+            <button class="btn btn-light">💬 Chat</button>
+        </div>
     </div>
+    <script>
+        document.getElementById("activity").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/subject/activity";
+        });
+        document.getElementById("content").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/subject";
+        });
+        document.getElementById("submissions").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/submission";
+        });
+        document.getElementById("feedback").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/feedback";
+        });
+        document.getElementById("back").addEventListener("click", function() {
+            window.location.href = "/student_dashboard";
+        });
+    </script>
 </body>
 </html>

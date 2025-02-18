@@ -24,6 +24,9 @@
             display: flex;
             flex-direction: column;
         }
+        .dashboard h2 {
+            margin: 4%;
+        }
         .header {
             width: 100%;
             display: flex;
@@ -38,82 +41,96 @@
             display: flex;
             gap: 300px;
         }
-        .nav-links a {
-            text-decoration: none;
+        .nav-links .active{
+            background: #bfd6ed;
+            border-radius: 5px;
+        }
+        .nav-links div {
+            padding: 5px;
             color: black;
             font-weight: bold;
         }
-        .nav-links a:hover {
-            text-decoration: underline;
+        .nav-links div:hover {
+            background: #bfd6ed;
+            border-radius: 5px;
         }
-        .content {
+        .file-input-container {
             display: flex;
-            justify-content: flex-start;
-            align-items: flex-start;
-            margin-top: 20px;
-            flex-direction: column;
-        }
-        .left-section {
-            font-size: 30px;
-            padding-left: 30px;
-            padding-top: 20px;
-        }
-        .task-card {
-            background: #E8A08E;
-            padding: 15px;
-            border-radius: 12px;
-            color: black;
-            font-size: 22px;
-            width: 250px;
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .file-upload {
-            display: flex;
-            gap: 10px;
             align-items: center;
+            gap: 10px;
+            margin-top: 10px;
         }
-        .file-upload input {
-            display: none;
-        }
-        .custom-file-label, .upload-btn {
+        .file-label {
             background: #E8A08E;
-            color: black;
-            padding: 8px 15px;
+            padding: 8px 12px;
             border-radius: 8px;
             cursor: pointer;
-            border: none;
-            font-size: 16px;
-            text-align: center;
+            color: black;
+            font-weight: bold;
         }
-        .custom-file-label:hover, .upload-btn:hover {
-            background: #d78a79;
+        .upload-btn {
+            background: #E8A08E;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #file-name {
+            font-size: 14px;
+            color: #333;
+        }
+        input[type="file"] {
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="dashboard container-fluid">
         <div class="header">
-            <button class="btn btn-light">&#8592;</button>
+            <button class="btn btn-light" id="back">&#8592;</button>
             <div class="nav-links">
-                <a href="content.html">Content</a>
-                <a href="submissions.html">Submissions</a>
-                <a href="feedback.html">Feedback</a>
+                <div id="content">Content</div>
+                <div id="submissions" class="active">Submissions</div>
+                <div id="feedback">Feedback</div>
             </div>
             <button class="btn btn-light">⚙️</button>
         </div>
-        <div class="content">
-            <div class="left-section">
-                <h2><i>Submissions</i></h2>
-                <div class="task-card">Activity 2</div>
-                <div class="file-upload">
-                    <label for="file-upload" class="custom-file-label">Choose File</label>
-                    <input type="file" id="file-upload">
-                    <button class="upload-btn">Upload</button>
-                </div>
+        <h2><i>Submissions</i></h2>
+        <div class="submission-section">
+            <h3>Activity 2</h3>
+            
+            <div class="file-input-container">
+                <label for="file-upload" class="file-label">Choose File</label>
+                <span id="file-name">No file chosen</span>
+                <button class="upload-btn">Upload</button>
+                <input type="file" id="file-upload" onchange="updateFileName()">
             </div>
         </div>
     </div>
+    <script>
+        function updateFileName() {
+            const fileInput = document.getElementById("file-upload");
+            const fileNameDisplay = document.getElementById("file-name");
+            
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = fileInput.files[0].name;
+            } else {
+                fileNameDisplay.textContent = "No file chosen";
+            }
+        }
+        document.getElementById("content").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/subject";
+        });
+        document.getElementById("submissions").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/submission";
+        });
+        document.getElementById("feedback").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/feedback";
+        });
+        document.getElementById("back").addEventListener("click", function() {
+            window.location.href = "/student_dashboard";
+        });
+    </script>
 </body>
 </html>

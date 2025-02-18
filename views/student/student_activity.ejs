@@ -38,13 +38,14 @@
             display: flex;
             gap: 300px;
         }
-        .nav-links a {
-            text-decoration: none;
+        .nav-links div {
+            padding: 5px;
             color: black;
             font-weight: bold;
         }
-        .nav-links a:hover {
-            text-decoration: underline;
+        .nav-links div:hover {
+            background: #bfd6ed;
+            border-radius: 5px;
         }
         .content {
             display: flex;
@@ -80,11 +81,11 @@
 <body>
     <div class="dashboard container-fluid">
         <div class="header">
-            <button class="btn btn-light">&#8592;</button>
+            <button class="btn btn-light" id="back">&#8592;</button>
             <div class="nav-links">
-                <a href="content.html">Content</a>
-                <a href="submissions.html">Submissions</a>
-                <a href="feedback.html">Feedback</a>
+                <div id="content">Content</div>
+                <div id="submissions">Submissions</div>
+                <div id="feedback">Feedback</div>
             </div>
             <button class="btn btn-light">⚙️</button>
         </div>
@@ -93,9 +94,24 @@
                 <h2><i>Activities!</i></h2>
                 <div class="task-card">
                     <h3>Activity 1</h3>
+                    <p>Activity 1 Description</p>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById("content").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/subject";
+        });
+        document.getElementById("submissions").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/submission";
+        });
+        document.getElementById("feedback").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/feedback";
+        });
+        document.getElementById("back").addEventListener("click", function() {
+            window.location.href = "/student_dashboard";
+        });
+    </script>
 </body>
 </html>

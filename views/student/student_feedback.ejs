@@ -9,31 +9,56 @@
         body {
             background-color: #f8f9fa;
             margin: 0;
-            padding: 20px;
-            font-family: Arial, sans-serif;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .container {
-            max-width: 800px;
-            margin: auto;
+        .dashboard {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 100%;
+            height: 100%;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .dashboard h2 {
+            margin: 4%;
         }
         .header {
+            width: 100%;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
+            background: #a7c7e7;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 20px;
         }
-        .header img {
-            width: 80px;
-            height: auto;
+        .nav-links {
+            display: flex;
+            gap: 300px;
         }
-        .header h2 {
-            font-size: 28px;
-            margin: 0;
+        .nav-links .active{
+            background: #bfd6ed;
+            border-radius: 5px;
+        }
+        .nav-links div {
+            padding: 5px;
+            color: black;
+            font-weight: bold;
+        }
+        .nav-links div:hover {
+            background: #bfd6ed;
+            border-radius: 5px;
         }
         .feedback-section {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 0.3fr 1fr;
             gap: 15px;
+            align-items: center;
         }
         .feedback-card {
             background: #E8A08E;
@@ -44,9 +69,6 @@
             text-align: center;
             font-weight: bold;
             min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         .feedback-text {
             font-size: 16px;
@@ -56,21 +78,39 @@
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="header">
-        <img src="image.png" alt="Teacher illustration">
-        <h2>Feedback</h2>
+    <div class="dashboard container-fluid">
+        <div class="header">
+            <button class="btn btn-light" id="back">&#8592;</button>
+            <div class="nav-links">
+                <div id="content">Content</div>
+                <div id="submissions">Submissions</div>
+                <div id="feedback" class="active">Feedback</div>
+            </div>
+            <button class="btn btn-light">⚙️</button>
+        </div>
+        <h2><i>Feedback!</i></h2>
+        <div class="feedback-section">
+            <div class="feedback-card">Activity 1</div>
+            <div class="feedback-card feedback-text">Very good work! Understood the concept well.</div>
+            
+            <div class="feedback-card">Activity 2</div>
+            <div class="feedback-card feedback-text"></div>
+        </div>
     </div>
 
-    <div class="feedback-section">
-        <div class="feedback-card">Activity 1</div>
-        <div class="feedback-card feedback-text">Very good work! Understood the concept well.</div>
-        
-        <div class="feedback-card">Activity 2</div>
-        <div class="feedback-card feedback-text"></div>
-    </div>
-</div>
-
+    <script>
+        document.getElementById("content").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/subject";
+        });
+        document.getElementById("submissions").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/submission";
+        });
+        document.getElementById("feedback").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/feedback";
+        });
+        document.getElementById("back").addEventListener("click", function() {
+            window.location.href = "/student_dashboard";
+        });
+    </script>
 </body>
 </html>

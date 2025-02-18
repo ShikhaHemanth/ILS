@@ -57,13 +57,7 @@
             align-items: center;
             gap: 10px;
         }
-        .subjects a {
-            font-size: 24px;
-            font-weight: bold;
-            text-decoration: none;
-            color: black;
-        }
-        .subjects a:hover {
+        .subjects div h2:hover {
             text-decoration: underline;
             color: #a7c7e7;
         }
@@ -92,7 +86,6 @@
 <body>
     <div class="dashboard container-fluid">
         <div class="header">
-            <button class="btn btn-light">&#8592;</button>
             <p class="fw-bold">Student Dashboard</p>
             <button class="btn btn-light">⚙️</button>
         </div>
@@ -108,13 +101,13 @@
                     <p class="mt-3 fw-bold">SUBJECTS</p>
                 </div>
                 <div class="subjects">
-                    <div>
+                    <div id="subject">
                         <div style="font-size: 80px;">📚</div>
-                        <a href="student_subject.ejs">Maths</a>
+                        <h2>Maths</h2>
                     </div>
-                    <div>
+                    <div id="subject">
                         <div style="font-size: 80px;">🧪</div>
-                        <a href="science.html">Science</a>
+                        <h2>Science</h2>
                     </div>
                 </div>
             </div>
@@ -131,5 +124,10 @@
             <button class="btn btn-light">💬 Chat</button>
         </div>
     </div>
+    <script>
+        document.getElementById("subject").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/subject";
+        });
+    </script>
 </body>
 </html>

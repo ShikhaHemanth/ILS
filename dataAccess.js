@@ -5,7 +5,7 @@ require('dotenv').config();
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'harshikha1619',
+    password: 'Mysandra1&',
     database: 'individualized_learning'
 });
 
@@ -35,4 +35,17 @@ async function getUserByEmail(email) {
     });
 }
 
-module.exports = { getUserByEmail, connectToDatabase };
+async function getSubjectsForStudent(studentID) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT s.subjectName FROM subjects s JOIN student_subject ss ON s.subjectId = ss.subjectId WHERE ss.studentId = ?`;
+        db.query(query, [studentID], (error, results) => {
+            if (error) {
+                console.error("Error retrieving subjects:", error);
+                return reject(error); // Reject the promise if there is an error
+            }
+            resolve(results.map(row => row.subject_name)); // Return array of subjects
+        });
+    });
+}
+
+module.exports = { connectToDatabase, getUserByEmail, getSubjectsForStudent };
