@@ -35,17 +35,20 @@ async function getUserByEmail(email) {
     });
 }
 
-async function getSubjectsForStudent(studentID) {
+// Function to get academic subjects
+async function getSubjectsforStudent(studentID) {
+    const query = `
+        SELECT s.subjectID, s.subjectName 
+        FROM Subjects s
+        JOIN Student_Subjects ss ON s.subjectID = ss.subjectID
+        WHERE ss.studentID = ? AND ss.isAcademic = TRUE;`;
+
     return new Promise((resolve, reject) => {
-        const query = `SELECT s.subjectName FROM subjects s JOIN student_subject ss ON s.subjectId = ss.subjectId WHERE ss.studentId = ?`;
-        db.query(query, [studentID], (error, results) => {
-            if (error) {
-                console.error("Error retrieving subjects:", error);
-                return reject(error); // Reject the promise if there is an error
-            }
-            resolve(results.map(row => row.subject_name)); // Return array of subjects
+        db.query(query, [studentID], (err, results) => {
+            if (err) reject(err);
+            else resolve(results);
         });
     });
 }
 
-module.exports = { connectToDatabase, getUserByEmail, getSubjectsForStudent };
+module.exports = { connectToDatabase, getUserByEmail, getSubjectsforStudent };

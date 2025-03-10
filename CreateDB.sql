@@ -46,10 +46,17 @@ CREATE TABLE Parents (
     FOREIGN KEY (studentID) REFERENCES Students(studentID)
 );
 
+CREATE TABLE Subjects (
+    subjectID INT AUTO_INCREMENT PRIMARY KEY,
+    subjectName VARCHAR(255)
+);
+
 CREATE TABLE Teachers (
     teacherID INT AUTO_INCREMENT PRIMARY KEY,
     userID INT,
-    FOREIGN KEY (userID) REFERENCES Users(userID)
+    subjectID INT,
+    FOREIGN KEY (userID) REFERENCES Users(userID),
+    FOREIGN KEY (subjectID) REFERENCES Subjects(subjectID) 
 );
 
 CREATE TABLE Counselors (
@@ -58,18 +65,30 @@ CREATE TABLE Counselors (
     FOREIGN KEY (userID) REFERENCES Users(userID)
 );
 
-CREATE TABLE Subjects (
-    subjectID INT AUTO_INCREMENT PRIMARY KEY,
-    subjectName VARCHAR(255),
-    teacherID INT,
-    FOREIGN KEY (teacherID) REFERENCES Teachers(teacherID)
+CREATE TABLE Student_Subjects (
+    studentID INT,
+    subjectID INT,
+    PRIMARY KEY (studentID, subjectID),
+    FOREIGN KEY (studentID) REFERENCES Students(studentID) ON DELETE CASCADE,
+    FOREIGN KEY (subjectID) REFERENCES Subjects(subjectID) ON DELETE CASCADE
 );
 
 CREATE TABLE Assignments (
-    assignmentID INT AUTO_INCREMENT PRIMARY KEY,
+    assignmentID INT PRIMARY KEY AUTO_INCREMENT,
+    subjectID INT,  -- Assignments belong to subjects, not students directly
     title VARCHAR(255),
     description TEXT,
-    dueDate DATE
+    dueDate DATE,
+    FOREIGN KEY (subjectID) REFERENCES Subjects(subjectID) ON DELETE CASCADE
+);
+
+CREATE TABLE Student_Assignments (
+    studentID INT,
+    assignmentID INT,
+    completed TINYINT(1) DEFAULT 0, -- Completion flag per student
+    PRIMARY KEY (studentID, assignmentID),
+    FOREIGN KEY (studentID) REFERENCES Students(studentID) ON DELETE CASCADE,
+    FOREIGN KEY (assignmentID) REFERENCES Assignments(assignmentID) ON DELETE CASCADE
 );
 
 CREATE TABLE Submissions (
@@ -137,10 +156,17 @@ CREATE TABLE Messages (
     chatRoomID INT,
     userID INT,
     content TEXT,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMPy,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (chatRoomID) REFERENCES Chat_rooms(chatRoomID),
     FOREIGN KEY (userID) REFERENCES Users(userID)
 );
+
+CREATE TRIGGER mark_assignment_completed
+AFTER INSERT ON Submissions
+FOR EACH ROW
+UPDATE Student_Assignments
+SET completed = 1
+WHERE studentID = NEW.studentID AND assignmentID = NEW.assignmentID;
 
 -- Insert data into Users
 INSERT INTO Users (userID, name, email, password, role) VALUES
@@ -149,7 +175,8 @@ INSERT INTO Users (userID, name, email, password, role) VALUES
 (3, 'Charlie Davis', 'charlie@ils.edu', 'password789', 'parent'),
 (4, 'Dana White', 'dana@ils.edu', 'password321', 'counselor'),
 (5, 'Eve Black', 'eve@ils.edu', 'password123', 'student'),
-(6, 'Steven Hawk', 'steven@ils.edu', 'password789', 'parent');
+(6, 'Steven Hawk', 'steven@ils.edu', 'password789', 'parent'),
+(7, 'Jane Austin', 'jane@ils.edu', 'password456', 'teacher');
 
 -- Insert data into Students
 INSERT INTO Students (studentID, userID, gradeLevel) VALUES
@@ -162,23 +189,35 @@ INSERT INTO Parents (parentID, userID, studentID) VALUES
 (2, 6, 2);
 
 -- Insert data into Teachers
-INSERT INTO Teachers (teacherID, userID) VALUES
-(1, 2);
+INSERT INTO Teachers (teacherID, userID, subjectID) VALUES
+(1, 2, 1),
+(2, 7, 2);
 
 -- Insert data into Counselors
 INSERT INTO Counselors (counselorID, userID) VALUES
 (1, 4);
 
 -- Insert data into Subjects
-INSERT INTO Subjects (subjectID, subjectName, teacherID) VALUES
-(1, 'Mathematics', 1),
-(2, 'Science', 1),
-(3, 'English', 2);
+INSERT INTO Subjects (subjectID, subjectName) VALUES
+(1, 'Mathematics'),
+(2, 'Science'),
+(3, 'English');
+
+INSERT INTO Student_Subjects (studentID, subjectID) VALUES
+(1, 1),
+(1, 2),
+(2, 1),
+(2, 3); 
 
 -- Insert data into Assignments
-INSERT INTO Assignments (assignmentID, title, description, dueDate) VALUES
-(1, 'Algebra Homework', 'Solve equations', '2025-03-01'),
-(2, 'Physics Lab', 'Write report', '2025-03-05');
+INSERT INTO Assignments (assignmentID, subjectID, title, description, dueDate) VALUES
+(1, 1, 'Algebra Homework', 'Solve equations', '2025-03-01'),
+(2, 2, 'Physics Lab', 'Write report', '2025-03-05');
+
+-- Insert data into Student_Assignments
+INSERT INTO Student_Assignments (studentID, assignmentID) VALUES
+(1, 1),
+(2, 2);
 
 -- Insert data into Submissions
 INSERT INTO Submissions (submissionID, assignmentID, studentID, fileURL, grade, feedback) VALUES

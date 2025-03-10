@@ -99,9 +99,9 @@
         }
 
         // Clear login token when the page loads
-        window.onload = function() {
+        window.addEventListener("pageshow", function() {
             deleteTokenLocalStorage();
-        };
+        });
     </script>
 </body>
 </html>

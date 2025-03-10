@@ -269,7 +269,7 @@
             transform: translateX(-50%); /* Adjust centering */
             width: 40px;
             height: 40px;
-            background-image: url('views/graphics/giftbox.png'); /* Replace with your gift/character image */
+            background-image: url('/graphics/giftbox.png');
             background-size: contain;
             background-repeat: no-repeat;
             transition: left 0.5s ease;
@@ -354,42 +354,58 @@
     </div>
 
     <script>
-        async function fetchProgressData() {
-            try {
-                const response = await fetch('/get-progress-data'); // Backend route for fetching data
-                const data = await response.json();
-
-                const totalAssignments = data.totalAssignments;
-                const completedAssignments = data.completedAssignments;
-
-                updateProgressBar(totalAssignments, completedAssignments);
-            } catch (error) {
-                console.error('Error fetching progress data:', error);
+        // Function to handle the pageshow event
+        function handlePageShow(event) {
+            if (event.persisted) {
+                // If the page is shown from the cache (e.g., when navigating back),
+                // check if the token is still in local storage
+                checkTokenLocalStorage();
+        }}
+        function checkTokenLocalStorage() {
+            if (!localStorage.getItem('token')) {
+                // Redirect to login page if token doesn't exist in localStorage
+                window.location.href = '/login';
             }
         }
+        // Add event listener for the pageshow event
+        window.addEventListener('pageshow', handlePageShow);
 
-        function updateProgressBar(totalAssignments, completedAssignments) {
-            const progressBar = document.getElementById('progress-bar');
-            const goalText = document.getElementById('goal-text');
-            const popup = document.getElementById('congrats-popup');
-            const funCharacter = document.getElementById('fun-character');
+        // async function fetchProgressData() {
+        //     try {
+        //         const response = await fetch('/get-progress-data'); // Backend route for fetching data
+        //         const data = await response.json();
 
-            const progressPercentage = (completedAssignments / totalAssignments) * 100;
-            progressBar.style.width = `${progressPercentage}%`;
+        //         const totalAssignments = data.totalAssignments;
+        //         const completedAssignments = data.completedAssignments;
 
-            // Move the fun character outside the progress bar
-            funCharacter.style.left = `calc(${progressPercentage}% + 20px)`;
+        //         updateProgressBar(totalAssignments, completedAssignments);
+        //     } catch (error) {
+        //         console.error('Error fetching progress data:', error);
+        //     }
+        // }
 
-            goalText.textContent = `${completedAssignments} / ${totalAssignments} Assignments Completed`;
+        // function updateProgressBar(totalAssignments, completedAssignments) {
+        //     const progressBar = document.getElementById('progress-bar');
+        //     const goalText = document.getElementById('goal-text');
+        //     const popup = document.getElementById('congrats-popup');
+        //     const funCharacter = document.getElementById('fun-character');
 
-            if (completedAssignments === totalAssignments) {
-                popup.style.display = 'block'; // Show the congratulatory popup
-            }
-        }
+        //     const progressPercentage = (completedAssignments / totalAssignments) * 100;
+        //     progressBar.style.width = `${progressPercentage}%`;
 
-        setInterval(fetchProgressData, 5000);
+        //     // Move the fun character outside the progress bar
+        //     funCharacter.style.left = `calc(${progressPercentage}% + 20px)`;
 
-        fetchProgressData();
+        //     goalText.textContent = `${completedAssignments} / ${totalAssignments} Assignments Completed`;
+
+        //     if (completedAssignments === totalAssignments) {
+        //         popup.style.display = 'block'; // Show the congratulatory popup
+        //     }
+        // }
+
+        // setInterval(fetchProgressData, 5000);
+
+        // fetchProgressData();
     </script>
 </body>
 </html>
