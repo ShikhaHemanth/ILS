@@ -11,12 +11,12 @@ DROP TABLE IF EXISTS Learning_plans;
 DROP TABLE IF EXISTS Assessments;
 DROP TABLE IF EXISTS Progress_reports;
 DROP TABLE IF EXISTS Submissions;
+DROP TABLE IF EXISTS Student_Assignments;
 DROP TABLE IF EXISTS Assignments;
-DROP TABLE IF EXISTS Student_section_map;
-DROP TABLE IF EXISTS Sections;
-DROP TABLE IF EXISTS Subjects;
+DROP TABLE IF EXISTS Student_Subjects;
 DROP TABLE IF EXISTS Counselors;
 DROP TABLE IF EXISTS Teachers;
+DROP TABLE IF EXISTS Subjects;
 DROP TABLE IF EXISTS Parents;
 DROP TABLE IF EXISTS Students;
 DROP TABLE IF EXISTS Users;
@@ -188,6 +188,12 @@ INSERT INTO Parents (parentID, userID, studentID) VALUES
 (1, 3, 1),
 (2, 6, 2);
 
+-- Insert data into Subjects
+INSERT INTO Subjects (subjectID, subjectName) VALUES
+(1, 'Mathematics'),
+(2, 'Science'),
+(3, 'English');
+
 -- Insert data into Teachers
 INSERT INTO Teachers (teacherID, userID, subjectID) VALUES
 (1, 2, 1),
@@ -196,12 +202,6 @@ INSERT INTO Teachers (teacherID, userID, subjectID) VALUES
 -- Insert data into Counselors
 INSERT INTO Counselors (counselorID, userID) VALUES
 (1, 4);
-
--- Insert data into Subjects
-INSERT INTO Subjects (subjectID, subjectName) VALUES
-(1, 'Mathematics'),
-(2, 'Science'),
-(3, 'English');
 
 INSERT INTO Student_Subjects (studentID, subjectID) VALUES
 (1, 1),
@@ -260,15 +260,15 @@ INSERT INTO Chat_rooms (chatRoomID, user1ID, user2ID) VALUES
 
 -- Insert messages exchanged in different chat rooms
 INSERT INTO Messages (messageID, chatRoomID, userID, content, timestamp) VALUES
-(1, 1, 1, 'Hello, Professor! I have a question about the homework.', '2025-02-12 09:30:00'),
-(2, 1, 2, 'Sure, Alice! What do you need help with?', '2025-02-12 09:31:00'),
-(3, 2, 1, 'Hi Counselor Dana, I need some advice.', '2025-02-12 10:00:00'),
-(4, 2, 4, 'Of course, Alice! What’s on your mind?', '2025-02-12 10:02:00'),
-(5, 3, 3, 'Hello, Mr. Bob. How is my child doing in math?', '2025-02-12 10:45:00'),
-(6, 3, 2, 'Hi Charlie! Your child is making good progress but needs some extra practice.', '2025-02-12 10:50:00'),
-(7, 4, 3, 'Counselor Dana, do you think my child needs extra support?', '2025-02-13 08:30:00'),
-(8, 4, 4, 'Yes, we should discuss an adaptive learning plan.', '2025-02-13 08:35:00'),
-(9, 5, 5, 'Hey Professor, I need help with the physics lab.', '2025-02-14 15:00:00'),
-(10, 5, 2, 'Sure Eve, let’s go through it together.', '2025-02-14 15:05:00'),
-(11, 6, 5, 'Counselor Dana, I struggle with time management.', '2025-02-14 16:30:00'),
-(12, 6, 4, 'That’s okay, Eve. We can create a personalized plan for you.', '2025-02-14 16:35:00');
+(1, 1, 1, "Hello, Professor! I have a question about the homework.", '2025-02-12 09:30:00'),
+(2, 1, 2, "Sure, Alice! What do you need help with?", '2025-02-12 09:31:00'),
+(3, 2, 1, "Hi Counselor Dana, I need some advice.", '2025-02-12 10:00:00'),
+(4, 2, 4, "Of course, Alice! What is on your mind?", '2025-02-12 10:02:00'),
+(5, 3, 3, "Hello, Mr. Bob. How is my child doing in math?", '2025-02-12 10:45:00'),
+(6, 3, 2, "Hi Charlie! Your child is making good progress but needs some extra practice.", '2025-02-12 10:50:00'),
+(7, 4, 3, "Counselor Dana, do you think my child needs extra support?", '2025-02-13 08:30:00'),
+(8, 4, 4, "Yes, we should discuss an adaptive learning plan.", '2025-02-13 08:35:00'),
+(9, 5, 5, "Hey Professor, I need help with the physics lab.", '2025-02-14 15:00:00'),
+(10, 5, 2, "Sure Eve, let us go through it together.", '2025-02-14 15:05:00'),
+(11, 6, 5, "Counselor Dana, I struggle with time management.", '2025-02-14 16:30:00'),
+(12, 6, 4, "That is okay, Eve. We can create a personalized plan for you.", '2025-02-14 16:35:00');
