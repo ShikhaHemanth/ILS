@@ -94,6 +94,11 @@ async function startServer() {
         }
     });
 
+    app.get('/student/:subjectName', (req, res) => {
+        const subjectName = req.params.subjectName;
+        res.render('student/student_subject', { subjectName });
+    });
+
     app.get('/teacher_dashboard', isAuthenticated, (req, res) => res.render('teacher/teacher_dashboard'));
     app.get('/counselor_dashboard', isAuthenticated, (req, res) => res.render('counselor/counselor_dashboard'));
     app.get('/parent_dashboard', isAuthenticated, (req, res) => res.render('parent/parent_dashboard'));

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subject Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Bundle (includes Popper.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         body {
             background-color: #f8f9fa;
@@ -95,11 +97,20 @@
                 <div id="submissions">Submissions</div>
                 <div id="feedback">Feedback</div>
             </div>
-            <button class="btn btn-light">⚙️</button>
+            <!-- Settings Dropdown -->
+            <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    ⚙️
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
+                    <li><a class="dropdown-item" href="#" id="logout">Logout</a></li>
+                </ul>
+            </div>
         </div>
         <div class="content">
             <div class="left-section">
-                <h2><i>Welcome to Maths!</i></h2>
+                <% function toSentenceCase(str) { return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase(); } %>
+                <h2><i>Welcome to <%= toSentenceCase(subjectName) %>!!</i></h2>
                 <div class="task-card">
                     <p class="mb-0 fw-bold" style="color: red;">PENDING</p>
                     <h3 id="activity">Click here to complete Activity 1</h3>
@@ -141,6 +152,10 @@
         });
         document.getElementById("back").addEventListener("click", function() {
             window.location.href = "/student_dashboard";
+        });
+        document.getElementById("logout").addEventListener("click", function() {
+            localStorage.removeItem('token'); // Remove the token
+            window.location.href = "/login";  // Redirect to login page
         });
     </script>
 </body>
