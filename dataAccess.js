@@ -36,19 +36,39 @@ async function getUserByEmail(email) {
 }
 
 // Function to get academic subjects
-async function getSubjectsforStudent(studentID) {
-    const query = `
-        SELECT s.subjectID, s.subjectName 
-        FROM Subjects s
-        JOIN Student_Subjects ss ON s.subjectID = ss.subjectID
-        WHERE ss.studentID = ? AND ss.isAcademic = TRUE;`;
-
+async function getSubjectsForStudent(userId) {
     return new Promise((resolve, reject) => {
-        db.query(query, [studentID], (err, results) => {
-            if (err) reject(err);
-            else resolve(results);
-        });
+        // Get the student ID from the students table
+        db.query(
+            "SELECT studentid FROM students WHERE userid = ?", 
+            [userId],
+            (err, studentResults) => {
+                if (err) {
+                    console.error("Error retrieving student ID:", err);
+                    return reject(err);
+                }
+                if (!studentResults.length) {
+                    return resolve([]); // No student found, return empty array
+                }
+
+                const studentId = studentResults[0].studentid;
+                const subjectQuery = `
+                    SELECT ss.subjectID, s.subjectName 
+                    FROM student_subjects ss 
+                    JOIN subjects s ON ss.subjectID = s.subjectID 
+                    WHERE ss.studentid = ?
+                `;
+
+                db.query(subjectQuery, [studentId], (error, results) => {
+                    if (error) {
+                        console.error("Error retrieving subjects:", error);
+                        return reject(error);
+                    }
+                    resolve(results); // ✅ Return the full array of subjects
+                });
+            }
+        );
     });
 }
 
-module.exports = { connectToDatabase, getUserByEmail, getSubjectsforStudent };
+module.exports = { connectToDatabase, getUserByEmail, getSubjectsForStudent };

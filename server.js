@@ -75,22 +75,23 @@ async function startServer() {
         }
     });
 
-    // Protected Routes
-    app.get('/student_dashboard', isAuthenticated, (req, res) => {
-        res.render('student/student_dashboard')
-        // if (!req.session.userId) {
-        //     return res.redirect('/login'); // Redirect if not logged in
-        // }
-
-        // try {
-        //     const studentID = req.session.userId;
-        //     console.log(studentID);
-        //     const subjects = await getSubjectsForStudent(studentID); // Fetch subjects
-        //     res.render('student/student_dashboard', { subjects }); // Pass subjects to the frontend
-        // } catch (error) {
-        //     console.error("Error fetching subjects:", error);
-        //     res.status(500).send("Internal Server Error");
-        // }
+    // Protected Route
+    app.get('/student_dashboard', isAuthenticated, async(req, res) => {
+        if (!req.session.userId) {
+            return res.redirect('/login'); // Ensure user is logged in
+        }
+        const userID = req.session.userId; // Get student ID from session
+        try {
+            const subjects = await getSubjectsForStudent(userID); // Fetch subjects
+            if (!Array.isArray(subjects)) {  // Ensure subjects is an array
+                console.error("Unexpected data format:", subjects);
+                return res.status(500).send("Server error: subjects data is invalid");
+            }
+            res.render('student/student_dashboard', { subjects }); // Pass subjects to EJS
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Error loading dashboard");
+        }
     });
 
     app.get('/teacher_dashboard', isAuthenticated, (req, res) => res.render('teacher/teacher_dashboard'));

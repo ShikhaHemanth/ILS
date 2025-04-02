@@ -87,7 +87,7 @@
     <div class="dashboard container-fluid">
         <div class="header">
             <p class="fw-bold">Student Dashboard</p>
-            <button class="btn btn-light">⚙️</button>
+            <button class="btn btn-light">⚙</button>
         </div>
         <div class="content">
             <div class="left-section">
@@ -265,7 +265,7 @@
         .fun-character {
             position: absolute;
             top: -40px; /* Move it higher */
-            left: 0; /* Default starting position */
+            left: 0; /* Default starting position*/
             transform: translateX(-50%); /* Adjust centering */
             width: 40px;
             height: 40px;
@@ -296,7 +296,7 @@
     <div class="dashboard container-fluid">
         <div class="header">
             <p class="fw-bold">Student Dashboard</p>
-            <button class="btn btn-light">⚙️</button>
+            <button class="btn btn-light">⚙</button>
         </div>
 
         <div class="content">
@@ -322,14 +322,28 @@
                 </div>
 
                 <div class="subjects">
-                    <div id="subject">
+                    <% if (subjects.length > 0) { %>
+                        <ul style="list-style: none; padding: 0;">
+                            <% subjects.forEach(subject => { %>
+                                <li style="display: flex; align-items: center; gap: 10px;">
+                                    <img src="/graphics/<%= subject.subjectName.toLowerCase() %>.jpg" 
+                                         alt="<%= subject.subjectName %>" 
+                                         style="width: 50px; height: 50px;">
+                                    <%= subject.subjectName %>
+                                </li>
+                            <% }); %>
+                        </ul>
+                    <% } else { %>
+                        <p>No academic subjects assigned.</p>
+                    <% } %>
+                    <!-- <div id="subject">
                         <div style="font-size: 80px;">📚</div>
                         <h2>Maths</h2>
                     </div>
                     <div id="subject">
                         <div style="font-size: 80px;">🧪</div>
                         <h2>Science</h2>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 
@@ -391,12 +405,12 @@
         //     const funCharacter = document.getElementById('fun-character');
 
         //     const progressPercentage = (completedAssignments / totalAssignments) * 100;
-        //     progressBar.style.width = `${progressPercentage}%`;
+        //     progressBar.style.width = ${progressPercentage}%;
 
         //     // Move the fun character outside the progress bar
-        //     funCharacter.style.left = `calc(${progressPercentage}% + 20px)`;
+        //     funCharacter.style.left = calc(${progressPercentage}% + 20px);
 
-        //     goalText.textContent = `${completedAssignments} / ${totalAssignments} Assignments Completed`;
+        //     goalText.textContent = ${completedAssignments} / ${totalAssignments} Assignments Completed;
 
         //     if (completedAssignments === totalAssignments) {
         //         popup.style.display = 'block'; // Show the congratulatory popup
@@ -409,4 +423,3 @@
     </script>
 </body>
 </html>
-
