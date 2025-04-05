@@ -123,7 +123,7 @@ async function getIncompleteAssignmentsForStudent(userId) {
 
         return new Promise((resolve, reject) => {
             const query = `
-                SELECT s.subjectName, a.title
+                SELECT s.subjectName, a.title, a.duedate
                 FROM student_assignments sa
                 JOIN assignments a ON sa.assignmentID = a.assignmentID
                 JOIN subjects s ON a.subjectID = s.subjectID

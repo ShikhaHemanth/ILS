@@ -109,11 +109,35 @@
         </div>
         <div class="content">
             <div class="left-section">
-                <% function toSentenceCase(str) { return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase(); } %>
+                <% 
+                    function toSentenceCase(str) { 
+                        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase(); 
+                    }
+                    const filteredAssignments = pendingAssignments.filter(a => a.subjectName.toLowerCase() === subjectName.toLowerCase());
+                    
+                    // Function to format the date
+                    function formatDate(date) {
+                        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                        return new Date(date).toLocaleDateString('en-US', options);
+                    }
+                %>
+
                 <h2><i>Welcome to <%= toSentenceCase(subjectName) %>!!</i></h2>
+
                 <div class="task-card">
                     <p class="mb-0 fw-bold" style="color: red;">PENDING</p>
-                    <h3 id="activity">Click here to complete Activity 1</h3>
+
+                    <% if (filteredAssignments.length > 0) { %>
+                        <% filteredAssignments.forEach(assignment => { %>
+                            <div class="assignment">
+                                <p><strong><%= assignment.title %></strong></p>
+                                <p>Due: <%= formatDate(assignment.duedate) %></p>
+                                <!-- Add other assignment details as needed -->
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p>No pending assignments for this subject.</p>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -122,6 +146,7 @@
         </div>
     </div>
     <script>
+        
         // Function to handle the pageshow event
         function handlePageShow(event) {
             if (event.persisted) {
@@ -138,11 +163,8 @@
         // Add event listener for the pageshow event
         window.addEventListener('pageshow', handlePageShow);
 
-        document.getElementById("activity").addEventListener("click", function() {
-            window.location.href = "/student_dashboard/subject/activity";
-        });
         document.getElementById("content").addEventListener("click", function() {
-            window.location.href = "/student_dashboard/subject";
+            window.location.href = "/student_dashboard/<%= subjectName %>";
         });
         document.getElementById("submissions").addEventListener("click", function() {
             window.location.href = "/student_dashboard/submission";

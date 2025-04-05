@@ -96,22 +96,37 @@ async function startServer() {
         }
     });
 
-    app.get('/student/:subjectName', (req, res) => {
+    app.get('/student_dashboard/:subjectName', async (req, res) => {
+        const studentId = req.session.userId; // assuming student is logged in
         const subjectName = req.params.subjectName;
-        res.render('student/student_subject', { subjectName });
+
+        try {
+            const pendingAssignments = await getIncompleteAssignmentsForStudent(studentId);
+            res.render('student/student_subject', { subjectName, pendingAssignments });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Error loading subject dashboard');
+        }
+    });
+
+    app.get('/student_dashboard/:subjectName/:activity', async (req, res) => {
+        const studentId = req.session.userId; // assuming student is logged in
+        const subjectName = req.params.student_activity;
+    
+        try {
+            const pendingAssignments = await getIncompleteAssignmentsForStudent(studentId);
+            res.render('student/student_activity', { subjectName, pendingAssignments });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Error loading subject dashboard');
+        }
     });
 
     app.get('/teacher_dashboard', isAuthenticated, (req, res) => res.render('teacher/teacher_dashboard'));
     app.get('/counselor_dashboard', isAuthenticated, (req, res) => res.render('counselor/counselor_dashboard'));
     app.get('/parent_dashboard', isAuthenticated, (req, res) => res.render('parent/parent_dashboard'));
 
-    // app.get('/student_dashboard/subject', isAuthenticated, (req, res) => {
-    //     res.render('student/student_subject')
-    // })
-
-    app.get('/student_dashboard/subject/activity', isAuthenticated, (req, res) => {
-        res.render('student/student_activity')
-    })
+    
 
     app.get('/student_dashboard/submission', isAuthenticated, (req, res) => {
         res.render('student/student_submission')
