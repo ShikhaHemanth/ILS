@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const { encryptPasswords } = require('./encrypt');
 const { loginUser } = require('./businessLogic');
-const { connectToDatabase, getUserByEmail, getSubjectsForStudent, getStudentAssignmentProgress } = require('./dataAccess');
+const { connectToDatabase, getUserByEmail, getSubjectsForStudent, getStudentAssignmentProgress, getIncompleteAssignmentsForStudent } = require('./dataAccess');
 
 async function setup() {
     try {
@@ -84,11 +84,12 @@ async function startServer() {
         try {
             const progressData = await getStudentAssignmentProgress(userID);
             const subjects = await getSubjectsForStudent(userID); // Fetch subjects
+            const incompleteAssignments = await getIncompleteAssignmentsForStudent(userID);
             if (!Array.isArray(subjects)) {  // Ensure subjects is an array
                 console.error("Unexpected data format:", subjects);
                 return res.status(500).send("Server error: subjects data is invalid");
             }
-            res.render('student/student_dashboard', { subjects, totalAssignments: progressData.total, completedAssignments: progressData.completed }); // Pass subjects to EJS
+            res.render('student/student_dashboard', { subjects, totalAssignments: progressData.total, completedAssignments: progressData.completed, incompleteAssignments }); // Pass subjects to EJS
         } catch (error) {
             console.error(error);
             res.status(500).send("Error loading dashboard");

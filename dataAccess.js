@@ -116,5 +116,31 @@ async function getStudentAssignmentProgress(userId) {
     }
 }
 
+async function getIncompleteAssignmentsForStudent(userId) {
+    try {
+        const studentId = await getStudentByUserId(userId);
+        if (!studentId) return [];
 
-module.exports = { connectToDatabase, getUserByEmail, getStudentByUserId, getSubjectsForStudent, getStudentAssignmentProgress };
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT s.subjectName, a.title
+                FROM student_assignments sa
+                JOIN assignments a ON sa.assignmentID = a.assignmentID
+                JOIN subjects s ON a.subjectID = s.subjectID
+                WHERE sa.studentID = ? AND sa.completed = 0
+            `;
+            db.query(query, [studentId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching incomplete assignments:", error);
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    } catch (error) {
+        console.error("Error in getIncompleteAssignmentsForStudent:", error);
+        throw error;
+    }
+}
+
+module.exports = { connectToDatabase, getUserByEmail, getStudentByUserId, getSubjectsForStudent, getStudentAssignmentProgress, getIncompleteAssignmentsForStudent };

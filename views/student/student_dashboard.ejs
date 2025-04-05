@@ -1,5 +1,3 @@
-<!-- CODE WITH PROGRESS BAR -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,8 +94,46 @@
             bottom: 20px;
             right: 20px;
         }
+        .animated-bar {
+            position: relative;
+            overflow: hidden;
+            background-color: #198754; /* Bootstrap bg-success */
+        }
 
+        .animated-bar::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background-image: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.2) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 40px 40px;
+            animation: moveStripes 1s linear infinite;
+        }
+
+        @keyframes moveStripes {
+            from {
+                background-position: 0 0;
+            }
+            to {
+                background-position: 40px 0;
+            }
+        }
         /* Progress Bar Styles */
+        .progress {
+            width: 90%;
+        }
+
         .progress-container {
             width: 85%;
             background-color: #ffffff;  /* White interior */
@@ -186,7 +222,7 @@
 
                 <!-- Progress Bar Section -->
                 <div class="progress mt-3">
-                    <div id="progress-bar" class="progress-bar bg-success" role="progressbar" 
+                    <div id="progress-bar" class="progress-bar bg-success animated-bar" role="progressbar"
                          style="width: <%= totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0 %>%;" 
                          aria-valuenow="<%= totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0 %>"
                          aria-valuemin="0" 
@@ -196,7 +232,7 @@
                 </div>
                 <div class="fun-character" id="fun-character"></div>
 
-                <div class="goal-text" id="goal-text">0 / 10 Assignments Completed</div>
+                <div class="goal-text" id="goal-text"><%= completedAssignments %> / <%= totalAssignments %> Assignments Completed</div>
                 <div class="prize-text">🌟 Complete all your assignments to win a special prize! 🎁</div>
 
                 <div style="padding-top: 15px; font-size: 30px;">
@@ -221,14 +257,6 @@
                     <% } else { %>
                         <p>No academic subjects assigned.</p>
                     <% } %>
-                    <!-- <div id="subject">
-                        <div style="font-size: 80px;">📚</div>
-                        <h2>Maths</h2>
-                    </div>
-                    <div id="subject">
-                        <div style="font-size: 80px;">🧪</div>
-                        <h2>Science</h2>
-                    </div> -->
                 </div>
             </div>
 
@@ -237,7 +265,13 @@
                     <p class="mb-0 fw-bold">🧠 Work To Do</p>
                 </div>
                 <div style="padding-top: 15px;">
-                    <a href="">Maths: Activity 2</a>
+                    <% if (incompleteAssignments.length > 0) { %>
+                        <% incompleteAssignments.forEach(task => { %>
+                            <div><a href="#"><%= task.subjectName %>: <%= task.title %></a></div>
+                        <% }); %>
+                    <% } else { %>
+                        <div><p>No pending assignments 🎉</p></div>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -273,42 +307,6 @@
         // Add event listener for the pageshow event
         window.addEventListener('pageshow', handlePageShow);
 
-        // async function fetchProgressData() {
-        //     try {
-        //         const response = await fetch('/get-progress-data'); // Backend route for fetching data
-        //         const data = await response.json();
-
-        //         const totalAssignments = data.totalAssignments;
-        //         const completedAssignments = data.completedAssignments;
-
-        //         updateProgressBar(totalAssignments, completedAssignments);
-        //     } catch (error) {
-        //         console.error('Error fetching progress data:', error);
-        //     }
-        // }
-
-        // function updateProgressBar(totalAssignments, completedAssignments) {
-        //     const progressBar = document.getElementById('progress-bar');
-        //     const goalText = document.getElementById('goal-text');
-        //     const popup = document.getElementById('congrats-popup');
-        //     const funCharacter = document.getElementById('fun-character');
-
-        //     const progressPercentage = (completedAssignments / totalAssignments) * 100;
-        //     progressBar.style.width = ${progressPercentage}%;
-
-        //     // Move the fun character outside the progress bar
-        //     funCharacter.style.left = calc(${progressPercentage}% + 20px);
-
-        //     goalText.textContent = ${completedAssignments} / ${totalAssignments} Assignments Completed;
-
-        //     if (completedAssignments === totalAssignments) {
-        //         popup.style.display = 'block'; // Show the congratulatory popup
-        //     }
-        // }
-
-        // setInterval(fetchProgressData, 5000);
-
-        // fetchProgressData();
     </script>
 </body>
 </html>
