@@ -185,8 +185,14 @@
                 </div>
 
                 <!-- Progress Bar Section -->
-                <div class="progress-container">
-                    <div class="progress-bar" id="progress-bar"></div>
+                <div class="progress mt-3">
+                    <div id="progress-bar" class="progress-bar bg-success" role="progressbar" 
+                         style="width: <%= totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0 %>%;" 
+                         aria-valuenow="<%= totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0 %>"
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                        <%= totalAssignments > 0 ? Math.round((completedAssignments / totalAssignments) * 100) : 0 %>%
+                    </div>
                 </div>
                 <div class="fun-character" id="fun-character"></div>
 

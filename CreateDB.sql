@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS Quizzes;
 DROP TABLE IF EXISTS Learning_plans;
 DROP TABLE IF EXISTS Assessments;
 DROP TABLE IF EXISTS Progress_reports;
+DROP TABLE IF EXISTS Feedback;
 DROP TABLE IF EXISTS Submissions;
 DROP TABLE IF EXISTS Student_Assignments;
 DROP TABLE IF EXISTS Assignments;
@@ -91,15 +92,23 @@ CREATE TABLE Student_Assignments (
     FOREIGN KEY (assignmentID) REFERENCES Assignments(assignmentID) ON DELETE CASCADE
 );
 
+-- Submissions Table
 CREATE TABLE Submissions (
-    submissionID INT AUTO_INCREMENT PRIMARY KEY,
+    submissionID INT PRIMARY KEY,
     assignmentID INT,
     studentID INT,
     fileURL VARCHAR(255),
-    grade DECIMAL(5, 2),
-    feedback TEXT,
     FOREIGN KEY (assignmentID) REFERENCES Assignments(assignmentID),
     FOREIGN KEY (studentID) REFERENCES Students(studentID)
+);
+
+-- Feedback Table
+CREATE TABLE Feedback (
+    feedbackID INT PRIMARY KEY AUTO_INCREMENT,
+    submissionID INT,
+    grade DECIMAL(5,2),
+    feedback TEXT,
+    FOREIGN KEY (submissionID) REFERENCES Submissions(submissionID)
 );
 
 CREATE TABLE Progress_reports (
@@ -180,7 +189,7 @@ INSERT INTO Users (userID, name, email, password, role) VALUES
 
 -- Insert data into Students
 INSERT INTO Students (studentID, userID, gradeLevel) VALUES
-(1, 1, 5),
+(1, 1, 4),
 (2, 5, 6);
 
 -- Insert data into Parents
@@ -211,18 +220,34 @@ INSERT INTO Student_Subjects (studentID, subjectID) VALUES
 
 -- Insert data into Assignments
 INSERT INTO Assignments (assignmentID, subjectID, title, description, dueDate) VALUES
-(1, 1, 'Algebra Homework', 'Solve equations', '2025-03-01'),
-(2, 2, 'Physics Lab', 'Write report', '2025-03-05');
+-- Math - Grade 4
+(1, 1, 'Basic Algebra', 'Solve simple equations like 2x + 3 = 7', '2025-04-01'),
+-- Math - Grade 6
+(2, 1, 'Advanced Geometry', 'Solve problems on angles, triangles, and area', '2025-04-03'),
+-- Math - Grade 4
+(3, 1, 'Bar Graph Practice', 'Interpret bar graphs and answer questions', '2025-04-04'),
+-- Science - Grade 4
+(4, 2, 'Animal Classification', 'Classify animals into mammals, reptiles, etc.', '2025-04-05'),
+-- English - Grade 6
+(5, 3, 'Compare Two Poems', 'Write a short essay comparing themes in two poems', '2025-04-06');
 
 -- Insert data into Student_Assignments
 INSERT INTO Student_Assignments (studentID, assignmentID) VALUES
 (1, 1),
-(2, 2);
+(2, 2),
+(1, 3),
+(1, 4),
+(2, 5);
 
--- Insert data into Submissions
-INSERT INTO Submissions (submissionID, assignmentID, studentID, fileURL, grade, feedback) VALUES
-(1, 1, 1, 'file1.pdf', 85.0, 'Good work'),
-(2, 2, 2, 'file2.pdf', 90.0, 'Excellent report');
+-- Insert into Submissions
+INSERT INTO Submissions (submissionID, assignmentID, studentID, fileURL) VALUES
+(1, 1, 1, 'file1.pdf'),
+(2, 2, 2, 'file2.pdf');
+
+-- Insert into Feedback
+INSERT INTO Feedback (submissionID, grade, feedback) VALUES
+(1, 85.0, 'Good work'),
+(2, 90.0, 'Excellent report');
 
 -- Insert data into Progress_reports
 INSERT INTO Progress_reports (reportID, studentID, generatedDate, details) VALUES

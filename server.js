@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const { encryptPasswords } = require('./encrypt');
 const { loginUser } = require('./businessLogic');
-const { connectToDatabase, getUserByEmail, getSubjectsForStudent } = require('./dataAccess');
+const { connectToDatabase, getUserByEmail, getSubjectsForStudent, getStudentAssignmentProgress } = require('./dataAccess');
 
 async function setup() {
     try {
@@ -82,12 +82,13 @@ async function startServer() {
         }
         const userID = req.session.userId; // Get student ID from session
         try {
+            const progressData = await getStudentAssignmentProgress(userID);
             const subjects = await getSubjectsForStudent(userID); // Fetch subjects
             if (!Array.isArray(subjects)) {  // Ensure subjects is an array
                 console.error("Unexpected data format:", subjects);
                 return res.status(500).send("Server error: subjects data is invalid");
             }
-            res.render('student/student_dashboard', { subjects }); // Pass subjects to EJS
+            res.render('student/student_dashboard', { subjects, totalAssignments: progressData.total, completedAssignments: progressData.completed }); // Pass subjects to EJS
         } catch (error) {
             console.error(error);
             res.status(500).send("Error loading dashboard");
@@ -103,9 +104,9 @@ async function startServer() {
     app.get('/counselor_dashboard', isAuthenticated, (req, res) => res.render('counselor/counselor_dashboard'));
     app.get('/parent_dashboard', isAuthenticated, (req, res) => res.render('parent/parent_dashboard'));
 
-    app.get('/student_dashboard/subject', isAuthenticated, (req, res) => {
-        res.render('student/student_subject')
-    })
+    // app.get('/student_dashboard/subject', isAuthenticated, (req, res) => {
+    //     res.render('student/student_subject')
+    // })
 
     app.get('/student_dashboard/subject/activity', isAuthenticated, (req, res) => {
         res.render('student/student_activity')

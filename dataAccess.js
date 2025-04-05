@@ -35,10 +35,9 @@ async function getUserByEmail(email) {
     });
 }
 
-// Function to get academic subjects
-async function getSubjectsForStudent(userId) {
+// Function to get student ID from user ID
+async function getStudentByUserId(userId) {
     return new Promise((resolve, reject) => {
-        // Get the student ID from the students table
         db.query(
             "SELECT studentid FROM students WHERE userid = ?", 
             [userId],
@@ -48,27 +47,74 @@ async function getSubjectsForStudent(userId) {
                     return reject(err);
                 }
                 if (!studentResults.length) {
-                    return resolve([]); // No student found, return empty array
+                    return resolve(null); // No student found
                 }
-
-                const studentId = studentResults[0].studentid;
-                const subjectQuery = `
-                    SELECT ss.subjectID, s.subjectName 
-                    FROM student_subjects ss 
-                    JOIN subjects s ON ss.subjectID = s.subjectID 
-                    WHERE ss.studentid = ?
-                `;
-
-                db.query(subjectQuery, [studentId], (error, results) => {
-                    if (error) {
-                        console.error("Error retrieving subjects:", error);
-                        return reject(error);
-                    }
-                    resolve(results); // ✅ Return the full array of subjects
-                });
+                resolve(studentResults[0].studentid);
             }
         );
     });
 }
 
-module.exports = { connectToDatabase, getUserByEmail, getSubjectsForStudent };
+// Function to get academic subjects
+async function getSubjectsForStudent(userId) {
+    try {
+        const studentId = await getStudentByUserId(userId);
+        if (!studentId) return []; // No student found
+        
+        return new Promise((resolve, reject) => {
+            const subjectQuery = `
+                SELECT ss.subjectID, s.subjectName 
+                FROM student_subjects ss 
+                JOIN subjects s ON ss.subjectID = s.subjectID 
+                WHERE ss.studentid = ?
+            `;
+            
+            db.query(subjectQuery, [studentId], (error, results) => {
+                if (error) {
+                    console.error("Error retrieving subjects:", error);
+                    return reject(error);
+                }
+                resolve(results); // ✅ Return the full array of subjects
+            });
+        });
+    } catch (error) {
+        console.error("Error in getSubjectsForStudent:", error);
+        throw error;
+    }
+}
+
+// Function to get student's assignment progress
+async function getStudentAssignmentProgress(userId) {
+    try {
+        const studentId = await getStudentByUserId(userId);
+        if (!studentId) return { total: 0, completed: 0 }; // No student found
+
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT 
+                    COUNT(*) AS totalAssignments, 
+                    SUM(completed) AS completedAssignments 
+                FROM student_assignments 
+                WHERE studentID = ?
+            `;
+
+            db.query(query, [studentId], (error, results) => {
+                if (error) {
+                    console.error("Error retrieving assignment progress:", error);
+                    return reject(error);
+                }
+
+                const total = results[0].totalAssignments || 0;
+                const completed = results[0].completedAssignments || 0;
+
+                resolve({ total, completed });
+            });
+        });
+    } catch (error) {
+        console.error("Error in getStudentAssignmentProgress:", error);
+        throw error;
+    }
+}
+
+
+module.exports = { connectToDatabase, getUserByEmail, getStudentByUserId, getSubjectsForStudent, getStudentAssignmentProgress };
