@@ -129,10 +129,9 @@
 
                     <% if (filteredAssignments.length > 0) { %>
                         <% filteredAssignments.forEach(assignment => { %>
-                            <div class="assignment">
-                                <p><strong><%= assignment.title %></strong></p>
+                            <div id="activity">
+                                <a href="/student_dashboard/<%= subjectName %>/<%= assignment %>">Click here to complete <strong><%= assignment.title %></strong></a>
                                 <p>Due: <%= formatDate(assignment.duedate) %></p>
-                                <!-- Add other assignment details as needed -->
                             </div>
                         <% }); %>
                     <% } else { %>
