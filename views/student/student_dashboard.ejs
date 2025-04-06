@@ -190,6 +190,11 @@
             animation: pop-up 0.5s ease-in-out;
         }
 
+        #progress-bar {
+            height: 100%;
+            width: <%= totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0 %>%; 
+        }
+
         @keyframes pop-up {
             0% { transform: scale(0.5); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
@@ -223,7 +228,6 @@
                 <!-- Progress Bar Section -->
                 <div class="progress mt-3">
                     <div id="progress-bar" class="progress-bar bg-success animated-bar" role="progressbar"
-                         style="width: <%= totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0 %>%;" 
                          aria-valuenow="<%= totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0 %>"
                          aria-valuemin="0" 
                          aria-valuemax="100">
@@ -265,21 +269,18 @@
                     <p class="mb-0 fw-bold">🧠 Work To Do</p>
                 </div>
                 <div style="padding-top: 15px;">
-                    <% 
-                        let hasTasks = false;
-                        assignments.forEach(task => {
-                            const dueDate = new Date(task.dueDate);
-                            const todayDate = new Date(today);
-                
-                            if (!task.completed && dueDate > todayDate) {
-                                hasTasks = true;
-                    %>
-                        <div><a href="#"><%= task.subjectName %>: <%= task.title %> (Due: <%= task.dueDate.toDateString ? task.dueDate.toDateString() : task.dueDate %>)</a></div>
-                    <%      
-                            }
+                    <%
+                        const today = new Date();
+                        const filteredAssignments = assignments.filter(a =>
+                            a.completed === 0 &&
+                            new Date(a.duedate) > today
+                        );
+                        filteredAssignments.forEach(task => { %>
+                            <div><a href="/student_dashboard/<%= task.subjectName %>/<%= task.assignmentId %>"><%= task.subjectName %>: <%= task.title %></a></div>
+                        <%
                         });
                 
-                        if (!hasTasks) { 
+                        if (!filteredAssignments) { 
                     %>
                         <div><p>No pending assignments 🎉</p></div>
                     <% } %>

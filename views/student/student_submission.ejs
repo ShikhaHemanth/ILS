@@ -94,7 +94,15 @@
                 <div id="submissions" class="active">Submissions</div>
                 <div id="feedback">Feedback</div>
             </div>
-            <button class="btn btn-light">⚙️</button>
+            <!-- Settings Dropdown -->
+            <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    ⚙️
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
+                    <li><a class="dropdown-item" href="#" id="logout">Logout</a></li>
+                </ul>
+            </div>
         </div>
         <h2><i>Submissions</i></h2>
         <div class="submission-section">
@@ -146,6 +154,10 @@
         });
         document.getElementById("back").addEventListener("click", function() {
             window.location.href = "/student_dashboard";
+        });
+        document.getElementById("logout").addEventListener("click", function() {
+            localStorage.removeItem('token'); // Remove the token
+            window.location.href = "/login";  // Redirect to login page
         });
     </script>
 </body>

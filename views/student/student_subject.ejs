@@ -76,6 +76,7 @@
         }
         .task-card a {
             color: white;
+            font-size: 110%;
             text-decoration: none;
         }
         #activity {
@@ -133,7 +134,7 @@
                                 <a href="/student_dashboard/<%= subjectName %>/<%= assignment.assignmentId %>">
                                     Click here to complete <strong><%= assignment.title %></strong>
                                 </a>
-                                <p>Due: <%= formatDate(assignment.duedate) %></p>
+                                <p style="font-size: 80%;">Due: <%= formatDate(assignment.duedate) %></p>
                             </div>
                     <%  }); 
                     } else { %>
@@ -146,7 +147,7 @@
             <button class="btn btn-light">💬 Chat</button>
         </div>
     </div>
-    
+
     <script>
         // Function to handle the pageshow event
         function handlePageShow(event) {

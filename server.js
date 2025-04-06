@@ -91,8 +91,7 @@ async function startServer() {
             res.render('student/student_dashboard', { subjects, 
                 completedAssignments: assignments.filter(a => a.completed).length,
                 totalAssignments: assignments.length, 
-                assignments, 
-                today: new Date() }); // Pass subjects to EJS
+                assignments }); // Pass to EJS
         } catch (error) {
             console.error(error);
             res.status(500).send("Error loading dashboard");
@@ -113,7 +112,6 @@ async function startServer() {
     });
 
     app.get('/student_dashboard/:subjectName/:assignmentId', async (req, res) => {
-        const userId = req.session.userId; // assuming student is logged in
         const subjectName = req.params.subjectName;
         const assignmentId = req.params.assignmentId;
     
