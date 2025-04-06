@@ -109,33 +109,35 @@
         </div>
         <div class="content">
             <div class="left-section">
-                <% 
-                    function toSentenceCase(str) { 
-                        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase(); 
-                    }
-                    const filteredAssignments = pendingAssignments.filter(a => a.subjectName.toLowerCase() === subjectName.toLowerCase());
-                    
-                    // Function to format the date
-                    function formatDate(date) {
-                        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                        return new Date(date).toLocaleDateString('en-US', options);
+                <%
+                    const today = new Date();
+                    const filteredAssignments = assignments.filter(a =>
+                        a.subjectName.toLowerCase() === subjectName.toLowerCase() &&
+                        a.completed === 0 &&
+                        new Date(a.duedate) > today
+                    );
+                    function formatDate(due) {
+                        const dateObj = new Date(due);
+                        return dateObj.toLocaleDateString('en-US', {
+                            year: 'numeric', month: 'long', day: 'numeric'
+                        });
                     }
                 %>
 
-                <h2><i>Welcome to <%= toSentenceCase(subjectName) %> !</i></h2>
-
+                <h2><i>Welcome to <%= subjectName.charAt(0).toUpperCase() + subjectName.slice(1).toLowerCase() %>!!</i></h2>
                 <div class="task-card">
                     <p class="mb-0 fw-bold" style="color: red;">PENDING</p>
-
                     <% if (filteredAssignments.length > 0) {
                         filteredAssignments.forEach(assignment => { %>
                             <div id="activity">
-                                <a href="/student_dashboard/<%= subjectName %>/<%= assignment.assignmentId %>">Click here to complete <strong><%= assignment.title %></strong></a>
+                                <a href="/student_dashboard/<%= subjectName %>/<%= assignment.assignmentId %>">
+                                    Click here to complete <strong><%= assignment.title %></strong>
+                                </a>
                                 <p>Due: <%= formatDate(assignment.duedate) %></p>
                             </div>
-                        <% });
+                    <%  }); 
                     } else { %>
-                        <p>No pending assignments for this subject.</p>
+                        <p>No upcoming assignments for this subject!</p>
                     <% } %>
                 </div>
             </div>
@@ -144,8 +146,8 @@
             <button class="btn btn-light">💬 Chat</button>
         </div>
     </div>
+    
     <script>
-        
         // Function to handle the pageshow event
         function handlePageShow(event) {
             if (event.persisted) {

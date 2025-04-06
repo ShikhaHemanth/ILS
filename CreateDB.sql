@@ -221,15 +221,15 @@ INSERT INTO Student_Subjects (studentID, subjectID) VALUES
 -- Insert data into Assignments
 INSERT INTO Assignments (assignmentID, subjectID, title, description, dueDate) VALUES
 -- Math - Grade 4
-(1, 1, 'Basic Algebra', 'Solve simple equations like 2x + 3 = 7', '2025-04-01'),
+(1, 1, 'Basic Algebra', 'Solve simple equations like 2x + 3 = 7', '2025-05-01'),
 -- Math - Grade 6
-(2, 1, 'Advanced Geometry', 'Solve problems on angles, triangles, and area', '2025-04-03'),
+(2, 1, 'Advanced Geometry', 'Solve problems on angles, triangles, and area', '2025-05-03'),
 -- Math - Grade 4
-(3, 1, 'Bar Graph Practice', 'Interpret bar graphs and answer questions', '2025-04-04'),
+(3, 1, 'Bar Graph Practice', 'Interpret bar graphs and answer questions', '2025-05-04'),
 -- Science - Grade 4
-(4, 2, 'Animal Classification', 'Classify animals into mammals, reptiles, etc.', '2025-04-05'),
+(4, 2, 'Animal Classification', 'Classify animals into mammals, reptiles, etc.', '2025-05-05'),
 -- English - Grade 6
-(5, 3, 'Compare Two Poems', 'Write a short essay comparing themes in two poems', '2025-04-06');
+(5, 3, 'Compare Two Poems', 'Write a short essay comparing themes in two poems', '2025-05-06');
 
 -- Insert data into Student_Assignments
 INSERT INTO Student_Assignments (studentID, assignmentID) VALUES

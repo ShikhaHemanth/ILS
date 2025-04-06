@@ -83,62 +83,29 @@ async function getSubjectsForStudent(userId) {
     }
 }
 
-// Function to get student's assignment progress
-async function getStudentAssignmentProgress(userId) {
-    try {
-        const studentId = await getStudentByUserId(userId);
-        if (!studentId) return { total: 0, completed: 0 }; // No student found
-
-        return new Promise((resolve, reject) => {
-            const query = `
-                SELECT 
-                    COUNT(*) AS totalAssignments, 
-                    SUM(completed) AS completedAssignments 
-                FROM student_assignments 
-                WHERE studentID = ?
-            `;
-
-            db.query(query, [studentId], (error, results) => {
-                if (error) {
-                    console.error("Error retrieving assignment progress:", error);
-                    return reject(error);
-                }
-
-                const total = results[0].totalAssignments || 0;
-                const completed = results[0].completedAssignments || 0;
-
-                resolve({ total, completed });
-            });
-        });
-    } catch (error) {
-        console.error("Error in getStudentAssignmentProgress:", error);
-        throw error;
-    }
-}
-
-async function getIncompleteAssignmentsForStudent(userId) {
+async function getAssignmentsForStudent(userId) {
     try {
         const studentId = await getStudentByUserId(userId);
         if (!studentId) return [];
 
         return new Promise((resolve, reject) => {
             const query = `
-                SELECT s.subjectName, a.title, a.duedate, a.assignmentId
+                SELECT s.subjectName, a.title, a.duedate, a.assignmentId, sa.completed
                 FROM student_assignments sa
                 JOIN assignments a ON sa.assignmentID = a.assignmentID
                 JOIN subjects s ON a.subjectID = s.subjectID
-                WHERE sa.studentID = ? AND sa.completed = 0
+                WHERE sa.studentID = ?
             `;
             db.query(query, [studentId], (error, results) => {
                 if (error) {
-                    console.error("Error fetching incomplete assignments:", error);
+                    console.error("Error fetching assignments:", error);
                     return reject(error);
                 }
                 resolve(results);
             });
         });
     } catch (error) {
-        console.error("Error in getIncompleteAssignmentsForStudent:", error);
+        console.error("Error in getAssignmentsForStudent:", error);
         throw error;
     }
 }
@@ -161,4 +128,4 @@ async function getAssignmentByAssignmentId(AssignmentId) {
     }
 }
 
-module.exports = { connectToDatabase, getUserByEmail, getStudentByUserId, getSubjectsForStudent, getStudentAssignmentProgress, getIncompleteAssignmentsForStudent, getAssignmentByAssignmentId };
+module.exports = { connectToDatabase, getUserByEmail, getStudentByUserId, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId };

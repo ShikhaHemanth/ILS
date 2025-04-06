@@ -265,11 +265,22 @@
                     <p class="mb-0 fw-bold">🧠 Work To Do</p>
                 </div>
                 <div style="padding-top: 15px;">
-                    <% if (incompleteAssignments.length > 0) { %>
-                        <% incompleteAssignments.forEach(task => { %>
-                            <div><a href="#"><%= task.subjectName %>: <%= task.title %></a></div>
-                        <% }); %>
-                    <% } else { %>
+                    <% 
+                        let hasTasks = false;
+                        assignments.forEach(task => {
+                            const dueDate = new Date(task.dueDate);
+                            const todayDate = new Date(today);
+                
+                            if (!task.completed && dueDate > todayDate) {
+                                hasTasks = true;
+                    %>
+                        <div><a href="#"><%= task.subjectName %>: <%= task.title %> (Due: <%= task.dueDate.toDateString ? task.dueDate.toDateString() : task.dueDate %>)</a></div>
+                    <%      
+                            }
+                        });
+                
+                        if (!hasTasks) { 
+                    %>
                         <div><p>No pending assignments 🎉</p></div>
                     <% } %>
                 </div>

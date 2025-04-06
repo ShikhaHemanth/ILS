@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const { encryptPasswords } = require('./encrypt');
 const { loginUser } = require('./businessLogic');
-const { connectToDatabase, getUserByEmail, getSubjectsForStudent, getStudentAssignmentProgress, getIncompleteAssignmentsForStudent, getAssignmentByAssignmentId } = require('./dataAccess');
+const { connectToDatabase, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId } = require('./dataAccess');
 
 async function setup() {
     try {
@@ -82,14 +82,17 @@ async function startServer() {
         }
         const userID = req.session.userId; // Get student ID from session
         try {
-            const progressData = await getStudentAssignmentProgress(userID);
             const subjects = await getSubjectsForStudent(userID); // Fetch subjects
-            const incompleteAssignments = await getIncompleteAssignmentsForStudent(userID);
+            const assignments = await getAssignmentsForStudent(userID);
             if (!Array.isArray(subjects)) {  // Ensure subjects is an array
                 console.error("Unexpected data format:", subjects);
                 return res.status(500).send("Server error: subjects data is invalid");
             }
-            res.render('student/student_dashboard', { subjects, totalAssignments: progressData.total, completedAssignments: progressData.completed, incompleteAssignments }); // Pass subjects to EJS
+            res.render('student/student_dashboard', { subjects, 
+                completedAssignments: assignments.filter(a => a.completed).length,
+                totalAssignments: assignments.length, 
+                assignments, 
+                today: new Date() }); // Pass subjects to EJS
         } catch (error) {
             console.error(error);
             res.status(500).send("Error loading dashboard");
@@ -101,8 +104,8 @@ async function startServer() {
         const subjectName = req.params.subjectName;
 
         try {
-            const pendingAssignments = await getIncompleteAssignmentsForStudent(userId);
-            res.render('student/student_subject', { subjectName, pendingAssignments });
+            const assignments = await getAssignmentsForStudent(userId);
+            res.render('student/student_subject', { subjectName, assignments });
         } catch (error) {
             console.error(error);
             res.status(500).send('Error loading subject dashboard');
@@ -116,7 +119,6 @@ async function startServer() {
     
         try {
             const assignmentDetails = await getAssignmentByAssignmentId(assignmentId);
-            console.log(assignmentDetails.title);
             res.render('student/student_activity', { subjectName, assignment: assignmentDetails });
         } catch (error) {
             console.error(error);
