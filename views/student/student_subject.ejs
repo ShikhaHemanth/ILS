@@ -169,7 +169,7 @@
             window.location.href = "/student_dashboard/<%= subjectName %>";
         });
         document.getElementById("submissions").addEventListener("click", function() {
-            window.location.href = "/student_dashboard/submission";
+            window.location.href = "/student_dashboard/<%= subjectName %>/activity/submission";
         });
         document.getElementById("feedback").addEventListener("click", function() {
             window.location.href = "/student_dashboard/feedback";

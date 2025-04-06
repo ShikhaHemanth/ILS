@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Activity</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Bundle (includes Popper.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         body {
             background-color: #f8f9fa;
@@ -101,8 +103,8 @@
             <div class="left-section">
                 <h2><i>Activity!</i></h2>
                 <div class="task-card">
-                    <h3><%= assignment[0].title %></h3>
-                    <p><%= assignment[0].description %></p>
+                    <h3><%= assignments.title %></h3>
+                    <p><%= assignments.description %></p>
                 </div>
             </div>
         </div>
@@ -128,7 +130,7 @@
             window.location.href = "/student_dashboard/<%= subjectName %>";
         });
         document.getElementById("submissions").addEventListener("click", function() {
-            window.location.href = "/student_dashboard/submission";
+            window.location.href = "/student_dashboard/<%= subjectName %>/activity/submission";
         });
         document.getElementById("feedback").addEventListener("click", function() {
             window.location.href = "/student_dashboard/feedback";

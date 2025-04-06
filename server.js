@@ -98,7 +98,7 @@ async function startServer() {
         }
     });
 
-    app.get('/student_dashboard/:subjectName', async (req, res) => {
+    app.get('/student_dashboard/:subjectName', isAuthenticated, async (req, res) => {
         const userId = req.session.userId; // assuming student is logged in
         const subjectName = req.params.subjectName;
 
@@ -111,21 +111,29 @@ async function startServer() {
         }
     });
 
-    app.get('/student_dashboard/:subjectName/:assignmentId', async (req, res) => {
+    app.get('/student_dashboard/:subjectName/:assignmentId', isAuthenticated, async (req, res) => {
         const subjectName = req.params.subjectName;
         const assignmentId = req.params.assignmentId;
     
         try {
             const assignmentDetails = await getAssignmentByAssignmentId(assignmentId);
-            res.render('student/student_activity', { subjectName, assignment: assignmentDetails });
+            res.render('student/student_activity', { subjectName, assignments: assignmentDetails[0] });
         } catch (error) {
             console.error(error);
-            res.status(500).send('Error loading subject dashboard');
+            res.status(500).send('Error loading activity dashboard');
         }
     });
 
-    app.get('/student_dashboard/submission', isAuthenticated, (req, res) => {
-        res.render('student/student_submission')
+    app.get('/student_dashboard/:subjectName/activity/submission', isAuthenticated, async (req, res) => {
+        const userId = req.session.userId; // assuming student is logged in
+        const subjectName = req.params.subjectName;
+        try {
+            const assignments = await getAssignmentsForStudent(userId);
+            res.render('student/student_submission', { subjectName, assignments });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Error loading submission dashboard');
+        }
     })
 
     app.get('/teacher_dashboard', isAuthenticated, (req, res) => res.render('teacher/teacher_dashboard'));
