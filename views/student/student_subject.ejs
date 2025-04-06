@@ -74,12 +74,12 @@
             margin-top: 30px; /* Added margin to move it down */
             width: 500px;
         }
-        .task-card h3 {
+        .task-card a {
             color: white;
             text-decoration: none;
         }
-        .task-card h3:hover {
-            text-decoration: underline;
+        #activity {
+            font-size: 20px;
         }
         .chat {
             position: fixed;
@@ -122,19 +122,19 @@
                     }
                 %>
 
-                <h2><i>Welcome to <%= toSentenceCase(subjectName) %>!!</i></h2>
+                <h2><i>Welcome to <%= toSentenceCase(subjectName) %> !</i></h2>
 
                 <div class="task-card">
                     <p class="mb-0 fw-bold" style="color: red;">PENDING</p>
 
-                    <% if (filteredAssignments.length > 0) { %>
-                        <% filteredAssignments.forEach(assignment => { %>
+                    <% if (filteredAssignments.length > 0) {
+                        filteredAssignments.forEach(assignment => { %>
                             <div id="activity">
-                                <a href="/student_dashboard/<%= subjectName %>/<%= assignment %>">Click here to complete <strong><%= assignment.title %></strong></a>
+                                <a href="/student_dashboard/<%= subjectName %>/<%= assignment.assignmentId %>">Click here to complete <strong><%= assignment.title %></strong></a>
                                 <p>Due: <%= formatDate(assignment.duedate) %></p>
                             </div>
-                        <% }); %>
-                    <% } else { %>
+                        <% });
+                    } else { %>
                         <p>No pending assignments for this subject.</p>
                     <% } %>
                 </div>

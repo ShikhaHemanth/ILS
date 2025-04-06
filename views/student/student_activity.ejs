@@ -91,10 +91,10 @@
         </div>
         <div class="content">
             <div class="left-section">
-                <h2><i>Activities!</i></h2>
+                <h2><i>Activity!</i></h2>
                 <div class="task-card">
-                    <h3>Activity 1</h3>
-                    <p>Activity 1 Description</p>
+                    <h3><%= assignment[0].title %></h3>
+                    <p><%= assignment[0].description %></p>
                 </div>
             </div>
         </div>
@@ -117,7 +117,7 @@
         window.addEventListener('pageshow', handlePageShow);
 
         document.getElementById("content").addEventListener("click", function() {
-            window.location.href = "/student_dashboard/subject";
+            window.location.href = "/student_dashboard/<%= subjectName %>";
         });
         document.getElementById("submissions").addEventListener("click", function() {
             window.location.href = "/student_dashboard/submission";

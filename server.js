@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const { encryptPasswords } = require('./encrypt');
 const { loginUser } = require('./businessLogic');
-const { connectToDatabase, getUserByEmail, getSubjectsForStudent, getStudentAssignmentProgress, getIncompleteAssignmentsForStudent } = require('./dataAccess');
+const { connectToDatabase, getUserByEmail, getSubjectsForStudent, getStudentAssignmentProgress, getIncompleteAssignmentsForStudent, getAssignmentByAssignmentId } = require('./dataAccess');
 
 async function setup() {
     try {
@@ -97,11 +97,11 @@ async function startServer() {
     });
 
     app.get('/student_dashboard/:subjectName', async (req, res) => {
-        const studentId = req.session.userId; // assuming student is logged in
+        const userId = req.session.userId; // assuming student is logged in
         const subjectName = req.params.subjectName;
 
         try {
-            const pendingAssignments = await getIncompleteAssignmentsForStudent(studentId);
+            const pendingAssignments = await getIncompleteAssignmentsForStudent(userId);
             res.render('student/student_subject', { subjectName, pendingAssignments });
         } catch (error) {
             console.error(error);
@@ -109,28 +109,28 @@ async function startServer() {
         }
     });
 
-    app.get('/student_dashboard/:subjectName/:activity', async (req, res) => {
-        const studentId = req.session.userId; // assuming student is logged in
-        const subjectName = req.params.student_activity;
+    app.get('/student_dashboard/:subjectName/:assignmentId', async (req, res) => {
+        const userId = req.session.userId; // assuming student is logged in
+        const subjectName = req.params.subjectName;
+        const assignmentId = req.params.assignmentId;
     
         try {
-            const pendingAssignments = await getIncompleteAssignmentsForStudent(studentId);
-            res.render('student/student_activity', { subjectName, pendingAssignments });
+            const assignmentDetails = await getAssignmentByAssignmentId(assignmentId);
+            console.log(assignmentDetails.title);
+            res.render('student/student_activity', { subjectName, assignment: assignmentDetails });
         } catch (error) {
             console.error(error);
             res.status(500).send('Error loading subject dashboard');
         }
     });
 
-    app.get('/teacher_dashboard', isAuthenticated, (req, res) => res.render('teacher/teacher_dashboard'));
-    app.get('/counselor_dashboard', isAuthenticated, (req, res) => res.render('counselor/counselor_dashboard'));
-    app.get('/parent_dashboard', isAuthenticated, (req, res) => res.render('parent/parent_dashboard'));
-
-    
-
     app.get('/student_dashboard/submission', isAuthenticated, (req, res) => {
         res.render('student/student_submission')
     })
+
+    app.get('/teacher_dashboard', isAuthenticated, (req, res) => res.render('teacher/teacher_dashboard'));
+    app.get('/counselor_dashboard', isAuthenticated, (req, res) => res.render('counselor/counselor_dashboard'));
+    app.get('/parent_dashboard', isAuthenticated, (req, res) => res.render('parent/parent_dashboard'));
 
     app.get('/student_dashboard/feedback', isAuthenticated, (req, res) => {
         res.render('student/student_feedback')

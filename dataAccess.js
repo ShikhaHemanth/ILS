@@ -123,7 +123,7 @@ async function getIncompleteAssignmentsForStudent(userId) {
 
         return new Promise((resolve, reject) => {
             const query = `
-                SELECT s.subjectName, a.title, a.duedate
+                SELECT s.subjectName, a.title, a.duedate, a.assignmentId
                 FROM student_assignments sa
                 JOIN assignments a ON sa.assignmentID = a.assignmentID
                 JOIN subjects s ON a.subjectID = s.subjectID
@@ -142,5 +142,23 @@ async function getIncompleteAssignmentsForStudent(userId) {
         throw error;
     }
 }
+async function getAssignmentByAssignmentId(AssignmentId) {
+    try {
 
-module.exports = { connectToDatabase, getUserByEmail, getStudentByUserId, getSubjectsForStudent, getStudentAssignmentProgress, getIncompleteAssignmentsForStudent };
+        return new Promise((resolve, reject) => {
+            const query = `SELECT * FROM assignments WHERE assignmentID = ?`;
+            db.query(query, [AssignmentId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching assignment details:", error);
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    } catch (error) {
+        console.error("Error in getAssignmentByAssignmentId:", error);
+        throw error;
+    }
+}
+
+module.exports = { connectToDatabase, getUserByEmail, getStudentByUserId, getSubjectsForStudent, getStudentAssignmentProgress, getIncompleteAssignmentsForStudent, getAssignmentByAssignmentId };
