@@ -121,9 +121,9 @@
                             Choose File
                         </label>
                         <span id="file-name-<%= assignment.assignmentID %>">No file chosen</span>
-                        <button class="upload-btn" <%= isPastDue ? 'disabled' : '' %>>Upload</button>
+                        <button class="upload-btn" <%= isPastDue ? 'disabled' : '' %>>Submit</button>
                     </div>
-                    
+
                     <% const userSubmission = submissions.find(sub => sub.assignmentID === assignment.assignmentID); %>
                     <% if (userSubmission) { %>
                         <p><strong>Your Upload:</strong> <%= userSubmission.filename %></p>
@@ -154,7 +154,7 @@
             </div>
             </div>
             <div class="modal-footer">
-            <button class="btn btn-primary" id="modal-submit-btn">Submit</button>
+            <button class="btn btn-primary" id="modal-submit-btn">Upload</button>
             </div>
         </div>
         </div>
