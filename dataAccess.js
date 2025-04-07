@@ -147,9 +147,13 @@ async function getSubmissionsByStudent(userId) {
 async function saveSubmission(userID, assignmentID, fileURL) {
     try {
         const studentId = await getStudentByUserId(userID);
-        if (!studentId) return [];
+
+        if (!studentId) {
+            console.log("No student found for userID:", userID);
+            return [];
+        }
         return new Promise((resolve, reject) => {
-            const query = `INSERT INTO Submissions (assignmentID, studentID, fileURL) VALUES (?, ?, ?)`;
+            const query = `INSERT INTO Submissions (assignmentID, studentId, fileURL) VALUES (?, ?, ?)`;
             db.query(query, [assignmentID, studentId, fileURL], (error, results) => {
                 if (error) {
                     console.error("Error saving submission:", error);

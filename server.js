@@ -133,7 +133,7 @@ async function startServer() {
     
         try {
             const assignmentDetails = await getAssignmentByAssignmentId(assignmentId);
-            res.render('student/student_activity', { subjectName, assignments: assignmentDetails[0] });
+            res.render('student/student_activity', { subjectName, assignment: assignmentDetails[0] });
         } catch (error) {
             console.error(error);
             res.status(500).send('Error loading activity dashboard');
@@ -156,14 +156,17 @@ async function startServer() {
         }
     })
     
-    app.post('/student_dashboard/upload', upload.single('file'), async (req, res) => {
+    app.post('/student_dashboard/:subjectName/activity/submission/upload', upload.single('file'), async (req, res) => {
         const assignmentID = req.body.assignmentID;
+        const userID = req.session.userId; // or use token decoding
+
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: "No file uploaded" });
+          }
         const filename = req.file.filename;
-        const userID = req.session.userID; // or use token decoding
-      
         try {
           // Insert into the DB (adjust your query as per your schema)
-          await await saveSubmission(userID, assignmentID, filename);       
+          await saveSubmission(userID, assignmentID, filename);       
           res.json({ success: true, filename });
         } catch (error) {
             console.error('Error saving submission:', error);
@@ -180,8 +183,20 @@ async function startServer() {
     app.get('/counselor_dashboard', isAuthenticated, (req, res) => res.render('counselor/counselor_dashboard'));
     app.get('/parent_dashboard', isAuthenticated, (req, res) => res.render('parent/parent_dashboard'));
 
-    app.get('/student_dashboard/feedback', isAuthenticated, (req, res) => {
-        res.render('student/student_feedback')
+    app.get('/student_dashboard/:subjectName/activity/feedback', isAuthenticated, async (req, res) => {
+        const userId = req.session.userId; // assuming student is logged in
+        const subjectName = req.params.subjectName;
+        try {
+            const assignments = await getAssignmentsForStudent(userId);
+            const filteredAssignments = assignments.filter(a =>
+                a.subjectName.toLowerCase() === subjectName.toLowerCase()
+            );
+            const submissions = await getSubmissionsByStudent(userId);
+            res.render('student/student_submission', { subjectName, assignments: filteredAssignments, submissions });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Error loading submission dashboard');
+        }
     })
 
 

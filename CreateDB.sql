@@ -94,7 +94,7 @@ CREATE TABLE Student_Assignments (
 
 -- Submissions Table
 CREATE TABLE Submissions (
-    submissionID INT PRIMARY KEY,
+    submissionID INT PRIMARY KEY AUTO_INCREMENT,
     assignmentID INT,
     studentID INT,
     fileURL VARCHAR(255),
