@@ -164,15 +164,13 @@
                         </div>
                       </div>
 
-                    <% const userSubmission = submissions.find(sub => sub.assignmentId === assignment.assignmentId); %>
-                    <% if (userSubmission) { %>
-                        <p>
-                            <strong>Your Upload:</strong> 
-                            <span id="uploaded-file-<%= assignment.assignmentId %>"><%= userSubmission.filename %></span>
-                            <span style="cursor: pointer; color: red; margin-left: 8px;" onclick="deleteUpload('<%= assignment.assignmentId %>')">❌</span>
-                        </p>
+                    <% const userSubmission = submissions.find(sub => sub.assignmentID === assignment.assignmentId); %>
+                    <% if (userSubmission && userSubmission.fileURL) { %>
+                        <div class="file-name">
+                            Already uploaded: <strong><%= userSubmission.fileURL %></strong>
+                            <button type="button" id="clearFile" class="btn btn-sm">❌</button>
+                        </div>
                     <% } %>
-
                     <% if (isPastDue) { %>
                         <small class="text-danger">Submission deadline has passed.</small>
                     <% } %>
@@ -320,6 +318,12 @@
                 fileNameDisplay.textContent = "No file chosen";
             }
         }
+        clearFile.addEventListener('click', () => {
+            fileInput.value = '';
+            submitBtn.disabled = true;
+            clearFile.style.display = 'none';
+        });
+
         function clearModalFile() {
             fileInput.value = "";
             fileNameDisplay.textContent = "No file chosen";
