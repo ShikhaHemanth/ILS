@@ -1,0 +1,6 @@
+to do for sd
+1. If while doing a task he remembers to do something else (i.e he gets distracted), we can give pop up or voice/ audio encouraging the student to write down his ideas and thoughts in the whiteboard on the screen so finish assignments one at a time. Before starting a task, provide a reminder to keep water bottles, snacks etc. beside them to minimise distractions. 
+2. Make note of the number of times a student gets distracted so it can be used in the report of individual students.
+3. Implement a whiteboard to encourage students to note their ideas/ thoughts or their to-do list so they can get back to it after they complete the assignment at hand .
+4. Add a progress bar in the student's page with a bonus/ gift basket at the end to motivate students to complete goals.
+5. Add “Activity/Task of the day” where students can draw, dance, listen to music etc., do fun, stress-free activities to refresh themselves between assignments.

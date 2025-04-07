@@ -1,12 +1,28 @@
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
 const { encryptPasswords } = require('./encrypt');
 const { loginUser } = require('./businessLogic');
-const { connectToDatabase, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId } = require('./dataAccess');
+const { connectToDatabase, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent } = require('./dataAccess');
+
+// Set up multer to store files in uploads folder
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      const uploadDir = path.join(__dirname, 'uploads');
+      if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+      cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const ext = path.extname(file.originalname);
+      cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+    }
+});
+const upload = multer({ storage: storage });
 
 async function setup() {
     try {
@@ -37,7 +53,7 @@ async function startServer() {
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(express.json());
     app.use(express.static('views'));
-
+    app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
     // Middleware to check authentication
     function isAuthenticated(req, res, next) {
@@ -129,12 +145,36 @@ async function startServer() {
         const subjectName = req.params.subjectName;
         try {
             const assignments = await getAssignmentsForStudent(userId);
-            res.render('student/student_submission', { subjectName, assignments });
+            const filteredAssignments = assignments.filter(a =>
+                a.subjectName.toLowerCase() === subjectName.toLowerCase()
+            );
+            const submissions = await getSubmissionsByStudent(userId);
+            res.render('student/student_submission', { subjectName, assignments: filteredAssignments, submissions });
         } catch (error) {
             console.error(error);
             res.status(500).send('Error loading submission dashboard');
         }
     })
+    
+    app.post('/student_dashboard/upload', upload.single('file'), async (req, res) => {
+        const assignmentID = req.body.assignmentID;
+        const filename = req.file.filename;
+        const userID = req.session.userID; // or use token decoding
+      
+        try {
+          // Insert into the DB (adjust your query as per your schema)
+          await await saveSubmission(userID, assignmentID, filename);       
+          res.json({ success: true, filename });
+        } catch (error) {
+            console.error('Error saving submission:', error);
+            res.status(500).send('Submission failed');
+        }
+      });
+
+    app.get('/download/:filename', isAuthenticated, (req, res) => {
+        const filePath = path.join(__dirname, 'uploads', req.params.filename);
+        res.download(filePath);
+    });
 
     app.get('/teacher_dashboard', isAuthenticated, (req, res) => res.render('teacher/teacher_dashboard'));
     app.get('/counselor_dashboard', isAuthenticated, (req, res) => res.render('counselor/counselor_dashboard'));

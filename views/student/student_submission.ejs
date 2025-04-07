@@ -109,17 +109,54 @@
         <h2><i>Submissions</i></h2>
         <div class="submission-section">
             <% if (assignments.length > 0) {
-                assignments.forEach(assignment => { %>
-            <h3><%= assignment.title %></h3>
-            
-            <div class="file-input-container">
-                <label for="file-upload" class="file-label">Choose File</label>
-                <span id="file-name">No file chosen</span>
-                <button class="upload-btn">Upload</button>
-                <input type="file" id="file-upload" onchange="updateFileName()">
+                assignments.forEach(assignment => { 
+                    const due = new Date(assignment.duedate);
+                    const today = new Date();
+                    const isPastDue = today > due; %>
+                    <h3><%= assignment.title %></h3>
+                    <p><strong>Due:</strong> <%= due.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                    
+                    <div class="file-input-container">
+                        <label class="file-label <%= isPastDue ? 'disabled' : '' %>" onclick="openUploadModal('<%= assignment.assignmentID %>')">
+                            Choose File
+                        </label>
+                        <span id="file-name-<%= assignment.assignmentID %>">No file chosen</span>
+                        <button class="upload-btn" <%= isPastDue ? 'disabled' : '' %>>Upload</button>
+                    </div>
+                    
+                    <% const userSubmission = submissions.find(sub => sub.assignmentID === assignment.assignmentID); %>
+                    <% if (userSubmission) { %>
+                        <p><strong>Your Upload:</strong> <%= userSubmission.filename %></p>
+                    <% } %>
+
+                    <% if (isPastDue) { %>
+                        <small class="text-danger">Submission deadline has passed.</small>
+                    <% } %>
+                <% });
+            }; %>
+        </div>
+    </div>
+    <!-- Upload Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3">
+            <div class="modal-header">
+            <h5 class="modal-title" id="uploadModalLabel">Upload File</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <% });
-        }; %>
+            <div class="modal-body">
+            <div id="drop-zone" class="border rounded text-center p-4" style="cursor: pointer; background: #f1f1f1;">
+                <p class="mb-2">Drag & Drop file here</p>
+                <p class="mb-2">or</p>
+                <input type="file" id="modal-file-upload" style="display: none;">
+                <button class="btn btn-secondary" onclick="document.getElementById('modal-file-upload').click()">Choose File</button>
+                <p id="modal-file-name" class="mt-2 text-muted">No file chosen</p>
+            </div>
+            </div>
+            <div class="modal-footer">
+            <button class="btn btn-primary" id="modal-submit-btn">Submit</button>
+            </div>
+        </div>
         </div>
     </div>
     <script>
@@ -139,9 +176,76 @@
         // Add event listener for the pageshow event
         window.addEventListener('pageshow', handlePageShow);
 
-        function updateFileName() {
-            const fileInput = document.getElementById("file-upload");
-            const fileNameDisplay = document.getElementById("file-name");
+        let currentAssignmentID = null;
+        function openUploadModal(assignmentId) {
+            currentAssignmentID = assignmentId;
+            document.getElementById('modal-file-upload').value = "";
+            document.getElementById('modal-file-name').textContent = "No file chosen";
+            const uploadModal = new bootstrap.Modal(document.getElementById('uploadModal'));
+            uploadModal.show();
+        }
+        // File drag and drop handling
+        const dropZone = document.getElementById("drop-zone");
+        const fileInput = document.getElementById("modal-file-upload");
+        const fileNameDisplay = document.getElementById("modal-file-name");
+
+        dropZone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropZone.classList.add("border-primary");
+        });
+        dropZone.addEventListener("dragleave", () => {
+            dropZone.classList.remove("border-primary");
+        });
+        dropZone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            dropZone.classList.remove("border-primary");
+            const file = e.dataTransfer.files[0];
+            fileInput.files = e.dataTransfer.files;
+            fileNameDisplay.textContent = file.name;
+        });
+        fileInput.addEventListener("change", () => {
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = fileInput.files[0].name;
+            } else {
+                fileNameDisplay.textContent = "No file chosen";
+            }
+        });
+        document.getElementById("modal-submit-btn").addEventListener("click", () => {
+            const file = fileInput.files[0];
+            if (!file) {
+                alert("Please select a file.");
+                return;
+            }
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("assignmentID", currentAssignmentID);
+
+            fetch(`/student_dashboard/upload`, {
+                method: "POST",
+                body: formData
+            }).then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("File uploaded successfully!");
+
+                    // Optional: You can dynamically update the file name display
+                    const displaySpan = document.getElementById("file-name-" + currentAssignmentID);
+                    displaySpan.textContent = file.name;
+
+                    // Close modal and refresh if you want full refresh:
+                    location.reload();
+                } else {
+                    alert("Upload failed. Try again.");
+                }
+            }).catch(err => {
+                alert("Error uploading file.");
+                console.error(err);
+            });
+        });
+
+        function updateFileName(id) {
+            const fileInput = document.getElementById("file-upload-" + id);
+            const fileNameDisplay = document.getElementById("file-name-" + id);
             
             if (fileInput.files.length > 0) {
                 fileNameDisplay.textContent = fileInput.files[0].name;
@@ -149,6 +253,7 @@
                 fileNameDisplay.textContent = "No file chosen";
             }
         }
+
         document.getElementById("content").addEventListener("click", function() {
             window.location.href = "/student_dashboard/<%= subjectName %>";
         });

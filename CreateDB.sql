@@ -98,6 +98,7 @@ CREATE TABLE Submissions (
     assignmentID INT,
     studentID INT,
     fileURL VARCHAR(255),
+    submittedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (assignmentID) REFERENCES Assignments(assignmentID),
     FOREIGN KEY (studentID) REFERENCES Students(studentID)
 );

@@ -87,7 +87,6 @@ async function getAssignmentsForStudent(userId) {
     try {
         const studentId = await getStudentByUserId(userId);
         if (!studentId) return [];
-
         return new Promise((resolve, reject) => {
             const query = `
                 SELECT s.subjectName, a.title, a.duedate, a.assignmentId, sa.completed
@@ -111,7 +110,6 @@ async function getAssignmentsForStudent(userId) {
 }
 async function getAssignmentByAssignmentId(AssignmentId) {
     try {
-
         return new Promise((resolve, reject) => {
             const query = `SELECT * FROM assignments WHERE assignmentID = ?`;
             db.query(query, [AssignmentId], (error, results) => {
@@ -127,5 +125,43 @@ async function getAssignmentByAssignmentId(AssignmentId) {
         throw error;
     }
 }
+async function getSubmissionsByStudent(userId) {
+    try {
+        const studentId = await getStudentByUserId(userId);
+        if (!studentId) return [];
+        return new Promise((resolve, reject) => {
+            const query = `SELECT * FROM submissions WHERE studentID = ?`;
+            db.query(query, [studentId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching assignment details:", error);
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    } catch (error) {
+        console.error("Error in getSubmissionsByStudent:", error);
+        throw error;
+    }
+}
+async function saveSubmission(userID, assignmentID, fileURL) {
+    try {
+        const studentId = await getStudentByUserId(userID);
+        if (!studentId) return [];
+        return new Promise((resolve, reject) => {
+            const query = `INSERT INTO Submissions (assignmentID, studentID, fileURL) VALUES (?, ?, ?)`;
+            db.query(query, [assignmentID, studentId, fileURL], (error, results) => {
+                if (error) {
+                    console.error("Error saving submission:", error);
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    } catch (error) {
+        console.error("Error in saveSubmission:", error);
+        throw error;
+    }
+}
 
-module.exports = { connectToDatabase, getUserByEmail, getStudentByUserId, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId };
+module.exports = { connectToDatabase, getUserByEmail, getStudentByUserId, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent };
