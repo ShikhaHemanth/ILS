@@ -4,8 +4,8 @@ const mysql = require('mysql');
 // Setup MySQL connection
 const db = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: 'Mysandra1&',
+    user: 'as3826',
+    password: 'root',
     database: 'individualized_learning'
 });
 
