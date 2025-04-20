@@ -3,10 +3,10 @@ require('dotenv').config();
 
 // Setup MySQL connection
 const db = mysql.createConnection({
-    host: 'localhost', 
-    user: 'as3826',
-    password: 'root',
-    database: 'individualized_learning'
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME
 });
 
 // Connect to the database
