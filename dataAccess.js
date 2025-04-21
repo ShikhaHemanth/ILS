@@ -24,8 +24,21 @@ function connectToDatabase() {
 
 async function getUserByEmail(email) {
     return new Promise((resolve, reject) => {
-        const query = 'SELECT userID, password, role FROM Users WHERE email = ?';
+        const query = 'SELECT userID, name, password, role FROM Users WHERE email = ?';
         db.query(query, [email], (error, results) => {
+            if (error) {
+                console.error("Error retrieving user:", error);
+                return reject(error); // Reject the promise if there is an error
+            }
+            resolve(results.length > 0 ? results[0] : null); // Resolve with user data or null
+        });
+    });
+}
+
+async function getUserByUserId(userID) {
+    return new Promise((resolve, reject) => {
+        const query = 'SELECT email, name, role FROM Users WHERE userID = ?';
+        db.query(query, [userID], (error, results) => {
             if (error) {
                 console.error("Error retrieving user:", error);
                 return reject(error); // Reject the promise if there is an error
@@ -168,4 +181,4 @@ async function saveSubmission(userID, assignmentID, fileURL) {
     }
 }
 
-module.exports = { connectToDatabase, getUserByEmail, getStudentByUserId, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent };
+module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent };

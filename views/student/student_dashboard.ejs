@@ -60,15 +60,54 @@
             gap: 50px;
         }
 
-        .subjects div {
+        .subject-cards {
+            list-style-type: none;
+            padding: 0;
             display: flex;
-            align-items: center;
-            gap: 10px;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
         }
 
-        .subjects div h2:hover {
-            text-decoration: underline;
-            color: #a7c7e7;
+        .subject-cards li {
+            margin: 0;
+        }
+
+        .subject-cards a{
+            text-decoration: none;
+            color: black;
+        }
+        .subject-card {
+            width: 150px;
+            height: 160px;
+            background-color: #F0F9FF;
+            border-radius: 15px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .subject-card:hover {
+            transform: scale(1.05);
+            box-shadow: 4px 4px 15px rgba(0,0,0,0.2);
+            background-color: #DBEAFE;
+        }
+
+        .subject-card img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .subject-card span {
+            font-weight: bold;
+            color: #1E40AF;
+            font-size: 16px;
         }
 
         .task-card {
@@ -124,19 +163,9 @@
                 background-position: 40px 0;
             }
         }
-        /* Progress Bar Styles */
+
         .progress {
             width: 90%;
-        }
-
-        .progress-container {
-            width: 85%;
-            background-color: #ffffff;  /* White interior */
-            border-radius: 50px;
-            border: 3px solid #3B82F6; /* Blue outline */
-            overflow: hidden;
-            margin-top: 20px;
-            position: relative;
         }
 
         .progress-bar {
@@ -148,10 +177,9 @@
 
         .goal-text {
             text-align: center;
-            margin-top: 5px;
+            font-size: 20px;
+            color: #F59E0B;
             font-weight: bold;
-            color: #4CAF50;
-            font-size: 18px;
         }
 
         .prize-text {
@@ -159,6 +187,7 @@
             color: #FF6F61;
             margin-top: 5px;
             font-weight: bold;
+            width: 90%;
         }
 
         .fun-character {
@@ -174,31 +203,42 @@
             transition: left 0.5s ease;
         }
 
-        #congrats-popup {
-            display: none;
-            background-color: #FFD700;
-            text-align: center;
-            padding: 20px;
-            border: 3px solid #FFA500;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            animation: pop-up 0.5s ease-in-out;
-        }
-
         #progress-bar {
             height: 100%;
             width: <%= totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0 %>%; 
         }
 
-        @keyframes pop-up {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        #congrats-popup {
+            width: 100%;
+            box-sizing: border-box;
+            animation: pop 0.6s ease;
+            color: #1F2937;
+            background-color: #F0FDF4;
+            padding: 12px;
+            font-size: 18px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-top: 10px;
         }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
     </style>
 </head>
 <body>
     <div class="dashboard container-fluid">
         <div class="header">
+            <img src="/graphics/Logo.png" alt="Website Logo" style="height: 50px;">
             <p class="fw-bold">Student Dashboard</p>
             <!-- Settings Dropdown -->
             <div class="dropdown">
@@ -214,9 +254,8 @@
         <div class="content">
             <div class="left-section">
                 <div class="d-flex align-items-center">
-                    <div style="width: 80px; height: 80px; background: lightgray; border-radius: 10px;"></div>
                     <div style="font-style: oblique;">
-                        <p class="ms-3">Hello! Welcome to your courses.</p>
+                        <p class="ms-3 fw-bold" style="font-size: 22px;">👋 Hi <%= student.name %>! Ready to learn and earn stars today?</p>
                     </div>
                 </div>
 
@@ -231,8 +270,18 @@
                 </div>
                 <div class="fun-character" id="fun-character"></div>
 
-                <div class="goal-text" id="goal-text"><%= completedAssignments %> / <%= totalAssignments %> Assignments Completed</div>
-                <div class="prize-text">🌟 Complete all your assignments to win a special prize! 🎁</div>
+                <div class="prize-text">
+                    <% if ((completedAssignments/ totalAssignments)==1) { %>
+                        <div id="congrats-popup">
+                            🎉 Yay! You've finished all assignments! Enjoy your reward! 🎁
+                        </div>
+                    <% } else { %>
+                        <div class="goal-text">
+                            🌟 You're <%= Math.round((completedAssignments / totalAssignments) * 100) %>% done! Keep going!
+                        </div>
+                        <div class="prize-text">🌟 Complete all your assignments to win a special prize! 🎁</div>
+                    <% } %>
+                  </div>
 
                 <div style="padding-top: 15px; font-size: 30px;">
                     <p class="mt-3 fw-bold">SUBJECTS</p>
@@ -240,18 +289,17 @@
 
                 <div class="subjects">
                     <% if (subjects.length > 0) { %>
-                        <ul style="list-style: none; padding: 0;">
+                        <ul class="subject-cards">
                             <% subjects.forEach(subject => { %>
-                                <li style="display: flex; align-items: center; gap: 10px;">
-                                    <a href="/student_dashboard/<%= subject.subjectName.toLowerCase() %>" 
-                                       style="display: flex; align-items: center; text-decoration: none; color: black;">
-                                        <img src="/graphics/<%= subject.subjectName.toLowerCase() %>.jpg" 
-                                             alt="<%= subject.subjectName %>" 
-                                             style="width: 50px; height: 50px;">
-                                        <span><%= subject.subjectName %></span>
-                                    </a>
-                                </li>
-                            <% }); %>
+                              <li>
+                                <a href="/student_dashboard/<%= subject.subjectName.toLowerCase() %>">
+                                  <div class="subject-card">
+                                    <img src="/graphics/<%= subject.subjectName.toLowerCase() %>.jpg" alt="<%= subject.subjectName %>">
+                                    <span><%= subject.subjectName %></span>
+                                  </div>
+                                </a>
+                              </li>
+                            <% }) %>
                         </ul>
                     <% } else { %>
                         <p>No academic subjects assigned.</p>
@@ -261,7 +309,7 @@
 
             <div class="task-card">
                 <div style="font-size: 25px;">
-                    <p class="mb-0 fw-bold">🧠 Work To Do</p>
+                    <p class="mb-0 fw-bold">🧠 Task List</p>
                 </div>
                 <div style="padding-top: 15px;">
                     <%
@@ -281,11 +329,6 @@
                     <% } %>
                 </div>
             </div>
-        </div>
-
-        <!-- Popup for Completion -->
-        <div id="congrats-popup">
-            🎉 Yay! You've finished all assignments! Enjoy your reward! 🎁
         </div>
     </div>
 

@@ -76,7 +76,7 @@ CREATE TABLE Student_Subjects (
 
 CREATE TABLE Assignments (
     assignmentID INT PRIMARY KEY AUTO_INCREMENT,
-    subjectID INT,  -- Assignments belong to subjects, not students directly
+    subjectID INT,
     title VARCHAR(255),
     description TEXT,
     dueDate DATE,
@@ -86,7 +86,7 @@ CREATE TABLE Assignments (
 CREATE TABLE Student_Assignments (
     studentID INT,
     assignmentID INT,
-    completed TINYINT(1) DEFAULT 0, -- Completion flag per student
+    completed INT DEFAULT 0,
     PRIMARY KEY (studentID, assignmentID),
     FOREIGN KEY (studentID) REFERENCES Students(studentID) ON DELETE CASCADE,
     FOREIGN KEY (assignmentID) REFERENCES Assignments(assignmentID) ON DELETE CASCADE
@@ -97,7 +97,8 @@ CREATE TABLE Submissions (
     submissionID INT PRIMARY KEY AUTO_INCREMENT,
     assignmentID INT,
     studentID INT,
-    fileURL VARCHAR(255),
+    actualFileName VARCHAR(255),
+    uploadsFileName VARCHAR(255),
     submittedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (assignmentID) REFERENCES Assignments(assignmentID),
     FOREIGN KEY (studentID) REFERENCES Students(studentID)
@@ -241,7 +242,7 @@ INSERT INTO Student_Assignments (studentID, assignmentID) VALUES
 (2, 5);
 
 -- Insert into Submissions
-INSERT INTO Submissions (submissionID, assignmentID, studentID, fileURL) VALUES
+INSERT INTO Submissions (submissionID, assignmentID, studentID, uploadsFileName) VALUES
 (1, 1, 1, 'file1.pdf'),
 (2, 2, 2, 'file2.pdf');
 

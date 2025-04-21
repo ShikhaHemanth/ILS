@@ -7,7 +7,7 @@ const fs = require('fs');
 
 const { encryptPasswords } = require('./encrypt');
 const { loginUser } = require('./businessLogic');
-const { connectToDatabase, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent } = require('./dataAccess');
+const { connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent } = require('./dataAccess');
 
 // Set up multer to store files in uploads folder
 const storage = multer.diskStorage({
@@ -100,6 +100,7 @@ async function startServer() {
         try {
             const subjects = await getSubjectsForStudent(userID); // Fetch subjects
             const assignments = await getAssignmentsForStudent(userID);
+            const student = await getUserByUserId(userID);
             if (!Array.isArray(subjects)) {  // Ensure subjects is an array
                 console.error("Unexpected data format:", subjects);
                 return res.status(500).send("Server error: subjects data is invalid");
@@ -107,7 +108,8 @@ async function startServer() {
             res.render('student/student_dashboard', { subjects, 
                 completedAssignments: assignments.filter(a => a.completed).length,
                 totalAssignments: assignments.length, 
-                assignments }); // Pass to EJS
+                assignments,
+                student }); // Pass to EJS
         } catch (error) {
             console.error(error);
             res.status(500).send("Error loading dashboard");
