@@ -1,186 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subject Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Bundle (includes Popper.js) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-        body {
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .dashboard {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            width: 100%;
-            height: 100%;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-        }
-        .header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #a7c7e7;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 20px;
-        }
-        .nav-links {
-            display: flex;
-            gap: 300px;
-        }
-        .nav-links .active{
-            background: #bfd6ed;
-            border-radius: 5px;
-        }
-        .nav-links div {
-            padding: 5px;
-            color: black;
-            font-weight: bold;
-        }
-        .nav-links div:hover {
-            background: #bfd6ed;
-            border-radius: 5px;
-        }
-        .content {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-top: 20px;
-        }
-        .left-section {
-            flex: 1;
-            font-size: 30px;
-            padding-left: 30px;
-            padding-top: 20px;
-        }
-        .task-card {
-            background: #a7c7e7;
-            padding: 30px;
-            border-radius: 8px;
-            color: white;
-            flex: 0.3;
-            margin-top: 30px; /* Added margin to move it down */
-            width: 500px;
-        }
-        .task-card a {
-            color: white;
-            font-size: 110%;
-            text-decoration: none;
-        }
-        #activity {
-            font-size: 20px;
-        }
-        .chat {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Names</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    /* ---- Global look identical to Teacher Dashboard ---- */
+    body{background:#f8f9fa;height:100vh;margin:0;display:flex;flex-direction:column;}
+    .dashboard{background:white;width:100%;height:100%;box-shadow:0 4px 10px rgba(0,0,0,.1);display:flex;flex-direction:column;}
+
+    /* Header strip */
+    .header{display:flex;justify-content:space-between;align-items:center;background:#a7c7e7;height:60px;padding:0 12px;border-radius:8px;font-size:20px;}
+    .header img{height:100%;}
+
+    /* nav links same style */
+    .nav-links{display:flex;gap:40px;}
+    .nav-links div{padding:8px 18px;border-radius:8px;font-weight:bold;cursor:pointer;transition:background .3s;}
+    .nav-links div:hover{background:#dbeafe;}
+    .nav-links .active{background:#bfd6ed;}
+
+    .content{display:flex;justify-content:space-between;margin-top:20px;gap:30px;}
+
+    /* Left side list of students as cards */
+    .left-section{flex:1;padding-left:30px;padding-top:20px;font-size:24px;}
+    .section-label{font-size:22px;font-weight:bold;color:red;}
+
+    .student-card-list{list-style:none;display:flex;flex-wrap:wrap;gap:20px;padding:0;}
+    .student-card{width:180px;height:80px;background:#F0F9FF;border-radius:15px;box-shadow:2px 2px 10px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;transition:transform .3s, box-shadow .3s, background .3s;}
+    .student-card:hover{transform:scale(1.05);box-shadow:4px 4px 15px rgba(0,0,0,.2);background:#DBEAFE;}
+    .student-card a{text-decoration:none;color:#1E40AF;font-weight:bold;font-size:18px;}
+
+    /* Reminder checklist identical */
+    .reminder-box{background:#fff3cd;border:1px solid #ffeeba;padding:20px;border-radius:8px;width:350px;margin-right:30px;height:fit-content;box-shadow:2px 2px 10px rgba(0,0,0,.05);}
+    .reminder-box h5{font-weight:bold;}
+    .form-check label{font-size:16px;}
+  </style>
 </head>
 <body>
-    <div class="dashboard container-fluid">
-        <div class="header">
-            <button class="btn btn-light" id="back">&#8592;</button>
-            <div class="nav-links">
-                <div id="content" class="active">Content</div>
-                <div id="submissions">Submissions</div>
-                <div id="feedback">Feedback</div>
-            </div>
-            <!-- Settings Dropdown -->
-            <div class="dropdown">
-                <button class="btn btn-light dropdown-toggle" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    ⚙️
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
-                    <li><a class="dropdown-item" href="#" id="logout">Logout</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="content">
-            <div class="left-section">
-                <%
-                    const today = new Date();
-                    const filteredAssignments = assignments.filter(a =>
-                        a.subjectName.toLowerCase() === subjectName.toLowerCase() &&
-                        a.completed === 0 &&
-                        new Date(a.duedate) > today
-                    );
-                    function formatDate(due) {
-                        const dateObj = new Date(due);
-                        return dateObj.toLocaleDateString('en-US', {
-                            year: 'numeric', month: 'long', day: 'numeric'
-                        });
-                    }
-                %>
+  <div class="dashboard container-fluid">
+    <!-- Header -->
+    <div class="header">
+      <button class="btn btn-light" id="back">&#8592;</button>
 
-                <h2><i>Welcome to <%= subjectName.charAt(0).toUpperCase() + subjectName.slice(1).toLowerCase() %>!!</i></h2>
-                <div class="task-card">
-                    <p class="mb-0 fw-bold" style="color: red;">PENDING</p>
-                    <% if (filteredAssignments.length > 0) {
-                        filteredAssignments.forEach(assignment => { %>
-                            <div id="activity">
-                                <a href="/student_dashboard/<%= subjectName %>/<%= assignment.assignmentId %>">
-                                    Click here to complete <strong><%= assignment.title %></strong>
-                                </a>
-                                <p style="font-size: 80%;">Due: <%= formatDate(assignment.duedate) %></p>
-                            </div>
-                    <%  }); 
-                    } else { %>
-                        <p>No upcoming assignments for this subject!</p>
-                    <% } %>
-                </div>
-            </div>
-        </div>
-        <div class="chat">
-            <button class="btn btn-light">💬 Chat</button>
-        </div>
+      <div class="nav-links">
+        <div id="my-sections" class="active">Chat</div>
+        <div id="uploads">Uploads</div>
+        <div id="reminders">Work To Do</div>
+      </div>
+
+      <div class="dropdown">
+        <button class="btn btn-light dropdown-toggle" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">⚙️</button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
+          <li><a class="dropdown-item" href="#" id="logout">Logout</a></li>
+        </ul>
+      </div>
     </div>
 
-    <script>
-        // Function to handle the pageshow event
-        function handlePageShow(event) {
-            if (event.persisted) {
-                // If the page is shown from the cache (e.g., when navigating back),
-                // check if the token is still in local storage
-                checkTokenLocalStorage();
-        }}
-        function checkTokenLocalStorage() {
-            if (!localStorage.getItem('token')) {
-                // Redirect to login page if token doesn't exist in localStorage
-                window.location.href = '/login';
-            }
-        }
-        // Add event listener for the pageshow event
-        window.addEventListener('pageshow', handlePageShow);
+    <!-- Main Content -->
+    <div class="content">
+      <!-- Student list -->
+      <div class="left-section">
+        <p class="section-label">SECTION NAME</p>
+        <ul class="student-card-list">
+          <li><div class="student-card"><a href="/teacher_dashboard/section1">Student A</a></div></li>
+          <li><div class="student-card"><a href="/teacher_dashboard/section2">Student B</a></div></li>
+          <li><div class="student-card"><a href="/teacher_dashboard/section3">Student C</a></div></li>
+          <li><div class="student-card"><a href="/teacher_dashboard/section4">Student D</a></div></li>
+          <li><div class="student-card"><a href="/teacher_dashboard/section5">Student E</a></div></li>
+        </ul>
+      </div>
 
-        document.getElementById("content").addEventListener("click", function() {
-            window.location.href = "/student_dashboard/<%= subjectName %>";
-        });
-        document.getElementById("submissions").addEventListener("click", function() {
-            window.location.href = "/student_dashboard/<%= subjectName %>/activity/submission";
-        });
-        document.getElementById("feedback").addEventListener("click", function() {
-            window.location.href = "/student_dashboard/feedback";
-        });
-        document.getElementById("back").addEventListener("click", function() {
-            window.location.href = "/student_dashboard";
-        });
-        document.getElementById("logout").addEventListener("click", function() {
-            localStorage.removeItem('token'); // Remove the token
-            window.location.href = "/login";  // Redirect to login page
-        });
-    </script>
+      <!-- Reminder checklist -->
+      <div class="reminder-box">
+        <h5>📌 Reminder Checklist</h5>
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="reminder1"><label class="form-check-label" for="reminder1">Review student submissions</label></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="reminder2"><label class="form-check-label" for="reminder2">Upload new assignments</label></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="reminder3"><label class="form-check-label" for="reminder3">Schedule parent meeting</label></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("my-sections").addEventListener("click",()=>window.location.href="/teacher_dashboard");
+    document.getElementById("uploads").addEventListener("click",()=>window.location.href="/teacher_dashboard/uploads");
+    document.getElementById("reminders").addEventListener("click",()=>window.location.href="/teacher_dashboard/reminders");
+    document.getElementById("back").addEventListener("click",()=>window.location.href="/dashboard");
+    document.getElementById("logout").addEventListener("click",()=>{localStorage.removeItem("token");window.location.href="/login"});
+  </script>
 </body>
 </html>
