@@ -201,7 +201,20 @@ async function startServer() {
         }
     })
 
-
+    // Protected Route
+    app.get('/teacher_dashboard', isAuthenticated, async(req, res) => {
+        if (!req.session.userId) {
+            return res.redirect('/login'); // Ensure user is logged in
+        }
+        const userID = req.session.userId; // Get student ID from session
+        try {
+            
+            res.render('teacher/teacher_dashboard'); // Pass to EJS
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Error loading dashboard");
+        }
+    });
 
     // Connect to database and start server
     try {
