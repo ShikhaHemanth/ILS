@@ -113,6 +113,22 @@ CREATE TABLE Feedback (
     FOREIGN KEY (submissionID) REFERENCES Submissions(submissionID)
 );
 
+CREATE TABLE SubjectContent (
+    contentId INT PRIMARY KEY AUTO_INCREMENT,
+    fileName VARCHAR(255),
+    uploadDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    contentType VARCHAR(50),  -- e.g., 'pdf', 'video', 'link', 'text'
+    studentId INT REFERENCES Students(studentId),
+    subjectId INT REFERENCES Subjects(subjectId)
+);
+
+CREATE TABLE MoodCheckins (
+    moodId INT PRIMARY KEY AUTO_INCREMENT,
+    studentId INT REFERENCES Students(studentId),
+    mood VARCHAR(50),  -- e.g., 'happy', 'tired', 'frustrated', etc.
+    checkinTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE Progress_reports (
     reportID INT AUTO_INCREMENT PRIMARY KEY,
     studentID INT,

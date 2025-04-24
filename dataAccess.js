@@ -68,6 +68,30 @@ async function getStudentByUserId(userId) {
     });
 }
 
+// Function to get student ID from user ID
+async function saveMood(userId, mood) {
+    try {
+        const studentId = await getStudentByUserId(userId);
+        if (!studentId) {
+            console.log("No student found for userID:", userId);
+            return [];
+        }
+        return new Promise((resolve, reject) => {
+            const query = `INSERT INTO MoodCheckins (studentId, mood) VALUES (?, ?)`;
+            db.query(query, [studentId, mood], (error, results) => {
+                if (error) {
+                    console.error("Error saving mood:", error);
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    } catch (error) {
+        console.error("Error in saveMood:", error);
+        throw error;
+    }
+}
+
 // Function to get academic subjects
 async function getSubjectsForStudent(userId) {
     try {
@@ -181,4 +205,4 @@ async function saveSubmission(userID, assignmentID, fileURL) {
     }
 }
 
-module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent };
+module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood };

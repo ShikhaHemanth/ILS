@@ -7,7 +7,7 @@ const fs = require('fs');
 
 const { encryptPasswords } = require('./encrypt');
 const { loginUser } = require('./businessLogic');
-const { connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent } = require('./dataAccess');
+const { connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, getStudentByUserId, saveMood } = require('./dataAccess');
 
 // Set up multer to store files in uploads folder
 const storage = multer.diskStorage({
@@ -113,6 +113,24 @@ async function startServer() {
         } catch (error) {
             console.error(error);
             res.status(500).send("Error loading dashboard");
+        }
+    });
+
+    app.post('/student/savemood', async (req, res) => {
+        const userID = req.session.userId;
+        const mood = req.body.mood;
+
+        if (!userID || !mood) {
+            return res.status(400).json({ success: false, message: "Missing user or mood" });
+        }
+
+        try {
+            await saveMood(userID, mood);
+            req.session.mood = mood; // ✅ Save in session
+            res.json({ success: true });
+        } catch (err) {
+            console.error('Error saving mood:', err);
+            res.status(500).json({ success: false, message: 'Internal error' });
         }
     });
 
