@@ -60,16 +60,26 @@
     .feedback-card p {
       margin: 0;
     }
-  </style>
+
+    .nav-links a {
+      text-decoration: none;
+      color: inherit;
+    }
+    .nav-links a:hover {
+      text-decoration: none;
+      color: inherit;
+    }
+    
+</style>
 </head>
 <body>
   <div class="dashboard container-fluid">
     <!-- Header -->
     <div class="header">
-      <img src="/graphics/Logo.png" alt="Logo" />
+      <button class="btn btn-light" id="back">&#8592;</button>
       <div class="nav-links">
-        <div id="my-sections">Dashboard</div>
-        <div id="uploads" class="active">Feedback</div>
+        <div id="my-sections"><a href= "/parent_dashboard">Dashboard</a></div>
+        <div id="uploads" class="active inactive-link"><a href="#">Feedback</a></div>
       </div>
       <div class="dropdown">
         <button class="btn btn-light dropdown-toggle" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">⚙️</button>

@@ -133,6 +133,17 @@
     .form-check label{
       font-size:16px;
     }
+
+    .nav-links a {
+      text-decoration: none;
+      color: inherit;
+    }
+    .nav-links a:hover {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    
   </style>
 </head>
 <body>
@@ -140,11 +151,9 @@
     <!-- ---------- Header ---------- -->
     <div class="header">
         <img src="/graphics/Logo.png" alt="Website Logo" />
-      <!-- <p class="fw-bold">Counselor Dashboard</p> -->
       <div class="nav-links">
         <div id="my-sections" class="active">Dashboard</div>
-        <div id="uploads">Feedback</div>
-        <!-- <div id="reminders">Work To Do</div> -->
+        <div id="uploads"> <a href= "/parent_dashboard/feedback"> Feedback </a></div>
       </div>
 
       <div class="dropdown">
@@ -159,7 +168,8 @@
     <div class="content">
       <!-- Left Section Cards -->
       <div class="left-section">
-        <p class="sections-label">STUDENT NAME: </p>
+        <h2 class="section-title">Welcome, <%= parent.name %> !</h2>
+        <p class="sections-label">STUDENT NAME: <%= students.name %></p>
         <p class="sections-label">Progress Report </p>
       </div>
     </div>  
