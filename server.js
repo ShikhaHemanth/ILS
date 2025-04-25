@@ -8,9 +8,8 @@ const fs = require('fs');
 const { encryptPasswords } = require('./encrypt');
 const { loginUser } = require('./businessLogic');
 const { connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, 
-    getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, getStudentByUserId, saveMood, getTeachersbyStudentId } = require('./dataAccess');
-//const { getTeacherIdbyUserId, getStudentsbyTeacherId } = require('./dataAccess')
-//const { getCounselorbyStudentId } = require('./dataAccess')
+    getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, getStudentByUserId, saveMood, getTeachersbyStudentId, 
+    getCounselorbyStudentId } = require('./dataAccess');
 
 // Set up multer to store files in uploads folder
 const storage = multer.diskStorage({
@@ -227,6 +226,8 @@ async function startServer() {
         res.download(filePath);
     });
 
+    app.get('/teacher_dashboard', isAuthenticated, (req, res) => res.render('teacher/teacher_dashboard'));
+    app.get('/counselor_dashboard', isAuthenticated, (req, res) => res.render('counselor/counselor_dashboard'));
     app.get('/parent_dashboard', isAuthenticated, (req, res) => res.render('parent/parent_dashboard'));
 
     // app.get('/student_dashboard/:subjectName/activity/feedback', isAuthenticated, async (req, res) => {
@@ -250,23 +251,7 @@ async function startServer() {
     //     }
     // })
 
-
-    // Connect to database and start server
-    try {
-        // Attempt to connect to the database before starting the server
-        await connectToDatabase();
-        console.log('Database connection successful.');
-        
-        // Start the server only after the database connection
-        app.listen(4000, () => {
-            console.log('Server running on http://localhost:4000');
-        });
-    } catch (error) {
-        console.error('Error connecting to the database:', error);
-    }
-}
-
-// Aryas workspace
+    // Aryas workspace
     // Protected Route
     // app.get('/teacher_dashboard', isAuthenticated, async(req, res) => {
     //     if (!req.session.userID) {
@@ -294,6 +279,22 @@ async function startServer() {
     
 //     res.render('counselor/counselor_dashboard')
 // });
+
+
+    // Connect to database and start server
+    try {
+        // Attempt to connect to the database before starting the server
+        await connectToDatabase();
+        console.log('Database connection successful.');
+        
+        // Start the server only after the database connection
+        app.listen(4000, () => {
+            console.log('Server running on http://localhost:4000');
+        });
+    } catch (error) {
+        console.error('Error connecting to the database:', error);
+    }
+}
 
 // Run setup before starting the server
 setup();

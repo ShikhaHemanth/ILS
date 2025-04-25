@@ -236,29 +236,30 @@ async function getTeachersbyStudentId(studentId) {
     }
 }
 
-// async function getCounselorbyStudentId(studentId) {
-//     try {
-//         return new Promise((resolve, reject) => {
-//             const query = `
-//                 SELECT c.counselorID, u.name AS counselorName
-//                 FROM Students s
-//                 JOIN Counselors c ON s.counselorID = c.counselorID
-//                 JOIN Users u ON c.userID = u.userID
-//                 WHERE s.studentID = ?
-//             `;
-//             db.query(query, [studentId], (error, results) => {
-//                 if (error) {
-//                     console.error("Error fetching counselor for student:", error);
-//                     return reject(error);
-//                 }
-//                 resolve(results);
-//             });
-//         });
-//     } catch (error) {
-//         console.error("Error in getCounselorsbyStudentId:", error);
-//         throw error;
-//     }
-// }
+async function getCounselorbyStudentId(studentId) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT c.counselorID, u.name AS counselorName
+                FROM Students s
+                JOIN Counselors c ON s.counselorID = c.counselorID
+                JOIN Users u ON c.userID = u.userID
+                WHERE s.studentID = ?
+            `;
+            db.query(query, [studentId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching counselor for student:", error);
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    } catch (error) {
+        console.error("Error in getCounselorsbyStudentId:", error);
+        throw error;
+    }
+}
+
 
 // Aryas worspace
 // async function getStudentsbyTeacherId(teacherId) {
@@ -313,8 +314,12 @@ async function getTeachersbyStudentId(studentId) {
 
 
 
-module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
-    getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId};
-//module.exports = { getTeacherIdbyUserId, getStudentsbyTeacherId};
+// module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
+//     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId};
+// //module.exports = { getTeacherIdbyUserId, getStudentsbyTeacherId};
 
-//module.exports = { getCounselorbyStudentId};
+// //module.exports = { getCounselorbyStudentId};
+
+module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
+    getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
+    getCounselorbyStudentId };
