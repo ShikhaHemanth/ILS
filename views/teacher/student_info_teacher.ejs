@@ -453,10 +453,10 @@
     });
     document.getElementById("my-sections").addEventListener("click", () => window.location.href="/teacher_dashboard");
     document.getElementById("uploads").addEventListener("click", () => window.location.href="/teacher_dashboard/uploads");
-    document.getElementById("reminders").addEventListener("click", () => window.location.href="/teacher_dashboard/reminders");
     document.getElementById("logout").addEventListener("click", () => {
       localStorage.removeItem("token");
       window.location.href="/login";
+    });
     // Event listeners for navigation links
     document.getElementById('my-sections').addEventListener('click', function() {
         showSection('student-status-content');

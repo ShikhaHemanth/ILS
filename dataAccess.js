@@ -542,4 +542,5 @@ async function uploadAssignment(studentID, subjectID, fileName, contentType, upl
 module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
     getCounselorbyStudentId,getCounselorByUserId, getMessagesBetweenUsers, getStudentsByCounselorID, getTeacherbyUserId, 
-    saveMessage, getStudentsByTeacherId, getUserIdByStudentId, getParentByUserId, getStudentsByParentId, getUploadedAssignments, uploadAssignment };
+    saveMessage, getStudentsByTeacherId, getUserIdByStudentId, getParentByUserId, getStudentsByParentId, getUploadedAssignments, 
+    uploadAssignment, getCompletedAssignments, getYetToCompleteAssignments };

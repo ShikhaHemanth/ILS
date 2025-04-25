@@ -10,7 +10,7 @@ const { loginUser } = require('./businessLogic');
 const { getMessagesBetweenUsers, connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, 
     getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, getStudentByUserId, saveMood, getTeachersbyStudentId, 
     getCounselorbyStudentId, saveMessage, getStudentsByTeacherId, getTeacherbyUserId, getCounselorByUserId,
-    getStudentsByCounselorID, getUserIdByStudentId, getParentByUserId, getStudentsByParentId,getCompletedAssignments, getYetToCompleteAssignments } = require('./dataAccess');
+    getStudentsByCounselorID, getUserIdByStudentId, getParentByUserId, getStudentsByParentId, getCompletedAssignments, getYetToCompleteAssignments } = require('./dataAccess');
 // Set up multer to store files in uploads folder
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
