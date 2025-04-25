@@ -219,6 +219,10 @@
       localStorage.removeItem("token");
       window.location.href="/login";
     });
+    
+    document.getElementById("back").addEventListener("click", function() {
+            window.location.href = "/teacher_dashboard/";
+        });
 
     // Upload file dialog box
     document.getElementById("uploadBtn").addEventListener("click", () => {

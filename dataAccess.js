@@ -318,7 +318,7 @@ async function getStudentsByTeacherId(teacherId) {
                 if (error) {
                     console.error("Error fetching students for teacher:", error);
                 }
-                resolve(results.length > 0 ? results[0] : null); // Resolve with counselor data
+                resolve(results); // Resolve with counselor data
             });
         });
     } catch (error) {

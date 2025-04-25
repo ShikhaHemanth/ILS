@@ -277,8 +277,6 @@ async function startServer() {
         res.download(filePath);
     });
 
-    app.get('/teacher_dashboard', isAuthenticated, (req, res) => res.render('teacher/teacher_dashboard'));
-
     app.get('/counselor_dashboard', isAuthenticated, async (req, res) => {
         try {
             // Fetch the counselor data including counselorID
@@ -360,7 +358,36 @@ async function startServer() {
             res.status(500).send("Error loading dashboard");
         }
     });
-      
+
+    app.get('/teacher_dashboard/student_info/:studentid', isAuthenticated, async (req, res) => {
+        if (!req.session.userID) {
+            return res.redirect('/login'); // Ensure user is logged in
+        }
+    
+        try {
+            const userID = req.session.userID;
+            const teacher = await getTeacherbyUserId(userID);
+            const students = await getStudentsByTeacherId(teacher.teacherid);
+            console.log(students);
+            res.render('teacher/student_info_teacher', { students, teacher }); 
+        } catch (error) {
+            console.error("Error loading teacher dashboard:", error);
+            res.status(500).send("Error loading dashboard");
+        }
+    });
+
+// Sakshis workspace 
+
+// app.get('/counselor_dashboard', isAuthenticated, (req, res) => {
+//     if (!req.session.userID) {
+//         return res.redirect('/login'); // Ensure user is logged in
+//     }
+//     const userID = req.session.userID; // Get student ID from session
+    
+//     res.render('counselor/counselor_dashboard')
+// });
+
+
     // Connect to database and start server
     try {
         // Attempt to connect to the database before starting the server

@@ -51,7 +51,7 @@
 <body>
     <div class="dashboard container-fluid">
         <div class="header">
-            <button class="btn btn-light" id="back">&#8592;</button>
+            <button class="btn btn-light" id="back" onclick="history.back()">&#8592;</button>
             <div class="nav-links">
                 <div id="content">Content</div>
                 <div id="submissions">Submissions</div>
@@ -108,7 +108,7 @@
             window.location.href = "/student_dashboard/feedback";
         });
         document.getElementById("back").addEventListener("click", function() {
-            window.location.href = "/student_dashboard";
+            window.location.href = "/student_dashboard/<%= subjectName %>";
         });
         document.getElementById("logout").addEventListener("click", function() {
             localStorage.removeItem('token');

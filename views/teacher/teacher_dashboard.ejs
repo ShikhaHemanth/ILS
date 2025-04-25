@@ -7,7 +7,6 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <style>
-    /* ---------- Global Style (mirrors student dashboard) ---------- */
     body{
       background-color:#f8f9fa;
       height:100vh;
@@ -24,7 +23,6 @@
       flex-direction:column;
     }
 
-    /* ---------- Header ---------- */
     .header{
       display:flex;
       justify-content:space-between;
@@ -39,7 +37,6 @@
       height:100%;
     }
 
-    /* nav links (styled like subject cards header) */
     .nav-links{
       display:flex;
       gap:40px;
@@ -54,7 +51,6 @@
     .nav-links div:hover{background:#dbeafe;}
     .nav-links .active{background:#bfd6ed;}
 
-    /* ---------- Main Content Layout ---------- */
     .content{
       display:flex;
       justify-content:space-between;
@@ -79,6 +75,9 @@
       font-weight:bold;
       color:red;
     }
+    a {
+      text-decoration: none;
+    }
 
     /* subject‑card‑like boxes for sections */
     .section-card{
@@ -94,19 +93,16 @@
       padding:10px;
       margin:10px;
       transition:transform .3s, box-shadow .3s, background .3s;
+      color:#1E40AF;
+      font-weight:bold;
+      font-size:18px;
     }
     .section-card:hover{
       transform:scale(1.05);
       box-shadow:4px 4px 15px rgba(0,0,0,0.2);
       background:#DBEAFE;
     }
-    .section-card a{
-      text-decoration:none;
-      color:#1E40AF;
-      font-weight:bold;
-      font-size:18px;
-    }
-
+    
     /* wrap cards like student subject list */
     .section-card-list{
       list-style:none;
@@ -167,11 +163,11 @@
               <ul class="section-card-list">
                   <% students.forEach(student => { %>
                       <li>
-                          <div class="section-card">
-                              <a href="/student_info_teacher/<%= student.studentID %>">
+                              <a href="/teacher_dashboard/student_info/<%= student.studentID %>">
+                                <div class="section-card">
                                   <%= student.studentName %>
+                                </div>
                               </a>
-                          </div>
                       </li>
                   <% }) %>
               </ul>
