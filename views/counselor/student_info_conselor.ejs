@@ -159,32 +159,13 @@
     <div class="content">
       <!-- Left Section Cards -->
       <div class="left-section">
-        <p class="sections-label">STUDENT NAME: </p>
-        <p class="sections-label">Progress Report </p>
+        <p class="sections-label"><%= student.name %>: </p>
+        <p class="sections-label">Progress Report: </p>
       </div>
     </div>  
-
-        <!-- <ul class="section-card-list">
-          <li><div class="section-card"><a href="">Student 1</a></div></li>
-        </ul>
-      </div> -->
-
-      <!-- Reminder Checklist -->
-      <!-- <div class="reminder-box">
-        <h5>📌 Reminder Checklist</h5>
-        <div class="form-check"><input class="form-check-input" type="checkbox" id="reminder1"><label class="form-check-label" for="reminder1">Review student progress</label></div>
-        <div class="form-check"><input class="form-check-input" type="checkbox" id="reminder2"><label class="form-check-label" for="reminder2">Upload student progress report</label></div>
-        <div class="form-check"><input class="form-check-input" type="checkbox" id="reminder3"><label class="form-check-label" for="reminder3">Schedule parent meeting</label></div>
-      </div>
-    </div>
-  </div> -->
-
-  <!-- ---------- Scripts ---------- -->
   <script>
-    // document.getElementById("my-sections").addEventListener("click",()=>window.location.href="/teacher_dashboard");
-    // document.getElementById("uploads").addEventListener("click",()=>window.location.href="/teacher_dashboard/uploads");
-    // document.getElementById("reminders").addEventListener("click",()=>window.location.href="/teacher_dashboard/reminders");
     document.getElementById("logout").addEventListener("click",()=>{localStorage.removeItem("token");window.location.href="/login"});
+    document.getElementById("back").addEventListener("click", function() {window.location.href = "/counselor_dashboard";});
   </script>
 </body>
 </html>

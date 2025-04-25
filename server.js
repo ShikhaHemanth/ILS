@@ -302,8 +302,7 @@ async function startServer() {
             const studentID = req.params.studentID; // Get the studentID from the URL
     
             // Fetch the student's information using the studentID
-            const student = await getStudentByUserId(studentID);  // Assuming this function retrieves student data
-            console.log(student)
+            const student = await getUserByUserId(studentID);
             if (!student) {
                 return res.status(404).send("Student not found.");
             }

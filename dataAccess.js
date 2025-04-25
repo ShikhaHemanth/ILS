@@ -87,23 +87,23 @@ async function saveMood(studentId, mood) {
 }
 
 // Function to get student ID from user ID
-async function saveMessage(userId, mood) {
-    try {
-        return new Promise((resolve, reject) => {
-            const query = `INSERT INTO Messages (studentId, mood) VALUES (?, ?)`;
-            db.query(query, [studentId, mood], (error, results) => {
-                if (error) {
-                    console.error("Error saving mood:", error);
-                    return reject(error);
-                }
-                resolve(results);
-            });
-        });
-    } catch (error) {
-        console.error("Error in saveMood:", error);
-        throw error;
-    }
-}
+// async function saveMessage(userId, mood) {
+//     try {
+//         return new Promise((resolve, reject) => {
+//             const query = `INSERT INTO Messages (studentId, mood) VALUES (?, ?)`;
+//             db.query(query, [studentId, mood], (error, results) => {
+//                 if (error) {
+//                     console.error("Error saving mood:", error);
+//                     return reject(error);
+//                 }
+//                 resolve(results);
+//             });
+//         });
+//     } catch (error) {
+//         console.error("Error in saveMood:", error);
+//         throw error;
+//     }
+// }
 
 
 // Function to get academic subjects
@@ -398,6 +398,6 @@ async function getTeacherbyUserId(userId) {
 
 // Sakshi workspace
 
-module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
+module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, saveMessage, getStudentByUserId, getSubjectsForStudent, 
     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
     getCounselorbyStudentId,getCounselorByUserId, getMessagesBetweenUsers, getStudentsByCounselorID, getTeacherbyUserId, getStudentsByTeacherId };
