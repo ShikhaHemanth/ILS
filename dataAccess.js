@@ -414,6 +414,31 @@ async function getParentByUserId(userId) {
         });
     } catch (error) {
         console.error("Error in getParentByUserId:", error);
+    }
+}
+
+async function getCompletedAssignments(studentname, teacherId) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT DISTINCT a.title
+                FROM Assignments a
+                JOIN Student_Assignments sa ON a.assignmentID = sa.assignmentID
+                JOIN Student_Subjects ss ON a.subjectID = ss.subjectID
+                WHERE sa.studentID = (SELECT studentID FROM Students WHERE userID = (SELECT userID FROM Users WHERE name = ?)) 
+                AND sa.completed = 1
+                AND ss.subjectID = (SELECT subjectID FROM Teachers WHERE teacherID = ?)
+            `;
+            db.query(query, [studentname, teacherId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching completed assignments:", error);
+                    return reject(error);
+                }
+                resolve(results); // Resolve with completed assignments data
+            });
+        });
+    } catch (error) {
+        console.error("Error in getCompletedAssignments:", error);
         throw error;
     }
 }
@@ -438,11 +463,83 @@ async function getStudentsByParentId(parentId) {
         });
     } catch (error) {
         console.error("Error in getStudentsByParentId:", error);
+    }
+}
+
+async function getYetToCompleteAssignments(studentname, teacherId) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT DISTINCT a.title
+                FROM Assignments a
+                JOIN Student_Assignments sa ON a.assignmentID = sa.assignmentID
+                JOIN Student_Subjects ss ON a.subjectID = ss.subjectID
+                WHERE sa.studentID = (SELECT studentID FROM Students WHERE userID = (SELECT userID FROM Users WHERE name = ?)) 
+                AND sa.completed = 0
+                AND ss.subjectID = (SELECT subjectID FROM Teachers WHERE teacherID = ?)
+            `;
+            db.query(query, [studentname, teacherId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching yet-to-complete assignments:", error);
+                    return reject(error);
+                }
+                resolve(results); // Resolve with yet-to-complete assignments data
+            });
+        });
+    } catch (error) {
+        console.error("Error in getYetToCompleteAssignments:", error);
         throw error;
     }
 }
 
+async function getUploadedAssignments(studentname, teacherId) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT sc.fileName, sc.contentType, sc.uploadDate, sub.subjectName
+                FROM SubjectContent sc
+                JOIN Subjects sub ON sc.subjectId = sub.subjectID
+                WHERE sc.studentId = (SELECT studentID FROM Students WHERE userID = (SELECT userID FROM Users WHERE name = ?))
+                AND sc.subjectId IN (SELECT subjectID FROM Teachers WHERE teacherID = ?)
+            `;
+            db.query(query, [studentname, teacherId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching uploaded assignments:", error);
+                    return reject(error);
+                }
+                resolve(results); // Resolve with the uploaded assignments
+            });
+        });
+    } catch (error) {
+        console.error("Error in getUploadedAssignments:", error);
+        throw error;
+    }
+}
+
+// Function to insert a new assignment upload into the database
+async function uploadAssignment(studentID, subjectID, fileName, contentType, uploadDate) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = `
+                INSERT INTO SubjectContent (fileName, contentType, uploadDate, studentId, subjectId)
+                VALUES (?, ?, ?, ?, ?)
+            `;
+            db.query(query, [fileName, contentType, uploadDate, studentID, subjectID], (error, results) => {
+                if (error) {
+                    console.error("Error uploading assignment:", error);
+                    return reject(error);
+                }
+                resolve(results); // Resolve after successful upload
+            });
+        });
+    } catch (error) {
+        console.error("Error in uploadAssignment:", error);
+        throw error;
+    }
+}
+
+
 module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
     getCounselorbyStudentId,getCounselorByUserId, getMessagesBetweenUsers, getStudentsByCounselorID, getTeacherbyUserId, 
-    saveMessage, getStudentsByTeacherId, getUserIdByStudentId, getParentByUserId, getStudentsByParentId };
+    saveMessage, getStudentsByTeacherId, getUserIdByStudentId, getParentByUserId, getStudentsByParentId, getUploadedAssignments, uploadAssignment };

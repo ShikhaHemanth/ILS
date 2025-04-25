@@ -10,8 +10,7 @@ const { loginUser } = require('./businessLogic');
 const { getMessagesBetweenUsers, connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, 
     getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, getStudentByUserId, saveMood, getTeachersbyStudentId, 
     getCounselorbyStudentId, saveMessage, getStudentsByTeacherId, getTeacherbyUserId, getCounselorByUserId,
-    getStudentsByCounselorID, getUserIdByStudentId, getParentByUserId, getStudentsByParentId } = require('./dataAccess');
-
+    getStudentsByCounselorID, getUserIdByStudentId, getParentByUserId, getStudentsByParentId,getCompletedAssignments, getYetToCompleteAssignments } = require('./dataAccess');
 // Set up multer to store files in uploads folder
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -401,12 +400,61 @@ async function startServer() {
             const student = await getUserByUserId(studentUserId.userid);
             const teacher = await getTeacherbyUserId(userId);
             const counselor = await getCounselorbyStudentId(studentid);
-            res.render('teacher/student_info_teacher', { userId, teacher, student, counselor }); 
+            const teacherId = teacher.teacherid;
+            const completedAssignments = await getCompletedAssignments(studentname, teacherId);
+            const yetToCompleteAssignments = await getYetToCompleteAssignments(studentname, teacherId);
+
+            res.render('teacher/student_info_teacher', { 
+                studentname, 
+                completedAssignments, 
+                yetToCompleteAssignments,
+                userId, 
+                teacher, 
+                student, 
+                counselor 
+            });
         } catch (error) {
             console.error("Error loading teacher dashboard:", error);
             res.status(500).send("Error loading dashboard");
         }
     });
+
+    
+    app.get('/teacher_dashboard/uploads/:studentname', isAuthenticated, async (req, res) => {
+        if (!req.session.userID) {
+            return res.redirect('/login'); // Ensure user is logged in
+        }
+        try {
+            const studentname = req.params.studentname;
+            
+            // Get the teacher's ID
+            const teacher = await getTeacherbyUserId(req.session.userID);
+            const teacherId = teacher.teacherid;
+
+            // Fetch uploaded assignments
+            const uploadedAssignments = await getUploadedAssignments(studentname, teacherId);
+
+            res.render('teacher/uploads', {
+                studentname, 
+                uploadedAssignments
+            });
+        } catch (error) {
+            console.error("Error loading uploads:", error);
+            res.status(500).send("Error loading uploads");
+        }
+    });
+
+// Sakshis workspace 
+
+// app.get('/counselor_dashboard', isAuthenticated, (req, res) => {
+//     if (!req.session.userID) {
+//         return res.redirect('/login'); // Ensure user is logged in
+//     }
+//     const userID = req.session.userID; // Get student ID from session
+    
+//     res.render('counselor/counselor_dashboard')
+// });
+
 
     // Connect to database and start server
     try {

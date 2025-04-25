@@ -122,19 +122,17 @@
 
         <% if (students.length === 0) { %>
           <p>No students assigned to you yet.</p>
-      <% } else { %>
-          <ul class="section-card-list">
-              <% students.forEach(student => { %>
-                  <li>
-                    <a href="/counselor_dashboard/student_info/<%= student.studentID %>">
-                      <div class="section-card">
-                        <%= student.name %>
-                      </div>
-                    </a>
-                  </li>
-              <% }) %>
-          </ul>
-      <% } %>
+        <% } else { %>
+            <ul class="section-card-list">
+                <% students.forEach(student => { %>
+                    <li>
+                        <div class="section-card">
+                            <a href="/counselor_dashboard/student_info/<%= student.studentID %>"><%= student.name %></a>
+                        </div>
+                    </li>
+                <% }) %>
+            </ul>
+        <% } %>
       </div>
 
       <!-- Reminder Checklist -->

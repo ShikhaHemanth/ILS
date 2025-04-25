@@ -223,28 +223,32 @@
         <!-- Submitted Assignments Section -->
         <div class="submitted-assignments">
           <h5>📄 Completed Assignments</h5>
-          <div class="assignment-item">
-            <span>Math Worksheet 1</span>
-          </div>
-          <div class="assignment-item">
-            <span>Science Project Report</span>
-          </div>
-          <div class="assignment-item">
-            <span>English Essay</span>
-          </div>
+          <% if (completedAssignments && completedAssignments.length > 0) { %>
+              <% completedAssignments.forEach(function(assignment) { %>
+                  <div class="assignment-item">
+                      <span><%= assignment.title %></span>
+                  </div>
+              <% }); %>
+          <% } else { %>
+              <div class="assignment-item">
+                  <span>No assignments completed yet.</span>
+              </div>
+          <% } %>
         </div>
         <div class="submitted-assignments">
-          <h5>📄 Yet to commplete</h5>
-          <div class="assignment-item">
-            <span>Math Worksheet 1</span>
-          </div>
-          <div class="assignment-item">
-            <span>Science Project Report</span>
-          </div>
-          <div class="assignment-item">
-            <span>English Essay</span>
-          </div>
-        </div>
+          <h5>📄 Yet to Complete</h5>
+          <% if (yetToCompleteAssignments && yetToCompleteAssignments.length > 0) { %>
+              <% yetToCompleteAssignments.forEach(function(assignment) { %>
+                  <div class="assignment-item">
+                      <span><%= assignment.title %></span>
+                  </div>
+              <% }); %>
+          <% } else { %>
+              <div class="assignment-item">
+                  <span>All assignments are completed!</span>
+              </div>
+          <% } %>
+      </div>
       </div>
     </div>
   </div>
@@ -452,23 +456,39 @@
     document.getElementById("logout").addEventListener("click", () => {
       localStorage.removeItem("token");
       window.location.href="/login";
+    // Event listeners for navigation links
+    document.getElementById('my-sections').addEventListener('click', function() {
+        showSection('student-status-content');
+        setActiveLink('my-sections');
     });
-    
-    document.getElementById("back").addEventListener("click", function() {
-            window.location.href = "/teacher_dashboard/";
+
+    document.getElementById('uploads').addEventListener('click', function() {
+        showSection('uploads-content');
+        setActiveLink('uploads');
+    });
+
+    document.getElementById('reminders').addEventListener('click', function() {
+        showSection('learning-plan-content');
+        setActiveLink('reminders');
+    });
+
+    // Function to display the selected section
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(function(section) {
+            section.style.display = 'none'; // Hide all sections
         });
+        document.getElementById(sectionId).style.display = 'block'; // Show selected section
+    }
 
-    // Upload file dialog box
-    document.getElementById("uploadBtn").addEventListener("click", () => {
-      document.getElementById("fileInput").click();
-    });
-
-    // Example button click logic (expand later)
-    document.querySelectorAll(".assignment-item button").forEach(btn => {
-      btn.addEventListener("click", () => alert("Starting download..."));
-    });
-
-    document.querySelector(".btn-secondary").addEventListener("click", () => alert("Downloading counselor report..."));
-  </script>
+    // Function to set the active link
+    function setActiveLink(activeLinkId) {
+        const links = document.querySelectorAll('.nav-links div');
+        links.forEach(function(link) {
+            link.classList.remove('active'); // Remove active class from all links
+        });
+        document.getElementById(activeLinkId).classList.add('active'); // Add active class to clicked link
+    }
+</script>
 </body>
 </html>

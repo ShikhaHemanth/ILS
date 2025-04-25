@@ -182,11 +182,9 @@
       <button class="btn btn-light" id="back">&#8592;</button>
       <!-- <p class="fw-bold">Counselor Dashboard</p> -->
       <div class="nav-links">
-        <div id="my-sections" class="active">Chat</div>
-        <div id="uploads">Trends</div>
-        <div id="reminders">Work To Do</div>
+        <div id="my-sections" class="active">Home</div>
+        <div id="reminders">Learning Plan</div>
       </div>
-
       <div class="dropdown">
         <button class="btn btn-light dropdown-toggle" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">⚙️</button>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
@@ -199,7 +197,9 @@
     <div class="content">
       <!-- Left Section Cards -->
       <div class="left-section">
-        <p class="sections-label"><%= student.name %> </p>
+        <p class="sections-label"><%= student.name %>: </p>
+
+        <p class="sections-label">Progress Report: </p>
       </div>
     </div>  
 
