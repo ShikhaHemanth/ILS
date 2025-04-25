@@ -7,7 +7,7 @@ const fs = require('fs');
 
 const { encryptPasswords } = require('./encrypt');
 const { loginUser } = require('./businessLogic');
-const { connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, 
+const { getMessagesBetweenUsers, connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, 
     getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, getStudentByUserId, saveMood, getTeachersbyStudentId, 
     getCounselorbyStudentId, saveMessage, getStudentsByTeacherId, getTeacherbyUserId } = require('./dataAccess');
 
@@ -48,7 +48,7 @@ async function startServer() {
         socket.on('send_message', async (data) => {
           try {
             // Save to DB
-            await saveMessage(data.senderId, data.receiverId, data.content, data.timestamp);
+            await saveMessage(data.senderId, data.receiverId, data.content);
       
             // Emit to receiver if connected
             io.emit("receive_message", data); // You can filter by socket ID or room
@@ -107,6 +107,20 @@ async function startServer() {
         } catch (error) {
             console.error("Login error:", error);
             return res.status(500).json({ success: false, message: "Internal Server Error" });
+        }
+    });
+
+    app.post('/getPreviousMessages', async (req, res) => {
+        const { senderId, receiverId } = req.body;
+        
+        try {
+            // Replace with your actual function to fetch previous messages from DB
+            const messages = await getMessagesBetweenUsers(senderId, receiverId);
+            
+            res.json(messages);
+        } catch (error) {
+            console.error('Error fetching previous messages:', error);
+            res.status(500).send('Error fetching messages');
         }
     });
 
@@ -265,23 +279,22 @@ async function startServer() {
     //     }
     // })
 
-    // Aryas workspace
     // Protected Route
-    // app.get('/teacher_dashboard', isAuthenticated, async(req, res) => {
-    //     if (!req.session.userID) {
-    //         return res.redirect('/login'); // Ensure user is logged in
-    //     }
-    //     const userID = req.session.userID; // Get student ID from session
-    //     const teacherid = await getTeacherIdbyUserId(userID); // Fetch subjects
-    //     const students =await getStudentsbyTeacherId(teacherid)
-    //     try {
-    //         res.render('teacher/teacher_dashboard', { students, teachername }); 
-    //     } catch (error) {
-    //         console.error(error);
-    //         res.status(500).send("Error loading dashboard");
-    //     }
-    // });
-
+    app.get('/teacher_dashboard', isAuthenticated, async (req, res) => {
+        if (!req.session.userID) {
+            return res.redirect('/login'); // Ensure user is logged in
+        }
+    
+        try {
+            const userID = req.session.userID;
+            const teacher = await getTeacherbyUserId(userID);
+            const students = await getStudentsByTeacherId(teacher.teacherid);
+            res.render('teacher/teacher_dashboard', { students, teacher }); 
+        } catch (error) {
+            console.error("Error loading teacher dashboard:", error);
+            res.status(500).send("Error loading dashboard");
+        }
+    });
 
 // Sakshis workspace 
 
@@ -308,36 +321,18 @@ async function startServer() {
     } catch (error) {
         console.error('Error connecting to the database:', error);
     }
-}
 
-// Aryas workspace
-    // Protected Route
-    app.get('/teacher_dashboard', isAuthenticated, async(req, res) => {
+
+    app.get('/counselor_dashboard', isAuthenticated, (req, res) => {
         if (!req.session.userID) {
             return res.redirect('/login'); // Ensure user is logged in
         }
         const userID = req.session.userID; // Get student ID from session
-        const teacherid = await getTeacherIdbyUserId(userID); // Fetch subjects
-        const students =await getStudentsbyTeacherId(teacherid)
-        try {
-            res.render('teacher/teacher_dashboard', { students, teachername }); 
-        } catch (error) {
-            console.error(error);
-            res.status(500).send("Error loading dashboard");
-        }
+        
+        res.render('counselor/counselor_dashboard')
     });
+}
 
-
-// Sakshis workspace 
-
-app.get('/counselor_dashboard', isAuthenticated, (req, res) => {
-    if (!req.session.userID) {
-        return res.redirect('/login'); // Ensure user is logged in
-    }
-    const userID = req.session.userID; // Get student ID from session
-    
-    res.render('counselor/counselor_dashboard')
-});
 
 // Run setup before starting the server
 setup();

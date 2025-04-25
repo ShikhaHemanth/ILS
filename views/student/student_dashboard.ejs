@@ -56,7 +56,7 @@
             <div class="prize-text">
                 <% if ((completedAssignments/ totalAssignments)==1) { %>
                     <div id="congrats-popup">
-                        🎉 Yay! You've finished all assignments! You have unlocked a new video! 🎁
+                        🎉 Yay! You've finished all assignments! Treat yourself to a new video! 🎁
                     </div>
                 <% } else { %>
                     <div class="goal-text">
@@ -140,7 +140,7 @@
             <button id="close-chat" class="material-icons" style="font-size: 20px; ">close</button>
         </div>
         <div id="chat-contacts"></div>
-        <div id="chat-box"></div>
+        <div id="chat-box" data-receiver-id="123" data-receiver-role="teacher"></div>
         <form id="chat-form">
             <input type="text" id="chat-input" placeholder="Type a message..." />
             <button type="submit" style="padding: 5px 10px;" id="sendButton">Send</button>
@@ -196,6 +196,7 @@
             localStorage.setItem('counselor', '<%- JSON.stringify(counselor) %>');
             const teacherContacts = JSON.parse(localStorage.getItem('teachers'));
             const counselorContacts = JSON.parse(localStorage.getItem('counselor'));
+            const senderId = localStorage.getItem('userID');
 
             chatIcon.addEventListener("click", () => {
                 chatModal.classList.toggle("show");
@@ -247,6 +248,7 @@
                     container.appendChild(button);
                 });
             }
+            
 
             function openChat(contact, type) {
                 const chatBox = document.getElementById("chat-box");
@@ -259,16 +261,49 @@
                     <div id="chat-messages" style="height: 250px; overflow-y: auto; border: 1px solid #ddd; padding: 5px; margin-bottom: 10px;"></div>
                 `;
 
-                chatBox.dataset.receiverId = contact.teacherID || contact.counselorID;
+                chatBox.dataset.receiverId = contact.userid;
                 chatBox.dataset.receiverRole = type;
+
+                // Call function to load previous messages
+                loadPreviousMessages(contact.userid, type);
+            }
+
+            async function loadPreviousMessages(receiverId, receiverRole) {
+                try {
+                    const senderId = localStorage.getItem('userID');
+                    const response = await fetch('/getPreviousMessages', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            senderId:senderId,
+                            receiverId: receiverId
+                        })
+                    });
+
+                    const messages = await response.json();
+                    const chatMessages = document.getElementById("chat-messages");
+                    // Clear existing messages if any
+                    chatMessages.innerHTML = "";
+                    // Display each message
+                    messages.forEach(msg => {
+                        const msgElement = document.createElement("div");
+                        const isFromYou = msg.senderId == senderId;
+                        msgElement.textContent = `${isFromYou ? 'You' : 'Them'}: ${msg.content}`;
+                        chatMessages.appendChild(msgElement);
+                    });
+                } catch (error) {
+                    console.error('Error loading messages:', error);
+                }
             }
 
             const socket = io();
             const sendButton = document.getElementById("sendButton");
-            const messageInput = document.getElementById("messageInput");
-            const senderId = localStorage.getItem('userID');
+            const messageInput = document.getElementById("chat-input");
 
-            sendButton.addEventListener("click", () => {
+            sendButton.addEventListener("click", (e) => {
+                e.preventDefault(); // Prevent form submission
                 const message = messageInput.value.trim();
                 if (message !== "") {
                     const chatBox = document.getElementById("chat-box");
@@ -279,8 +314,7 @@
                         senderId,
                         receiverId,
                         receiverRole, // optional, in case you want it for routing
-                        content: message,
-                        timestamp: new Date().toISOString()
+                        content: message
                     };
 
                     socket.emit("send_message", messageData);
@@ -289,15 +323,18 @@
             });
 
             socket.on("receive_message", (data) => {
-                // Append to message list in UI
-                const chatBox = document.getElementById("chatMessages");
+                const chatBox = document.getElementById("chat-messages");
                 const msgElement = document.createElement("div");
+
+                // Append received message to chat window
                 msgElement.textContent = `${data.senderId === senderId ? 'You' : 'Them'}: ${data.content}`;
                 chatBox.appendChild(msgElement);
+
+                // Scroll to the latest message
+                chatBox.scrollTop = chatBox.scrollHeight;
             });
         });
 
-        // TODO: Add logic to fetch chat history and connect to socket.io
 
     // Chatbase based chatbot
 

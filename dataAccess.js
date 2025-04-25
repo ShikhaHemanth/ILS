@@ -197,7 +197,7 @@ async function saveSubmission(userID, assignmentID, fileURL) {
             return [];
         }
         return new Promise((resolve, reject) => {
-            const query = `INSERT INTO Submissions (assignmentID, studentId, fileURL) VALUES (?, ?, ?)`;
+            const query = `INSERT INTO Submissions (assignmentID, studentId, uploadsFileName) VALUES (?, ?, ?)`;
             db.query(query, [assignmentID, studentId, fileURL], (error, results) => {
                 if (error) {
                     console.error("Error saving submission:", error);
@@ -216,7 +216,7 @@ async function getTeachersbyStudentId(studentId) {
     try {
         return new Promise((resolve, reject) => {
             const query = `
-                SELECT t.teacherID, u.name AS teacherName
+                SELECT t.teacherID, u.name AS teacherName, t.userid
                 FROM Student_Teachers st
                 JOIN Teachers t ON st.teacherID = t.teacherID
                 JOIN Users u ON t.userID = u.userID
@@ -236,11 +236,34 @@ async function getTeachersbyStudentId(studentId) {
     }
 }
 
+async function getMessagesBetweenUsers(senderId, receiverId) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT * FROM messages 
+                WHERE (senderId = ? AND receiverId = ?) 
+                OR (senderId = ? AND receiverId = ?)
+                ORDER BY timestamp ASC
+            `;
+            db.query(query, [senderId, receiverId, receiverId, senderId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching messages:", error);
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    } catch (error) {
+        console.error("Error in getMessagesBetweenUsers:", error);
+        throw error;
+    }  
+}
+
 async function getCounselorbyStudentId(studentId) {
     try {
         return new Promise((resolve, reject) => {
             const query = `
-                SELECT c.counselorID, u.name AS counselorName
+                SELECT c.counselorID, u.name AS counselorName, c.userid
                 FROM Students s
                 JOIN Counselors c ON s.counselorID = c.counselorID
                 JOIN Users u ON c.userID = u.userID
@@ -261,11 +284,11 @@ async function getCounselorbyStudentId(studentId) {
 }
 
 
-async function saveMessage (senderId, receiverId, content, timestamp) {
+async function saveMessage (senderId, receiverId, content) {
     try {
         return new Promise((resolve, reject) => {
-            const query = `INSERT INTO Messages (senderId, receiverId, content, timestamp) VALUES (?, ?, ?, ?)`;
-            db.query(query, [senderId, receiverId, content, timestamp], (error, results) => {
+            const query = `INSERT INTO Messages (senderId, receiverId, content) VALUES (?, ?, ?)`;
+            db.query(query, [senderId, receiverId, content], (error, results) => {
                 if (error) {
                     console.error("Error saving message:", error);
                     return reject(error);
@@ -296,7 +319,6 @@ async function getStudentsByTeacherId(teacherId) {
                     console.error("Error fetching students for teacher:", error);
                     return reject(error);
                 }
-                console.log("Data access", results);
                 resolve(results);
             });
         });
@@ -331,13 +353,6 @@ async function getTeacherbyUserId(userId) {
 // Sakshi workspace
 
 
-
-// module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
-//     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId};
-// //module.exports = { getTeacherIdbyUserId, getStudentsbyTeacherId};
-
-// //module.exports = { getCounselorbyStudentId};
-
-module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
+module.exports = { getMessagesBetweenUsers, connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
     getCounselorbyStudentId, saveMessage, getTeacherbyUserId, getStudentsByTeacherId};
