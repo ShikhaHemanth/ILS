@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Student Information Page For Teacher</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="/student/css/header.css">
   <style>
     body {
       background-color: #f8f9fa;
@@ -14,40 +16,6 @@
       display: flex;
       flex-direction: column;
     }
-    .dashboard {
-      background: white;
-      width: 100%;
-      height: 100%;
-      box-shadow: 0 4px 10px rgba(0,0,0,.1);
-      display: flex;
-      flex-direction: column;
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #a7c7e7;
-      height: 60px;
-      padding: 0 12px;
-      border-radius: 8px;
-      font-size: 20px;
-    }
-    .header img {
-      height: 100%;
-    }
-    .nav-links {
-      display: flex;
-      gap: 40px;
-    }
-    .nav-links div {
-      padding: 8px 18px;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background .3s;
-    }
-    .nav-links div:hover { background: #dbeafe; }
-    .nav-links .active { background: #bfd6ed; }
     .content {
       display: flex;
       justify-content: space-between;
@@ -148,13 +116,85 @@
       display: flex;
       gap: 20px;
     }
+    
+    #chat-launcher {
+        position: fixed;
+        bottom: 30px;
+        right: 10%;
+        cursor: pointer;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    #chat-launcher:hover {
+        box-shadow: 0 8px 16px rgba(28, 28, 28, 0.3);
+        background-color: #f9f9f9;
+        transform: scale(1.1);
+        transition: box-shadow 0.3s ease, background-color 1s ease;
+    }
+
+    .material-icons {
+        background: transparent;
+        border: none;
+        font-size: 40px;
+        color: #DE6013;
+        cursor: pointer;
+    }
+
+    #chat-modal {
+        display: none; 
+        position: fixed; 
+        bottom: 80px; 
+        right: 20px; 
+        width: 350px; 
+        height: 500px; 
+        background: #fff; 
+        border: 1px solid #ccc; 
+        border-radius: 10px; 
+        box-shadow: 0 0 10px rgba(0,0,0,0.2); 
+        z-index: 1000;
+    }
+    .chat-tab {
+        flex: 1; 
+        padding: 10px; 
+        border: none; 
+        background: #f1f1f1;
+    }
+    #chat-contacts {
+        height: 100px; 
+        overflow-y: auto; 
+        padding: 10px;
+    }
+    #chat-box {
+        height: 300px; 
+        overflow-y: auto; 
+        padding: 10px; 
+        border-top: 1px solid #eee; 
+        border-bottom: 1px solid #eee;
+    }
+    #chat-form {
+        display: flex; 
+        padding: 10px;
+    }
+    #chat-input {
+        flex: 1; 
+        padding: 5px;
+    }
+    #chat-modal.show {
+        display: block;
+    }
   </style>
 </head>
 <body>
   <div class="dashboard container-fluid">
     <!-- Header -->
     <div class="header">
-      <!-- <img src="/graphics/Logo.png" alt="Website Logo" /> -->
       <button class="btn btn-light" id="back">&#8592;</button>
       <div class="nav-links">
         <div id="my-sections" class="active">Chat</div>
@@ -173,7 +213,7 @@
     <div class="content">
       <!-- Left Section -->
       <div class="left-section">
-        <p class="sections-label">STUDENT NAME: </p>
+        <p class="sections-label">Student: <%= studentname %></p>
 
         <!-- Submitted Assignments Section -->
         <div class="submitted-assignments">
@@ -208,6 +248,23 @@
         <div class="form-check"><input class="form-check-input" type="checkbox" id="reminder3"><label class="form-check-label" for="reminder3">Schedule parent meeting</label></div>
       </div>
     </div>
+  </div>
+
+  <div id="chat-launcher">
+    <span class="material-icons">forum</span>
+  </div>
+  <div id="chat-modal">
+    <div style="display: flex; border-bottom: 1px solid #ccc;">
+        <button id="tab-student" class="chat-tab">Students</button>
+        <button id="tab-teacher" class="chat-tab">Teachers</button>
+        <button id="close-chat" class="material-icons" style="font-size: 20px; ">close</button>
+    </div>
+    <div id="chat-contacts"></div>
+    <div id="chat-box" data-receiver-id="123" data-receiver-role="teacher"></div>
+    <form id="chat-form">
+        <input type="text" id="chat-input" placeholder="Type a message..." />
+        <button type="submit" style="padding: 5px 10px;" id="sendButton">Send</button>
+    </form>
   </div>
 
   <!-- Scripts -->

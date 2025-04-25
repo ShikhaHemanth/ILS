@@ -358,17 +358,13 @@ async function startServer() {
         }
     });
 
-    app.get('/teacher_dashboard/student_info/:studentid', isAuthenticated, async (req, res) => {
+    app.get('/teacher_dashboard/student_info/:studentname', isAuthenticated, async (req, res) => {
         if (!req.session.userID) {
             return res.redirect('/login'); // Ensure user is logged in
         }
-    
         try {
-            const userID = req.session.userID;
-            const teacher = await getTeacherbyUserId(userID);
-            const students = await getStudentsByTeacherId(teacher.teacherid);
-            console.log(students);
-            res.render('teacher/student_info_teacher', { students, teacher }); 
+            const studentname = req.params.studentname;
+            res.render('teacher/student_info_teacher', { studentname }); 
         } catch (error) {
             console.error("Error loading teacher dashboard:", error);
             res.status(500).send("Error loading dashboard");

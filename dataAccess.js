@@ -48,7 +48,7 @@ async function getUserByUserId(userID) {
     });
 }
 
-// Function to get student ID from user ID
+// Function to get student ID from userID
 async function getStudentByUserId(userId) {
     return new Promise((resolve, reject) => {
         db.query(
@@ -85,26 +85,6 @@ async function saveMood(studentId, mood) {
         throw error;
     }
 }
-
-// Function to get student ID from user ID
-// async function saveMessage(userId, mood) {
-//     try {
-//         return new Promise((resolve, reject) => {
-//             const query = `INSERT INTO Messages (studentId, mood) VALUES (?, ?)`;
-//             db.query(query, [studentId, mood], (error, results) => {
-//                 if (error) {
-//                     console.error("Error saving mood:", error);
-//                     return reject(error);
-//                 }
-//                 resolve(results);
-//             });
-//         });
-//     } catch (error) {
-//         console.error("Error in saveMood:", error);
-//         throw error;
-//     }
-// }
-
 
 // Function to get academic subjects
 async function getSubjectsForStudent(studentId) {
@@ -283,7 +263,6 @@ async function getCounselorbyStudentId(studentId) {
     }
 }
 
-
 async function saveMessage (senderId, receiverId, content) {
     try {
         return new Promise((resolve, reject) => {
@@ -302,7 +281,6 @@ async function saveMessage (senderId, receiverId, content) {
     }
 }
 
-// Aryas worspace
 async function getStudentsByTeacherId(teacherId) {
     try {
         return new Promise((resolve, reject) => {
@@ -326,6 +304,30 @@ async function getStudentsByTeacherId(teacherId) {
         throw error;
     }
 }
+async function getCounselors(teacherId) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT s.studentID, u.name AS studentName
+                FROM Student_Teachers st
+                JOIN Students s ON st.studentID = s.studentID
+                JOIN Users u ON s.userID = u.userID
+                WHERE st.teacherID = ?
+            `;
+
+            db.query(query, [teacherId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching students for teacher:", error);
+                }
+                resolve(results); // Resolve with counselor data
+            });
+        });
+    } catch (error) {
+        console.error("Error in getStudentsByTeacherId:", error);
+        throw error;
+    }
+}
+
 
 async function getCounselorByUserId(userID) {
     try{ 
@@ -396,8 +398,6 @@ async function getTeacherbyUserId(userId) {
     }
 }
 
-// Sakshi workspace
-
-module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, saveMessage, getStudentByUserId, getSubjectsForStudent, 
+module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
-    getCounselorbyStudentId,getCounselorByUserId, getMessagesBetweenUsers, getStudentsByCounselorID, getTeacherbyUserId, getStudentsByTeacherId };
+    getCounselorbyStudentId,getCounselorByUserId, getMessagesBetweenUsers, getStudentsByCounselorID, getTeacherbyUserId, saveMessage, getStudentsByTeacherId };
