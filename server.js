@@ -8,10 +8,9 @@ const fs = require('fs');
 const { encryptPasswords } = require('./encrypt');
 const { loginUser } = require('./businessLogic');
 const { connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, 
-    getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, getStudentByUserId, saveMood, getTeachersbyStudentId, 
-    getCounselorbyStudentId } = require('./dataAccess');
-const { getTeacherIdbyUserId, getStudentsbyTeacherId } = require('./dataAccess')
-const { getCounselorbyStudentId } = require('./dataAccess')
+    getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, getStudentByUserId, saveMood, getTeachersbyStudentId } = require('./dataAccess');
+//const { getTeacherIdbyUserId, getStudentsbyTeacherId } = require('./dataAccess')
+//const { getCounselorbyStudentId } = require('./dataAccess')
 
 // Set up multer to store files in uploads folder
 const storage = multer.diskStorage({
@@ -269,32 +268,32 @@ async function startServer() {
 
 // Aryas workspace
     // Protected Route
-    app.get('/teacher_dashboard', isAuthenticated, async(req, res) => {
-        if (!req.session.userID) {
-            return res.redirect('/login'); // Ensure user is logged in
-        }
-        const userID = req.session.userID; // Get student ID from session
-        const teacherid = await getTeacherIdbyUserId(userID); // Fetch subjects
-        const students =await getStudentsbyTeacherId(teacherid)
-        try {
-            res.render('teacher/teacher_dashboard', { students, teachername }); 
-        } catch (error) {
-            console.error(error);
-            res.status(500).send("Error loading dashboard");
-        }
-    });
+    // app.get('/teacher_dashboard', isAuthenticated, async(req, res) => {
+    //     if (!req.session.userID) {
+    //         return res.redirect('/login'); // Ensure user is logged in
+    //     }
+    //     const userID = req.session.userID; // Get student ID from session
+    //     const teacherid = await getTeacherIdbyUserId(userID); // Fetch subjects
+    //     const students =await getStudentsbyTeacherId(teacherid)
+    //     try {
+    //         res.render('teacher/teacher_dashboard', { students, teachername }); 
+    //     } catch (error) {
+    //         console.error(error);
+    //         res.status(500).send("Error loading dashboard");
+    //     }
+    // });
 
 
 // Sakshis workspace 
 
-app.get('/counselor_dashboard', isAuthenticated, (req, res) => {
-    if (!req.session.userID) {
-        return res.redirect('/login'); // Ensure user is logged in
-    }
-    const userID = req.session.userID; // Get student ID from session
+// app.get('/counselor_dashboard', isAuthenticated, (req, res) => {
+//     if (!req.session.userID) {
+//         return res.redirect('/login'); // Ensure user is logged in
+//     }
+//     const userID = req.session.userID; // Get student ID from session
     
-    res.render('counselor/counselor_dashboard')
-});
+//     res.render('counselor/counselor_dashboard')
+// });
 
 // Run setup before starting the server
 setup();
