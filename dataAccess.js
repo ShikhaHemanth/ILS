@@ -68,6 +68,26 @@ async function getStudentByUserId(userId) {
     });
 }
 
+// Function to get student ID from userID
+async function getUserIdByStudentId(studentId) {
+    return new Promise((resolve, reject) => {
+        db.query(
+            "SELECT userid FROM students WHERE studentid = ?", 
+            [studentId],
+            (err, studentResults) => {
+                if (err) {
+                    console.error("Error retrieving student ID:", err);
+                    return reject(err);
+                }
+                if (!studentResults.length) {
+                    return resolve(null); // No student found
+                }
+                resolve(studentResults[0]);
+            }
+        );
+    });
+}
+
 async function saveMood(studentId, mood) {
     try {
         return new Promise((resolve, reject) => {
@@ -401,4 +421,4 @@ async function getTeacherbyUserId(userId) {
 module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
     getCounselorbyStudentId,getCounselorByUserId, getMessagesBetweenUsers, getStudentsByCounselorID, getTeacherbyUserId, 
-    saveMessage, getStudentsByTeacherId };
+    saveMessage, getStudentsByTeacherId, getUserIdByStudentId };

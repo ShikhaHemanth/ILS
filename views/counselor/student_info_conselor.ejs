@@ -320,7 +320,25 @@
                 messages.forEach(msg => {
                     const msgElement = document.createElement("div");
                     const isFromYou = msg.senderId == senderId;
-                    msgElement.textContent = `${isFromYou ? 'You' : 'Them'}: ${msg.content}`;
+                    msgElement.textContent = msg.content;
+                    msgElement.style.margin = "5px";
+                    msgElement.style.padding = "8px 12px";
+                    msgElement.style.borderRadius = "10px";
+                    msgElement.style.maxWidth = "70%";
+                    msgElement.style.display = "inline-block";
+
+                    if (isFromYou) {
+                        msgElement.style.backgroundColor = "#dcf8c6"; // Light green bubble
+                        msgElement.style.alignSelf = "flex-end";
+                        msgElement.style.textAlign = "right";
+                        msgElement.style.marginLeft = "auto";
+                    } else {
+                        msgElement.style.backgroundColor = "#f1f0f0"; // Gray bubble
+                        msgElement.style.alignSelf = "flex-start";
+                        msgElement.style.textAlign = "left";
+                        msgElement.style.marginRight = "auto";
+                    }
+
                     chatMessages.appendChild(msgElement);
                 });
             } catch (error) {

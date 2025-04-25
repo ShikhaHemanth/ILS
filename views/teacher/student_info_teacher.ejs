@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <link rel="stylesheet" href="/student/css/header.css">
+  <script src="/socket.io/socket.io.js"></script>
   <style>
     body {
       background-color: #f8f9fa;
@@ -213,7 +214,7 @@
     <div class="content">
       <!-- Left Section -->
       <div class="left-section">
-        <p class="sections-label">Student: <%= studentname %></p>
+        <p class="sections-label">Student: <%= student.name %></p>
 
         <!-- Submitted Assignments Section -->
         <div class="submitted-assignments">
@@ -249,12 +250,12 @@
   </div>
   <div id="chat-modal">
     <div style="display: flex; border-bottom: 1px solid #ccc;">
-        <button id="tab-student" class="chat-tab">Students</button>
-        <button id="tab-teacher" class="chat-tab">Teachers</button>
+        <button id="tab-student" class="chat-tab">Student</button>
+        <button id="tab-counselor" class="chat-tab">Counselor</button>
         <button id="close-chat" class="material-icons" style="font-size: 20px; ">close</button>
     </div>
     <div id="chat-contacts"></div>
-    <div id="chat-box" data-receiver-id="123" data-receiver-role="teacher"></div>
+    <div id="chat-box" data-receiver-id="123" data-receiver-role="student"></div>
     <form id="chat-form">
         <input type="text" id="chat-input" placeholder="Type a message..." />
         <button type="submit" style="padding: 5px 10px;" id="sendButton">Send</button>
@@ -263,6 +264,150 @@
 
   <!-- Scripts -->
   <script>
+    localStorage.setItem("userID", "<%= userId %>")
+    document.addEventListener("DOMContentLoaded", function() {
+        const chatIcon = document.getElementById("chat-launcher");
+        const chatModal = document.getElementById("chat-modal");
+        const closeChat = document.getElementById("close-chat");
+
+        localStorage.setItem('student', '<%- JSON.stringify(student) %>');
+        localStorage.setItem('counselor', '<%- JSON.stringify(counselor) %>');
+        const studentContact = JSON.parse(localStorage.getItem('student'));
+        const counselorContact = JSON.parse(localStorage.getItem('counselor'));
+        const senderId = localStorage.getItem('userID');
+
+        chatIcon.addEventListener("click", () => {
+            chatModal.classList.toggle("show");
+            loadContacts("student"); // default to student
+            setActiveTab("tab-student");
+        });
+
+        closeChat.addEventListener("click", () => {
+            chatModal.style.display = "none";
+        });
+
+        document.getElementById("tab-student").addEventListener("click", () => {
+            loadContacts("student");
+            setActiveTab("tab-student");
+        });
+
+        document.getElementById("tab-counselor").addEventListener("click", () => {
+            loadContacts("counselor");
+            setActiveTab("tab-counselor");
+        });
+
+        function setActiveTab(tabId) {
+            document.querySelectorAll(".chat-tab").forEach(tab => tab.style.background = "#f1f1f1");
+            document.getElementById(tabId).style.background = "#fff";
+        }
+
+        function loadContacts(type) {
+            const contact = type === "student" ? studentContact : counselorContact[0];
+            const container = document.getElementById("chat-contacts");
+
+            container.innerHTML = ""; // Clear previous list
+
+            const button = document.createElement("button");
+            button.textContent = contact.name || contact.counselorName;
+            button.classList.add("contact-button");
+            button.style.display = "block";
+            button.style.marginBottom = "5px";
+            button.style.padding = "8px";
+            button.style.borderRadius = "5px";
+            button.style.border = "1px solid #ccc";
+            button.style.backgroundColor = "#f9f9f9";
+            button.style.cursor = "pointer";
+
+            button.addEventListener("click", () => {
+                openChat(contact, type);
+            });
+
+            container.appendChild(button);
+        }
+        
+
+        function openChat(contact, type) {
+            const chatBox = document.getElementById("chat-box");
+            const contactName = contact.name || contact.counselorName;
+
+            chatBox.innerHTML = `
+                <div style="margin-bottom: 10px; font-weight: bold;">
+                    Chat with ${contactName}
+                </div>
+                <div id="chat-messages" style="height: 250px; overflow-y: auto; border: 1px solid #ddd; padding: 5px; margin-bottom: 10px;"></div>
+            `;
+
+            chatBox.dataset.receiverId = contact.userID || contact.userid;
+            chatBox.dataset.receiverRole = type;
+
+            // Call function to load previous messages
+            loadPreviousMessages(contact.userID || contact.userid, type);
+        }
+
+        async function loadPreviousMessages(receiverId) {
+            try {
+                const senderId = localStorage.getItem('userID');
+                const response = await fetch('/getPreviousMessages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        senderId:senderId,
+                        receiverId: receiverId
+                    })
+                });
+
+                const messages = await response.json();
+                const chatMessages = document.getElementById("chat-messages");
+                // Clear existing messages if any
+                chatMessages.innerHTML = "";
+                // Display each message
+                messages.forEach(msg => {
+                    const msgElement = document.createElement("div");
+                    const isFromYou = msg.senderId == senderId;
+                    msgElement.textContent = `${isFromYou ? 'You' : 'Them'}: ${msg.content}`;
+                    chatMessages.appendChild(msgElement);
+                });
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+
+        const socket = io();
+        const sendButton = document.getElementById("sendButton");
+        const messageInput = document.getElementById("chat-input");
+
+        sendButton.addEventListener("click", (e) => {
+            e.preventDefault(); // Prevent form submission
+            const message = messageInput.value.trim();
+            if (message !== "") {
+                const chatBox = document.getElementById("chat-box");
+                const receiverId = chatBox.dataset.receiverId;
+
+                const messageData = {
+                    senderId,
+                    receiverId,
+                    content: message
+                };
+
+                socket.emit("send_message", messageData);
+                messageInput.value = "";
+            }
+        });
+
+        socket.on("receive_message", (data) => {
+            const chatBox = document.getElementById("chat-messages");
+            const msgElement = document.createElement("div");
+
+            // Append received message to chat window
+            msgElement.textContent = `${data.senderId === senderId ? 'You' : 'Them'}: ${data.content}`;
+            chatBox.appendChild(msgElement);
+
+            // Scroll to the latest message
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    });
     document.getElementById("my-sections").addEventListener("click", () => window.location.href="/teacher_dashboard");
     document.getElementById("uploads").addEventListener("click", () => window.location.href="/teacher_dashboard/uploads");
     document.getElementById("reminders").addEventListener("click", () => window.location.href="/teacher_dashboard/reminders");
