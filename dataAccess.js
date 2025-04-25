@@ -260,6 +260,62 @@ async function getCounselorbyStudentId(studentId) {
     }
 }
 
+// Aryas worspace
+async function getStudentsbyTeacherId(teacherId) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT c.counselorID, u.name AS counselorName
+                FROM Students s
+                JOIN Counselors c ON s.counselorID = c.counselorID
+                JOIN Users u ON c.userID = u.userID
+                WHERE s.studentID = ?
+            `;
+            db.query(query, [teacherId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching counselor for student:", error);
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    } catch (error) {
+        console.error("Error in getCounselorsbyStudentId:", error);
+        throw error;
+    }
+}
+
+async function getTeacherIdbyUserId(userId) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT c.counselorID, u.name AS counselorName
+                FROM Students s
+                JOIN Counselors c ON s.counselorID = c.counselorID
+                JOIN Users u ON c.userID = u.userID
+                WHERE s.studentID = ?
+            `;
+            db.query(query, [teacherId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching counselor for student:", error);
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    } catch (error) {
+        console.error("Error in getCounselorsbyStudentId:", error);
+        throw error;
+    }
+}
+
+// Sakshi workspace
+
+
+
 module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
     getCounselorbyStudentId };
+module.exports = { getTeacherIdbyUserId, getStudentsbyTeacherId};
+
+module.exports = { getCounselorbyStudentId};
