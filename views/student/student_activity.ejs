@@ -30,13 +30,15 @@
             padding-top: 20px;
         }
         .task-card {
+            font-size: 20px; /* Adjust text size */
             background: #a7c7e7;
             padding: 30px;
             border-radius: 8px;
-            color: white;
-            flex: 0.3;
+            color: rgb(0, 0, 0);
+            flex: 1; /* Allows the card to expand flexibly within its container */
             margin-top: 30px;
-            width: 500px;
+            width: 80%; /* Increased width */
+            box-sizing: border-box; /* Ensures padding doesn't affect width calculation */
         }
         .task-card a {
             color: white;
@@ -46,6 +48,30 @@
         .task-card a:hover {
             text-decoration: underline;
         }
+
+        .whiteboard-launch {
+            margin: 0; /* Reset margin */
+            align-self: flex-start; /* Align with top of task card */
+        }
+
+        .whiteboard-launch .btn-primary {
+            background-color: #29649f; /* Matches the header and task card theme */
+            border: none; /* Removes border for a cleaner look */
+            border-radius: 5px; /* Rounded corners */
+            padding: 10px 20px; /* Adds comfortable spacing */
+            font-size: 16px; /* Adjusts font size */
+            font-weight: bold; /* Makes the text stand out */
+            color: white; /* Text color */
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow */
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
+        }
+
+        .whiteboard-launch .btn-primary:hover {
+            background-color: #86add9; /* Slightly darker shade on hover */
+            transform: scale(1.05); /* Enlarges button slightly when hovered */
+            cursor: pointer; /* Changes cursor to a pointer */
+        }
+
     </style>
 </head>
 <body>
@@ -69,20 +95,24 @@
         <div class="content">
             <div class="left-section">
                 <h2><i>Activity!</i></h2>
-
-                <!-- Whiteboard Button -->
-                <div id="openWhiteboard" class="whiteboard-launch" style="text-align: right; margin-bottom: 10px;">
-                    <button class="btn btn-primary">Open Whiteboard</button>
-                </div>
-                
-
-                <div class="task-card">
-                    <h3><%= assignment.title %></h3>
-                    <p><%= assignment.description %></p>
+            
+                <div class="task-container">
+                    <div class="task-card">
+                        <img src="/graphics/welcome.png" alt="Assignment Image" style="width: 350px; height: auto;">
+                        <p><br> Hello! Welcome to your first day of classes. Let's start with something fun.<br>
+                            <br>1. Tell me about yourself. Where you are from, your hobbies and your favourite cartoon.<br>
+                            2. Can you draw or colour a picture of your favourite cartoon?<br>
+                            3. You can start of by trying out the Whiteboard: Your Creative Space.
+                        </p>
+                    </div>
+            
+                    <!-- Whiteboard Button now inline with task-card -->
+                    <div id="openWhiteboard" class="whiteboard-launch">
+                        <button class="btn btn-primary">Whiteboard: Your Creative Space</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+            
     <script>
         function handlePageShow(event) {
             if (event.persisted) {

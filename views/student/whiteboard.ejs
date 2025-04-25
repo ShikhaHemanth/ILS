@@ -71,9 +71,29 @@
       color: #000000;
       border: 2px solid #000000;
     }
+
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: #1e3a8a;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: #163169;
+    }
+
   </style>
 </head>
 <body>
+  <button class="back-button" onclick="history.back()">← Back</button>
   <h1>Your Creative Space!</h1>
   <div class="container">
     <div class="color-picker">
