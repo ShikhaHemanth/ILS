@@ -225,12 +225,15 @@
             }
 
             function loadContacts(type) {
-                const contacts = type === "teacher" ? teacherContacts : counselorContacts;
+                const contactList = type === "teacher" ? teacherContacts : counselorContacts;
                 const container = document.getElementById("chat-contacts");
 
                 container.innerHTML = ""; // Clear previous list
 
-                contacts.forEach(contact => {
+                // Handle both single object and array
+                const contacts = Array.isArray(contactList) ? contactList : [contactList];
+
+                contacts.forEach((contact, index) => {
                     const button = document.createElement("button");
                     button.textContent = contact.teacherName || contact.counselorName;
                     button.classList.add("contact-button");
@@ -247,6 +250,11 @@
                     });
 
                     container.appendChild(button);
+
+                    // Auto-open first contact's chat
+                    if (index === 0) {
+                        openChat(contact, type);
+                    }
                 });
             }
             
@@ -291,8 +299,26 @@
                     messages.forEach(msg => {
                         const msgElement = document.createElement("div");
                         const isFromYou = msg.senderId == senderId;
-                        msgElement.textContent = `${isFromYou ? 'You' : 'Them'}: ${msg.content}`;
+                        msgElement.textContent = msg.content;
+                        msgElement.style.margin = "5px";
+                        msgElement.style.padding = "8px 12px";
+                        msgElement.style.borderRadius = "10px";
+                        msgElement.style.maxWidth = "70%";
+                        msgElement.style.display = "inline-block";
+
+                        if (isFromYou) {
+                            msgElement.style.backgroundColor = "#d4f7dc"; // Light green bubble
+                            msgElement.style.alignSelf = "flex-end";
+                            msgElement.style.textAlign = "right";
+                            msgElement.style.marginLeft = "auto";
+                        } else {
+                            msgElement.style.backgroundColor = "#f1f0f0"; // Gray bubble
+                            msgElement.style.alignSelf = "flex-start";
+                            msgElement.style.textAlign = "left";
+                            msgElement.style.marginRight = "auto";
+                        }
                         chatMessages.appendChild(msgElement);
+                
                     });
                 } catch (error) {
                     console.error('Error loading messages:', error);
@@ -324,15 +350,31 @@
             });
 
             socket.on("receive_message", (data) => {
-                const chatBox = document.getElementById("chat-messages");
+                const chatMessages = document.getElementById("chat-messages");
                 const msgElement = document.createElement("div");
 
-                // Append received message to chat window
-                msgElement.textContent = `${data.senderId === senderId ? 'You' : 'Them'}: ${data.content}`;
-                chatBox.appendChild(msgElement);
+                const isFromYou = data.senderId == senderId;
+                msgElement.textContent = data.content;
+                msgElement.style.margin = "5px";
+                msgElement.style.padding = "8px 12px";
+                msgElement.style.borderRadius = "10px";
+                msgElement.style.maxWidth = "70%";
+                msgElement.style.display = "inline-block";
 
-                // Scroll to the latest message
-                chatBox.scrollTop = chatBox.scrollHeight;
+                if (isFromYou) {
+                    msgElement.style.backgroundColor = "#d4f7dc"; // Light green bubble
+                    msgElement.style.alignSelf = "flex-end";
+                    msgElement.style.textAlign = "right";
+                    msgElement.style.marginLeft = "auto";
+                } else {
+                    msgElement.style.backgroundColor = "#f1f0f0"; // Gray bubble
+                    msgElement.style.alignSelf = "flex-start";
+                    msgElement.style.textAlign = "left";
+                    msgElement.style.marginRight = "auto";
+                }
+
+                chatMessages.appendChild(msgElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             });
         });
 

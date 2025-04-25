@@ -10,7 +10,7 @@ const { loginUser } = require('./businessLogic');
 const { getMessagesBetweenUsers, connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, 
     getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, getStudentByUserId, saveMood, getTeachersbyStudentId, 
     getCounselorbyStudentId, saveMessage, getStudentsByTeacherId, getTeacherbyUserId, getCounselorByUserId,
-    getStudentsByCounselorID, getUserIdByStudentId } = require('./dataAccess');
+    getStudentsByCounselorID, getUserIdByStudentId, getParentByUserId, getStudentsByParentId } = require('./dataAccess');
 
 // Set up multer to store files in uploads folder
 const storage = multer.diskStorage({
@@ -317,32 +317,49 @@ async function startServer() {
         }
     });    
     
-    app.get('/parent_dashboard', isAuthenticated, (req, res) => res.render('parent/parent_dashboard'));
+    app.get('/parent_dashboard', async (req, res) => {
+        // console.log("ROUTE HIT");
+        if (!req.session.userID) {
+            return res.redirect('/login'); // Ensure user is logged in
+        }
+
+        try {
+            const userID = req.session.userID;
+            const parent = await getParentByUserId(userID);
+            console.log(parent.name)
+            const students = await getStudentsByParentId(parent.parentId);
+            console.log(students)
+            res.render('parent/parent_dashboard', { students, parent });
+        } catch (error) {
+            console.error("Error loading parent dashboard:", error);
+            res.status(500).send("Error loading dashboard");
+        }
+    });
 
     app.get('/student/whiteboard', (req, res) => {
         res.render('student/whiteboard'); // assuming whiteboard.ejs exists in views/student
     });
 
-    // app.get('/student_dashboard/:subjectName/activity/feedback', isAuthenticated, async (req, res) => {
-    //     const userID = req.session.userID; // assuming student is logged in
-    //     const subjectName = req.params.subjectName;
-    //     try {
-    //         const studentID = await getStudentByUserId(userID);
-    //             if (!studentID) {
-    //                 console.log("No student found for userID:", userID);
-    //                 return [];
-    //             }
-    //         const assignments = await getAssignmentsForStudent(studentID);
-    //         const filteredAssignments = assignments.filter(a =>
-    //             a.subjectName.toLowerCase() === subjectName.toLowerCase()
-    //         );
-    //         const submissions = await getSubmissionsByStudent(userID);
-    //         res.render('student/student_submission', { subjectName, assignments: filteredAssignments, submissions });
-    //     } catch (error) {
-    //         console.error(error);
-    //         res.status(500).send('Error loading submission dashboard');
-    //     }
-    // })
+    app.get('/student_dashboard/:subjectName/activity/feedback', isAuthenticated, async (req, res) => {
+        const userID = req.session.userID; // assuming student is logged in
+        const subjectName = req.params.subjectName;
+        try {
+            const studentID = await getStudentByUserId(userID);
+                if (!studentID) {
+                    console.log("No student found for userID:", userID);
+                    return [];
+                }
+            const assignments = await getAssignmentsForStudent(studentID);
+            const filteredAssignments = assignments.filter(a =>
+                a.subjectName.toLowerCase() === subjectName.toLowerCase()
+            );
+            const submissions = await getSubmissionsByStudent(userID);
+            res.render('student/student_submission', { subjectName, assignments: filteredAssignments, submissions });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Error loading submission dashboard');
+        }
+    })
 
     // Protected Route
     app.get('/teacher_dashboard', isAuthenticated, async (req, res) => {

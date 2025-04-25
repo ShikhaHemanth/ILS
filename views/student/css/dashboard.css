@@ -300,3 +300,7 @@ body {
 #chat-modal.show {
     display: block;
 }
+#chat-messages {
+    display: flex;
+    flex-direction: column;
+  }

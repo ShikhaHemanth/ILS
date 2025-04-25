@@ -169,6 +169,10 @@
     #chat-modal.show {
         display: block;
     }
+    #chat-messages {
+      display: flex;
+      flex-direction: column;
+    }
   </style>
 </head>
 <body>
@@ -254,29 +258,37 @@
         }
 
         function loadContacts(type) {
-            const contacts = type === "student" ? [studentContact] : teacherContacts;
-            const container = document.getElementById("chat-contacts");
+          const contactList = type === "student" ? studentContact : teacherContacts;
+          const container = document.getElementById("chat-contacts");
 
-            container.innerHTML = ""; // Clear previous list
+          container.innerHTML = ""; // Clear previous list
 
-            contacts.forEach(contact => {
-                const button = document.createElement("button");
-                button.textContent = contact.name || contact.teacherName;
-                button.classList.add("contact-button");
-                button.style.display = "block";
-                button.style.marginBottom = "5px";
-                button.style.padding = "8px";
-                button.style.borderRadius = "5px";
-                button.style.border = "1px solid #ccc";
-                button.style.backgroundColor = "#f9f9f9";
-                button.style.cursor = "pointer";
+          // Handle both single object and array
+          const contacts = Array.isArray(contactList) ? contactList : [contactList];
 
-                button.addEventListener("click", () => {
-                    openChat(contact, type);
-                });
+          contacts.forEach((contact, index) => {
+              const button = document.createElement("button");
+              button.textContent = contact.name || contact.teacherName;
+              button.classList.add("contact-button");
+              button.style.display = "block";
+              button.style.marginBottom = "5px";
+              button.style.padding = "8px";
+              button.style.borderRadius = "5px";
+              button.style.border = "1px solid #ccc";
+              button.style.backgroundColor = "#f9f9f9";
+              button.style.cursor = "pointer";
 
-                container.appendChild(button);
-            });
+              button.addEventListener("click", () => {
+                  openChat(contact, type);
+              });
+
+              container.appendChild(button);
+
+              // Auto-open first contact's chat
+              if (index === 0) {
+                  openChat(contact, type);
+              }
+          });
         }
         
 
@@ -328,7 +340,7 @@
                     msgElement.style.display = "inline-block";
 
                     if (isFromYou) {
-                        msgElement.style.backgroundColor = "#dcf8c6"; // Light green bubble
+                        msgElement.style.backgroundColor = "#d4f7dc"; // Light green bubble
                         msgElement.style.alignSelf = "flex-end";
                         msgElement.style.textAlign = "right";
                         msgElement.style.marginLeft = "auto";
@@ -369,15 +381,22 @@
         });
 
         socket.on("receive_message", (data) => {
-            const chatBox = document.getElementById("chat-messages");
-            const msgElement = document.createElement("div");
+          const chatMessages = document.getElementById("chat-messages");
+          const msgElement = document.createElement("div");
 
-            // Append received message to chat window
-            msgElement.textContent = `${data.senderId === senderId ? 'You' : 'Them'}: ${data.content}`;
-            chatBox.appendChild(msgElement);
+          const isFromYou = data.senderId === senderId;
+          msgElement.classList.add("message");
+          msgElement.style.margin = "5px 0";
+          msgElement.style.padding = "8px";
+          msgElement.style.borderRadius = "10px";
+          msgElement.style.maxWidth = "60%";
+          msgElement.style.wordWrap = "break-word";
+          msgElement.style.backgroundColor = isFromYou ? "#d4f7dc" : "#f0f0f0"; // green or gray
+          msgElement.style.alignSelf = isFromYou ? "flex-end" : "flex-start";
+          msgElement.textContent = `${data.content}`;
 
-            // Scroll to the latest message
-            chatBox.scrollTop = chatBox.scrollHeight;
+          chatMessages.appendChild(msgElement);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
         });
     });
 
