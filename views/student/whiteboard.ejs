@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interactive Whiteboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #1e3a8a;
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+    }
+    .container {
+      display: flex;
+      align-items: flex-start;
+    }
+    canvas {
+      border: 3px solid #1e3a8a;
+      background-color: white;
+      margin-left: 20px;
+    }
+    .color-picker {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    button {
+      width: 100px;
+      height: 50px;
+      margin: 10px 0;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      opacity: 0.8;
+    }
+    button:focus {
+      outline: none;
+    }
+    #blue {
+      background-color: #4682B4;
+      color: white;
+    }
+    #black {
+      background-color: #000000;
+      color: white;
+    }
+    #green {
+      background-color: #90EE90; /* Light Green */
+      color: #000000;
+    }
+    #clear {
+      background-color: #FFA500;
+      color: #000000;
+    }
+    #rectangle, #square, #circle {
+      background-color: white;
+      color: #000000;
+      border: 2px solid #000000;
+    }
+  </style>
+</head>
+<body>
+  <h1>Your Creative Space!</h1>
+  <div class="container">
+    <div class="color-picker">
+      <button id="blue" onclick="setColor('#4682B4')">Blue</button>
+      <button id="black" onclick="setColor('#000000')">Black</button>
+      <button id="green" onclick="setColor('#90EE90')">Green</button>
+      <button id="clear" onclick="clearCanvas()">Clear</button>
+      <button id="rectangle" onclick="selectShape('rectangle')">Rectangle</button>
+      <button id="square" onclick="selectShape('square')">Square</button>
+      <button id="circle" onclick="selectShape('circle')">Circle</button>
+    </div>
+    <canvas id="whiteboard" width="800" height="600"></canvas>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('whiteboard');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let currentColor = '#4682B4';
+    let currentShape = null;
+    let startX, startY, endX, endY;
+    let drawings = [];
+
+    canvas.addEventListener('mousedown', (e) => {
+      drawing = true;
+      startX = e.clientX - canvas.offsetLeft;
+      startY = e.clientY - canvas.offsetTop;
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!drawing) return;
+      endX = e.clientX - canvas.offsetLeft;
+      endY = e.clientY - canvas.offsetTop;
+      redraw();
+      if (currentShape === null) {
+        drawLine(startX, startY, endX, endY);
+        startX = endX;
+        startY = endY;
+      } else {
+        drawShape(startX, startY, endX, endY);
+      }
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      drawing = false;
+      if (currentShape === null) return;
+      saveDrawing(currentShape, startX, startY, endX, endY, '#000000');
+      currentShape = null;
+    });
+
+    function drawLine(x1, y1, x2, y2) {
+      ctx.strokeStyle = currentColor;
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      drawings.push({ type: 'line', x1, y1, x2, y2, color: currentColor });
+    }
+
+    function selectShape(shape) {
+      currentShape = shape;
+    }
+
+    function drawShape(x1, y1, x2, y2) {
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 5;
+      if (currentShape === 'rectangle') {
+        ctx.beginPath();
+        ctx.rect(x1, y1, x2 - x1, y2 - y1);
+        ctx.stroke();
+      } else if (currentShape === 'square') {
+        const size = Math.min(Math.abs(x2 - x1), Math.abs(y2 - y1));
+        ctx.beginPath();
+        ctx.rect(x1, y1, size, size);
+        ctx.stroke();
+      } else if (currentShape === 'circle') {
+        const radius = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)) / 2;
+        const centerX = (x1 + x2) / 2;
+        const centerY = (y1 + y2) / 2;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+
+    function saveDrawing(type, x1, y1, x2, y2, color) {
+      drawings.push({ type, x1, y1, x2, y2, color });
+    }
+
+    function redraw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawings.forEach((drawing) => {
+        ctx.strokeStyle = drawing.color;
+        ctx.lineWidth = 5;
+        if (drawing.type === 'line') {
+          ctx.beginPath();
+          ctx.moveTo(drawing.x1, drawing.y1);
+          ctx.lineTo(drawing.x2, drawing.y2);
+          ctx.stroke();
+        } else if (drawing.type === 'rectangle') {
+          ctx.beginPath();
+          ctx.rect(drawing.x1, drawing.y1, drawing.x2 - drawing.x1, drawing.y2 - drawing.y1);
+          ctx.stroke();
+        } else if (drawing.type === 'square') {
+          const size = Math.min(Math.abs(drawing.x2 - drawing.x1), Math.abs(drawing.y2 - drawing.y1));
+          ctx.beginPath();
+          ctx.rect(drawing.x1, drawing.y1, size, size);
+          ctx.stroke();
+        } else if (drawing.type === 'circle') {
+          const centerX = (drawing.x1 + drawing.x2) / 2;
+          const centerY = (drawing.y1 + drawing.y2) / 2;
+          const radius = Math.sqrt(Math.pow(drawing.x2 - drawing.x1, 2) + Math.pow(drawing.y2 - drawing.y1, 2)) / 2;
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      });
+    }
+
+    function setColor(color) {
+      currentColor = color;
+      currentShape = null;
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawings = [];
+    }
+  </script>
+</body>
+</html>

@@ -9,7 +9,7 @@ const { encryptPasswords } = require('./encrypt');
 const { loginUser } = require('./businessLogic');
 const { getMessagesBetweenUsers, connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, 
     getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, getStudentByUserId, saveMood, getTeachersbyStudentId, 
-    getCounselorbyStudentId, saveMessage, getStudentsByTeacherId, getTeacherbyUserId, getCounselorByUserId, 
+    getCounselorbyStudentId, saveMessage, getStudentsByTeacherId, getTeacherbyUserId, getCounselorByUserId, getCounselorIDByUserID,
     getStudentsByCounselorID } = require('./dataAccess');
 
 // Set up multer to store files in uploads folder
@@ -124,6 +124,28 @@ async function startServer() {
             res.status(500).send('Error fetching messages');
         }
     });
+    //sakshi
+
+    app.get('/counselor/counselor_dashboard', async (req, res) => {
+        try {
+            const userID = req.session.userID;
+            const counselorID = await getCounselorIDByUserID(userID);
+    
+            if (!counselorID) {
+                return res.status(404).send('Counselor not found');
+            }
+    
+            const students = await getStudentsByCounselorID(counselorID);
+            console.log("Students fetched:", students); // Check the structure of students
+    
+            res.render('counselor/counselor_dashboard', { students });
+
+        } catch (error) {
+            console.error("Error retrieving counselor's students:", error);
+            res.status(500).send('Internal Server Error');
+        }
+    });
+    
 
     // Protected Route
     app.get('/student_dashboard', isAuthenticated, async(req, res) => {
@@ -297,6 +319,10 @@ async function startServer() {
     
     app.get('/parent_dashboard', isAuthenticated, (req, res) => res.render('parent/parent_dashboard'));
 
+    app.get('/student/whiteboard', (req, res) => {
+        res.render('student/whiteboard'); // assuming whiteboard.ejs exists in views/student
+    });
+
     // app.get('/student_dashboard/:subjectName/activity/feedback', isAuthenticated, async (req, res) => {
     //     const userID = req.session.userID; // assuming student is logged in
     //     const subjectName = req.params.subjectName;
@@ -334,19 +360,7 @@ async function startServer() {
             res.status(500).send("Error loading dashboard");
         }
     });
-
-// Sakshis workspace 
-
-// app.get('/counselor_dashboard', isAuthenticated, (req, res) => {
-//     if (!req.session.userID) {
-//         return res.redirect('/login'); // Ensure user is logged in
-//     }
-//     const userID = req.session.userID; // Get student ID from session
-    
-//     res.render('counselor/counselor_dashboard')
-// });
-
-
+      
     // Connect to database and start server
     try {
         // Attempt to connect to the database before starting the server
@@ -371,7 +385,6 @@ async function startServer() {
         res.render('counselor/counselor_dashboard')
     });
 }
-
 
 // Run setup before starting the server
 setup();
