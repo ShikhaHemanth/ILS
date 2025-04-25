@@ -37,7 +37,7 @@ async function getUserByEmail(email) {
 
 async function getUserByUserId(userID) {
     return new Promise((resolve, reject) => {
-        const query = 'SELECT email, name, role FROM Users WHERE userID = ?';
+        const query = 'SELECT userID, email, name, role FROM Users WHERE userID = ?';
         db.query(query, [userID], (error, results) => {
             if (error) {
                 console.error("Error retrieving user:", error);
@@ -63,6 +63,26 @@ async function getStudentByUserId(userId) {
                     return resolve(null); // No student found
                 }
                 resolve(studentResults[0].studentid);
+            }
+        );
+    });
+}
+
+// Function to get student ID from userID
+async function getUserIdByStudentId(studentId) {
+    return new Promise((resolve, reject) => {
+        db.query(
+            "SELECT userid FROM students WHERE studentid = ?", 
+            [studentId],
+            (err, studentResults) => {
+                if (err) {
+                    console.error("Error retrieving student ID:", err);
+                    return reject(err);
+                }
+                if (!studentResults.length) {
+                    return resolve(null); // No student found
+                }
+                resolve(studentResults[0]);
             }
         );
     });
@@ -304,30 +324,6 @@ async function getStudentsByTeacherId(teacherId) {
         throw error;
     }
 }
-async function getCounselors(teacherId) {
-    try {
-        return new Promise((resolve, reject) => {
-            const query = `
-                SELECT s.studentID, u.name AS studentName
-                FROM Student_Teachers st
-                JOIN Students s ON st.studentID = s.studentID
-                JOIN Users u ON s.userID = u.userID
-                WHERE st.teacherID = ?
-            `;
-
-            db.query(query, [teacherId], (error, results) => {
-                if (error) {
-                    console.error("Error fetching students for teacher:", error);
-                }
-                resolve(results); // Resolve with counselor data
-            });
-        });
-    } catch (error) {
-        console.error("Error in getStudentsByTeacherId:", error);
-        throw error;
-    }
-}
-
 
 async function getCounselorByUserId(userID) {
     try{ 
@@ -398,6 +394,55 @@ async function getTeacherbyUserId(userId) {
     }
 }
 
+async function getParentByUserId(userId) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT p.parentId, u.name
+                FROM parents p
+                JOIN users u ON p.userId = u.userId
+                WHERE u.userId = ?
+            `;
+            db.query(query, [userId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching parentId for parent:", error);
+                    return reject(error);
+                }
+                // console.log(results)
+                resolve(results[0]);
+            });
+        });
+    } catch (error) {
+        console.error("Error in getParentByUserId:", error);
+        throw error;
+    }
+}
+
+async function getStudentsByParentId(parentId) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT s.studentID, u.name
+                FROM Students s
+                JOIN Users u ON s.userID = u.userID
+                JOIN parents p ON s.StudentID = p.StudentID
+                WHERE p.parentID = ?
+            `;
+            db.query(query, [parentId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching students for parent:", error);
+                    return reject(error);
+                }
+                resolve(results[0]);
+            });
+        });
+    } catch (error) {
+        console.error("Error in getStudentsByParentId:", error);
+        throw error;
+    }
+}
+
 module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
-    getCounselorbyStudentId,getCounselorByUserId, getMessagesBetweenUsers, getStudentsByCounselorID, getTeacherbyUserId, saveMessage, getStudentsByTeacherId };
+    getCounselorbyStudentId,getCounselorByUserId, getMessagesBetweenUsers, getStudentsByCounselorID, getTeacherbyUserId, 
+    saveMessage, getStudentsByTeacherId, getUserIdByStudentId, getParentByUserId, getStudentsByParentId };

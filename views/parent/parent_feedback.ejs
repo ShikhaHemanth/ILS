@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Parent Feedback</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      background-color: #f8f9fa;
+      margin: 0;
+      height: 100vh;
+    }
+    .dashboard {
+      background: white;
+      height: 100%;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, .1);
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #a7c7e7;
+      height: 60px;
+      padding: 0 12px;
+      font-size: 20px;
+      border-radius: 8px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 40px;
+    }
+    .nav-links div {
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .nav-links .active {
+      background: #bfd6ed;
+    }
+    .content {
+      padding: 30px;
+    }
+    .feedback-card {
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 20px;
+      background-color: #f0f9ff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .05);
+      margin-bottom: 20px;
+    }
+    .feedback-card h5 {
+      color: #1e3a8a;
+      margin-bottom: 10px;
+    }
+    .feedback-card p {
+      margin: 0;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: inherit;
+    }
+    .nav-links a:hover {
+      text-decoration: none;
+      color: inherit;
+    }
+    
+</style>
+</head>
+<body>
+  <div class="dashboard container-fluid">
+    <!-- Header -->
+    <div class="header">
+      <button class="btn btn-light" id="back">&#8592;</button>
+      <div class="nav-links">
+        <div id="my-sections"><a href= "/parent_dashboard">Dashboard</a></div>
+        <div id="uploads" class="active inactive-link"><a href="#">Feedback</a></div>
+      </div>
+      <div class="dropdown">
+        <button class="btn btn-light dropdown-toggle" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">⚙️</button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
+          <li><a class="dropdown-item" href="#" id="logout">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+      <h4 class="mb-4">📋 Teacher Feedback on Assignments</h4>
+
+      <!-- Feedback Cards -->
+      <div class="feedback-card">
+        <h5>Math Assignment 1</h5>
+        <p><strong>Feedback:</strong> Great effort! Try to revise the final problem for accuracy. Keep practicing.</p>
+      </div>
+
+      <div class="feedback-card">
+        <h5>Science Project - Plants</h5>
+        <p><strong>Feedback:</strong> Excellent visuals and research. Encourage deeper explanations in future reports.</p>
+      </div>
+
+      <div class="feedback-card">
+        <h5>English Essay - My Family</h5>
+        <p><strong>Feedback:</strong> Wonderful storytelling! Focus on punctuation in the next assignment.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    document.getElementById("logout").addEventListener("click", () => {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    });
+  </script>
+</body>
+</html>

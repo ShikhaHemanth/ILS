@@ -98,15 +98,29 @@
                 </ul>
             </div>
         </div>
-        <h2><i>Feedback!</i></h2>
-        <div class="feedback-section">
-            <div class="feedback-card">Activity 1</div>
-            <div class="feedback-card feedback-text">Very good work! Understood the concept well.</div>
-            
-            <div class="feedback-card">Activity 2</div>
-            <div class="feedback-card feedback-text"></div>
+
+        <div class="content">
+            <h4 class="mb-4">📋 Teacher Feedback on Assignments</h4>
+      
+            <!-- Feedback Cards -->
+            <div class="feedback-card">
+              <h5>Math Assignment 1</h5>
+              <p><strong>Feedback:</strong> Great effort! Try to revise the final problem for accuracy. Keep practicing.</p>
+            </div>
+      
+            <div class="feedback-card">
+              <h5>Science Project - Plants</h5>
+              <p><strong>Feedback:</strong> Excellent visuals and research. Encourage deeper explanations in future reports.</p>
+            </div>
+      
+            <div class="feedback-card">
+              <h5>English Essay - My Family</h5>
+              <p><strong>Feedback:</strong> Wonderful storytelling! Focus on punctuation in the next assignment.</p>
+            </div>
+      
+          </div>
         </div>
-    </div>
+
 
     <script>
         // Function to handle the pageshow event
@@ -132,7 +146,7 @@
             window.location.href = "/student_dashboard/<%= subjectName %>/activity/submission";
         });
         document.getElementById("feedback").addEventListener("click", function() {
-            window.location.href = "/student_dashboard/feedback";
+            window.location.href = "/student_dashboard/<%= subjectName %>/activity/submission/feedback";
         });
         document.getElementById("back").addEventListener("click", function() {
             window.location.href = "/student_dashboard";

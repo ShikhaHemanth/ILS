@@ -7,6 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="/student/css/header.css">
   <style>
     /* ---------- Global Style (mirrors student dashboard) ---------- */
     body{
@@ -16,45 +17,6 @@
       display:flex;
       flex-direction:column;
     }
-    .dashboard{
-      background:white;
-      width:100%;
-      height:100%;
-      box-shadow:0 4px 10px rgba(0,0,0,.1);
-      display:flex;
-      flex-direction:column;
-    }
-
-    /* ---------- Header ---------- */
-    .header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      background:#a7c7e7; /* same blue strip */
-      height:60px;
-      padding:0 12px;
-      border-radius:8px;
-      font-size:20px;
-    }
-    .header img{
-      height:100%;
-    }
-
-    /* nav links (styled like subject cards header) */
-    .nav-links{
-      display:flex;
-      gap:40px;
-    }
-    .nav-links div{
-      padding:8px 18px;
-      border-radius:8px;
-      font-weight:bold;
-      cursor:pointer;
-      transition:background .3s;
-    }
-    .nav-links div:hover{background:#dbeafe;}
-    .nav-links .active{background:#bfd6ed;}
-
     /* ---------- Main Content Layout ---------- */
     .content{
       display:flex;
@@ -95,17 +57,17 @@
       padding:10px;
       margin:10px;
       transition:transform .3s, box-shadow .3s, background .3s;
+      color:#1E40AF;
+      font-weight:bold;
+      font-size:18px;
     }
     .section-card:hover{
       transform:scale(1.05);
       box-shadow:4px 4px 15px rgba(0,0,0,0.2);
       background:#DBEAFE;
     }
-    .section-card a{
+    a{
       text-decoration:none;
-      color:#1E40AF;
-      font-weight:bold;
-      font-size:18px;
     }
 
     /* wrap cards like student subject list */
@@ -134,78 +96,6 @@
     .form-check label{
       font-size:16px;
     }
-    #chat-launcher {
-    position: fixed;
-    bottom: 30px;
-    right: 10%;
-    cursor: pointer;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-#chat-launcher:hover {
-    box-shadow: 0 8px 16px rgba(28, 28, 28, 0.3);
-    background-color: #f9f9f9;
-    transform: scale(1.1);
-    transition: box-shadow 0.3s ease, background-color 1s ease;
-}
-
-.material-icons {
-    background: transparent;
-    border: none;
-    font-size: 40px;
-    color: #DE6013;
-    cursor: pointer;
-}
-
-#chat-modal {
-    display: none; 
-    position: fixed; 
-    bottom: 80px; 
-    right: 20px; 
-    width: 350px; 
-    height: 500px; 
-    background: #fff; 
-    border: 1px solid #ccc; 
-    border-radius: 10px; 
-    box-shadow: 0 0 10px rgba(0,0,0,0.2); 
-    z-index: 1000;
-}
-.chat-tab {
-    flex: 1; 
-    padding: 10px; 
-    border: none; 
-    background: #f1f1f1;
-}
-#chat-contacts {
-    height: 100px; 
-    overflow-y: auto; 
-    padding: 10px;
-}
-#chat-box {
-    height: 300px; 
-    overflow-y: auto; 
-    padding: 10px; 
-    border-top: 1px solid #eee; 
-    border-bottom: 1px solid #eee;
-}
-#chat-form {
-    display: flex; 
-    padding: 10px;
-}
-#chat-input {
-    flex: 1; 
-    padding: 5px;
-}
-#chat-modal.show {
-    display: block;
-}
   </style>
 </head>
 <body>
@@ -214,11 +104,6 @@
     <div class="header">
       <img src="/graphics/Logo.png" alt="Website Logo" />
       <p class="fw-bold">Counselor Dashboard</p>
-      <!-- <div class="nav-links">
-        <div id="my-sections" class="active">Chat</div>
-        <div id="uploads">Uploads</div>
-        <div id="reminders">Work To Do</div>
-      </div> -->
 
       <div class="dropdown">
         <button class="btn btn-light dropdown-toggle" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">⚙️</button>
@@ -241,9 +126,11 @@
           <ul class="section-card-list">
               <% students.forEach(student => { %>
                   <li>
+                    <a href="/counselor_dashboard/student_info/<%= student.studentID %>">
                       <div class="section-card">
-                          <a href="/counselor_dashboard/student_info/<%= student.studentID %>"><%= student.name %></a>
+                        <%= student.name %>
                       </div>
+                    </a>
                   </li>
               <% }) %>
           </ul>
@@ -257,148 +144,11 @@
         <div class="form-check"><input class="form-check-input" type="checkbox" id="reminder2"><label class="form-check-label" for="reminder2">Upload student progress report</label></div>
         <div class="form-check"><input class="form-check-input" type="checkbox" id="reminder3"><label class="form-check-label" for="reminder3">Schedule parent meeting</label></div>
       </div>
-      <div id="chat-launcher">
-        <span class="material-icons">forum</span>
-      </div>
-      <div id="chat-modal">
-          <div style="display: flex; border-bottom: 1px solid #ccc;">
-              <button id="tab-teacher" class="chat-tab">Teachers</button>
-              <button id="tab-counselor" class="chat-tab">Counselor</button>
-              <button id="close-chat" class="material-icons" style="font-size: 20px; ">close</button>
-          </div>
-          <div id="chat-contacts"></div>
-          <div id="chat-box" data-receiver-id="123" data-receiver-role="teacher"></div>
-          <form id="chat-form">
-              <input type="text" id="chat-input" placeholder="Type a message..." />
-              <button type="submit" style="padding: 5px 10px;" id="sendButton">Send</button>
-          </form>
-      </div>
-    </div>
   </div>
 
   <!-- ---------- Scripts ---------- -->
   <script>
     document.getElementById("logout").addEventListener("click",()=>{localStorage.removeItem("token");window.location.href="/login"});
-    document.addEventListener("DOMContentLoaded", function() {
-      const chatIcon = document.getElementById("chat-launcher");
-      const chatModal = document.getElementById("chat-modal");
-      const closeChat = document.getElementById("close-chat");
-
-      // Local Storage setup (students instead of teachers)
-      localStorage.setItem('students', '<%- JSON.stringify(students) %>'); 
-      const studentContacts = JSON.parse(localStorage.getItem('students'));
-      const senderId = localStorage.getItem('userID');
-
-      chatIcon.addEventListener("click", () => {
-          chatModal.classList.toggle("show");
-          loadContacts(); // Load students by default
-      });
-
-      closeChat.addEventListener("click", () => {
-          chatModal.style.display = "none";
-      });
-
-      function loadContacts() {
-          const contacts = studentContacts;
-          const container = document.getElementById("chat-contacts");
-
-          container.innerHTML = ""; // Clear previous list
-
-          contacts.forEach(contact => {
-              const button = document.createElement("button");
-              button.textContent = contact.studentName;  // Assuming you send studentName
-              button.classList.add("contact-button");
-              button.style.display = "block";
-              button.style.marginBottom = "5px";
-              button.style.padding = "8px";
-              button.style.borderRadius = "5px";
-              button.style.border = "1px solid #ccc";
-              button.style.backgroundColor = "#f9f9f9";
-              button.style.cursor = "pointer";
-
-              button.addEventListener("click", () => {
-                  openChat(contact);
-              });
-
-              container.appendChild(button);
-          });
-      }
-
-      function openChat(contact) {
-          const chatBox = document.getElementById("chat-box");
-          const contactName = contact.studentName;
-
-          chatBox.innerHTML = `
-              <div style="margin-bottom: 10px; font-weight: bold;">
-                  Chat with ${contactName}
-              </div>
-              <div id="chat-messages" style="height: 250px; overflow-y: auto; border: 1px solid #ddd; padding: 5px; margin-bottom: 10px;"></div>
-          `;
-
-          chatBox.dataset.receiverId = contact.userID; // **important** should match DB userID
-          loadPreviousMessages(contact.userID);
-      }
-
-      async function loadPreviousMessages(receiverId) {
-          try {
-              const senderId = localStorage.getItem('userID');
-              const response = await fetch('/getPreviousMessages', {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                      senderId: senderId,
-                      receiverId: receiverId
-                  })
-              });
-
-              const messages = await response.json();
-              const chatMessages = document.getElementById("chat-messages");
-              chatMessages.innerHTML = "";
-
-              messages.forEach(msg => {
-                  const msgElement = document.createElement("div");
-                  const isFromYou = msg.senderId == senderId;
-                  msgElement.textContent = `${isFromYou ? 'You' : 'Them'}: ${msg.content}`;
-                  chatMessages.appendChild(msgElement);
-              });
-          } catch (error) {
-              console.error('Error loading messages:', error);
-          }
-      }
-
-      const socket = io();
-      const sendButton = document.getElementById("sendButton");
-      const messageInput = document.getElementById("chat-input");
-
-      sendButton.addEventListener("click", (e) => {
-          e.preventDefault(); // Prevent page refresh
-          const message = messageInput.value.trim();
-          if (message !== "") {
-              const chatBox = document.getElementById("chat-box");
-              const receiverId = chatBox.dataset.receiverId;
-
-              const messageData = {
-                  senderId,
-                  receiverId,
-                  content: message
-              };
-
-              socket.emit("send_message", messageData);
-              messageInput.value = "";
-          }
-      });
-
-      socket.on("receive_message", (data) => {
-          const chatMessages = document.getElementById("chat-messages");
-          const msgElement = document.createElement("div");
-
-          msgElement.textContent = `${data.senderId == senderId ? 'You' : 'Them'}: ${data.content}`;
-          chatMessages.appendChild(msgElement);
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-      });
-    });
   </script>
 </body>
 </html>
