@@ -260,6 +260,7 @@ async function getCounselorbyStudentId(studentId) {
     }
 }
 
+
 async function saveMessage (senderId, receiverId, content, timestamp) {
     try {
         return new Promise((resolve, reject) => {
@@ -330,6 +331,12 @@ async function getTeacherbyUserId(userId) {
 // Sakshi workspace
 
 
+
+// module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
+//     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId};
+// //module.exports = { getTeacherIdbyUserId, getStudentsbyTeacherId};
+
+// //module.exports = { getCounselorbyStudentId};
 
 module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
