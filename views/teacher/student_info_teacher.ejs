@@ -404,6 +404,7 @@
 
                     chatMessages.appendChild(msgElement);
                 });
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             } catch (error) {
                 console.error('Error loading messages:', error);
             }
