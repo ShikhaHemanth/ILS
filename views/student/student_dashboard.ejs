@@ -5,264 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <!-- Bootstrap Bundle (includes Popper.js) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/student/css/dashboard.css">
+
     <style>
-        body {
-            background-color: #f8f9fa;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .dashboard {
-            background: white;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #a7c7e7;
-            font-size: 20px;
-            height: 60px;
-        }
-        .header img {
-            height: 100%;
-        }
-
-        .dropdown button {
-            margin-right: 10px;
-        }
-        .content {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin: 20px;
-        }
-
-        .right-column {
-            display: flex; 
-            flex-direction: column; 
-            gap: 20px;
-            /* margin-right: 20px; */
-        }
-
-        .left-section {
-            flex: 1;
-            font-size: 40px;
-            padding-top: 20px;
-        }
-
-        .subjects {
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            gap: 50px;
-        }
-
-        .subject-cards {
-            list-style-type: none;
-            padding: 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .subject-cards li {
-            margin: 0;
-        }
-
-        .subject-cards a{
-            text-decoration: none;
-            color: black;
-        }
-        .subject-card {
-            width: 150px;
-            height: 160px;
-            background-color: #F0F9FF;
-            border-radius: 15px;
-            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-align: center;
-            padding: 10px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .subject-card:hover {
-            transform: scale(1.05);
-            box-shadow: 4px 4px 15px rgba(0,0,0,0.2);
-            background-color: #DBEAFE;
-        }
-
-        .subject-card img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin-bottom: 10px;
-        }
-
-        .subject-card span {
-            font-weight: bold;
-            color: #1E40AF;
-            font-size: 16px;
-        }
-
-        .task-card {
-            background: #a7c7e7;
-            padding: 20px;
-            border-radius: 8px;
-            color: white;
-            flex: 0.3;
-        }
-
-        .task-card a {
-            color: white;
-            text-decoration: none;
-            font-size: 20px;
-        }
-
-        .task-card a:hover {
-            text-decoration: underline;
-        }
-        
-        .task-card .completed-task {
-            color: green;
-            font-weight: bold;
-        }
-
-        .task-card .incomplete-task {
-            color: red;
-            font-weight: bold;
-        }
-        .animated-bar {
-            position: relative;
-            overflow: hidden;
-            background-color: #198754; /* Bootstrap bg-success */
-        }
-
-        .animated-bar::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 100%;
-            background-image: linear-gradient(
-                45deg,
-                rgba(255, 255, 255, 0.2) 25%,
-                transparent 25%,
-                transparent 50%,
-                rgba(255, 255, 255, 0.2) 50%,
-                rgba(255, 255, 255, 0.2) 75%,
-                transparent 75%,
-                transparent
-            );
-            background-size: 40px 40px;
-            animation: moveStripes 1s linear infinite;
-        }
-
-        @keyframes moveStripes {
-            from {
-                background-position: 0 0;
-            }
-            to {
-                background-position: 40px 0;
-            }
-        }
-
-        .progress {
-            width: 90%;
-        }
-
-        .progress-bar {
-            height: 15px; /* Thinner bar */
-            background-color: #3B82F6; /* Solid blue progress */
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .goal-text {
-            text-align: center;
-            font-size: 20px;
-            color: #F59E0B;
-            font-weight: bold;
-        }
-
-        .prize-text {
-            font-size: 14px;
-            color: #FF6F61;
-            margin-top: 5px;
-            font-weight: bold;
-            width: 90%;
-        }
-
-        .fun-character {
-            position: absolute;
-            top: -40px; /* Move it higher */
-            left: 0; /* Default starting position*/
-            transform: translateX(-50%); /* Adjust centering */
-            width: 40px;
-            height: 40px;
-            background-image: url('/graphics/giftbox.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            transition: left 0.5s ease;
-        }
-
         #progress-bar {
             height: 100%;
             width: <%= totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0 %>%; 
         }
-
-        #congrats-popup {
-            width: 100%;
-            box-sizing: border-box;
-            animation: pop 0.6s ease;
-            color: #1F2937;
-            background-color: #F0FDF4;
-            padding: 12px;
-            font-size: 18px;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        @keyframes pop {
-            0% {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        #emoji-list .emoji {
-            font-size: 2rem;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        #emoji-list .emoji.selected {
-            transform: scale(1.3);
-            border: 2px solid #3498db;
-            border-radius: 50%;
-            padding: 5px;
-        }
-
     </style>
+
 </head>
 <body>
     <div class="header">
@@ -362,17 +117,34 @@
                 <% } %>
             </div>
 
-            <div id="mood-checkin" style="margin-top: 30px;">
+            <div id="mood-checkin" style="margin-top: 30px;"> 
                 <h3>How are you feeling today?</h3>
                 <div id="emoji-list" style="display: flex; gap: 10px;">
-                    <span class="emoji" data-mood="happy" title="Happy">😊</span>
-                    <span class="emoji" data-mood="tired" title="Tired">😴</span>
-                    <span class="emoji" data-mood="frustrated" title="Frustrated">😤</span>
-                    <span class="emoji" data-mood="sad" title="Sad">😢</span>
-                    <span class="emoji" data-mood="excited" title="Excited">🤩</span>
+                    <span class="emoji <%= currentMood === 'happy' ? 'selected' : '' %>" data-mood="happy" title="Happy">😊</span>
+                    <span class="emoji <%= currentMood === 'tired' ? 'selected' : '' %>" data-mood="tired" title="Tired">😴</span>
+                    <span class="emoji <%= currentMood === 'frustrated' ? 'selected' : '' %>" data-mood="frustrated" title="Frustrated">😤</span>
+                    <span class="emoji <%= currentMood === 'sad' ? 'selected' : '' %>" data-mood="sad" title="Sad">😢</span>
+                    <span class="emoji <%= currentMood === 'excited' ? 'selected' : '' %>" data-mood="excited" title="Excited">🤩</span>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="chat-launcher">
+        <span class="material-icons">forum</span>
+    </div>
+    <div id="chat-modal">
+        <div style="display: flex; border-bottom: 1px solid #ccc;">
+            <button id="tab-teacher" class="chat-tab">Teachers</button>
+            <button id="tab-counselor" class="chat-tab">Counselor</button>
+            <button id="close-chat" class="material-icons" style="font-size: 20px; ">close</button>
+        </div>
+        <div id="chat-contacts"></div>
+        <div id="chat-box"></div>
+        <form id="chat-form">
+            <input type="text" id="chat-input" placeholder="Type a message..." />
+            <button type="submit" style="padding: 5px 10px;">Send</button>
+        </form>
     </div>
 
     <script>
@@ -413,6 +185,91 @@
                 }));
             }
         });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const chatIcon = document.getElementById("chat-launcher");
+            const chatModal = document.getElementById("chat-modal");
+            const closeChat = document.getElementById("close-chat");
+            // Open modal on chat icon click
+            chatIcon.addEventListener("click", () => {
+                chatModal.style.display = chatModal.style.display === "block" ? "none" : "block";
+            });
+            // Close modal on close button click
+            closeChat.addEventListener("click", () => {
+                chatModal.style.display = "none";
+            });
+        });
+
+        // Tab switching
+        document.getElementById("tab-teacher").addEventListener("click", () => {
+            loadContacts("teacher");
+            setActiveTab("tab-teacher");
+        });
+
+        document.getElementById("tab-counselor").addEventListener("click", () => {
+            loadContacts("counselor");
+            setActiveTab("tab-counselor");
+        });
+
+        function setActiveTab(tabId) {
+            document.querySelectorAll(".chat-tab").forEach(tab => tab.style.background = "#f1f1f1");
+            document.getElementById(tabId).style.background = "#fff";
+        }
+
+        chatIcon.addEventListener("click", () => {
+            chatModal.classList.toggle("show");
+            loadContacts("teacher"); // default to teacher
+            setActiveTab("tab-teacher");
+        });
+        const teacherContacts = JSON.stringify(teachers);
+        const counselorContacts = JSON.stringify(counselor);
+
+        console.log("teacherContacts:", teacherContacts);
+        console.log("counselorContacts:", counselorContacts);
+
+        function loadContacts(type) {
+            const contacts = type === "teacher" ? teacherContacts : counselorContacts;
+            const container = document.getElementById("chat-contacts");
+
+            container.innerHTML = ""; // Clear previous list
+
+            contacts.forEach(contact => {
+                const button = document.createElement("button");
+                button.textContent = contact.teacherName || contact.counselorName;
+                button.classList.add("contact-button");
+                button.style.display = "block";
+                button.style.marginBottom = "5px";
+                button.style.padding = "8px";
+                button.style.borderRadius = "5px";
+                button.style.border = "1px solid #ccc";
+                button.style.backgroundColor = "#f9f9f9";
+                button.style.cursor = "pointer";
+
+                button.addEventListener("click", () => {
+                    openChat(contact, type); // you'll build this function next
+                });
+
+                container.appendChild(button);
+            });
+        }
+
+        function openChat(contact, type) {
+            const chatBox = document.getElementById("chat-box");
+            const contactName = contact.teacherName || contact.counselorName;
+
+            chatBox.innerHTML = `
+                <div style="margin-bottom: 10px; font-weight: bold;">
+                    Chat with ${contactName}
+                </div>
+                <div id="chat-messages" style="height: 250px; overflow-y: auto; border: 1px solid #ddd; padding: 5px; margin-bottom: 10px;"></div>
+            `;
+
+            // Store selected contact (if needed for message sending later)
+            chatBox.dataset.receiverId = contact.teacherID || contact.counselorID;
+            chatBox.dataset.receiverRole = type;
+        }
+
+        // TODO: Add logic to fetch chat history and connect to socket.io
 
     // Chatbase based chatbot
 

@@ -68,14 +68,8 @@ async function getStudentByUserId(userId) {
     });
 }
 
-// Function to get student ID from user ID
-async function saveMood(userId, mood) {
+async function saveMood(studentId, mood) {
     try {
-        const studentId = await getStudentByUserId(userId);
-        if (!studentId) {
-            console.log("No student found for userID:", userId);
-            return [];
-        }
         return new Promise((resolve, reject) => {
             const query = `INSERT INTO MoodCheckins (studentId, mood) VALUES (?, ?)`;
             db.query(query, [studentId, mood], (error, results) => {
@@ -92,12 +86,29 @@ async function saveMood(userId, mood) {
     }
 }
 
-// Function to get academic subjects
-async function getSubjectsForStudent(userId) {
+// Function to get student ID from user ID
+async function saveMessage(userId, mood) {
     try {
-        const studentId = await getStudentByUserId(userId);
-        if (!studentId) return []; // No student found
-        
+        return new Promise((resolve, reject) => {
+            const query = `INSERT INTO Messages (studentId, mood) VALUES (?, ?)`;
+            db.query(query, [studentId, mood], (error, results) => {
+                if (error) {
+                    console.error("Error saving mood:", error);
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    } catch (error) {
+        console.error("Error in saveMood:", error);
+        throw error;
+    }
+}
+
+
+// Function to get academic subjects
+async function getSubjectsForStudent(studentId) {
+    try {        
         return new Promise((resolve, reject) => {
             const subjectQuery = `
                 SELECT ss.subjectID, s.subjectName 
@@ -111,7 +122,7 @@ async function getSubjectsForStudent(userId) {
                     console.error("Error retrieving subjects:", error);
                     return reject(error);
                 }
-                resolve(results); // ✅ Return the full array of subjects
+                resolve(results); // Return the full array of subjects
             });
         });
     } catch (error) {
@@ -120,10 +131,8 @@ async function getSubjectsForStudent(userId) {
     }
 }
 
-async function getAssignmentsForStudent(userId) {
+async function getAssignmentsForStudent(studentId) {
     try {
-        const studentId = await getStudentByUserId(userId);
-        if (!studentId) return [];
         return new Promise((resolve, reject) => {
             const query = `
                 SELECT s.subjectName, a.title, a.duedate, a.assignmentId, sa.completed
@@ -162,10 +171,8 @@ async function getAssignmentByAssignmentId(AssignmentId) {
         throw error;
     }
 }
-async function getSubmissionsByStudent(userId) {
+async function getSubmissionsByStudent(studentId) {
     try {
-        const studentId = await getStudentByUserId(userId);
-        if (!studentId) return [];
         return new Promise((resolve, reject) => {
             const query = `SELECT * FROM submissions WHERE studentID = ?`;
             db.query(query, [studentId], (error, results) => {
@@ -205,4 +212,54 @@ async function saveSubmission(userID, assignmentID, fileURL) {
     }
 }
 
-module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood };
+async function getTeachersbyStudentId(studentId) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT t.teacherID, u.name AS teacherName
+                FROM Student_Teachers st
+                JOIN Teachers t ON st.teacherID = t.teacherID
+                JOIN Users u ON t.userID = u.userID
+                WHERE st.studentID = ?
+            `;
+            db.query(query, [studentId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching teachers for student:", error);
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    } catch (error) {
+        console.error("Error in getTeachersByStudentId:", error);
+        throw error;
+    }
+}
+
+async function getCounselorbyStudentId(studentId) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT c.counselorID, u.name AS counselorName
+                FROM Students s
+                JOIN Counselors c ON s.counselorID = c.counselorID
+                JOIN Users u ON c.userID = u.userID
+                WHERE s.studentID = ?
+            `;
+            db.query(query, [studentId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching counselor for student:", error);
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    } catch (error) {
+        console.error("Error in getCounselorsbyStudentId:", error);
+        throw error;
+    }
+}
+
+module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
+    getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
+    getCounselorbyStudentId };
