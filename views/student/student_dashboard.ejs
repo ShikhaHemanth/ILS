@@ -143,7 +143,7 @@
         <div id="chat-box"></div>
         <form id="chat-form">
             <input type="text" id="chat-input" placeholder="Type a message..." />
-            <button type="submit" style="padding: 5px 10px;">Send</button>
+            <button type="submit" style="padding: 5px 10px;" id="sendButton">Send</button>
         </form>
     </div>
 
@@ -168,6 +168,7 @@
         // Add event listener for the pageshow event
         window.addEventListener('pageshow', handlePageShow);
 
+        localStorage.setItem('userID', "<%= userID %>")
         let selectedMood = null;
 
         document.querySelectorAll('.emoji').forEach(emoji => {
@@ -190,84 +191,111 @@
             const chatIcon = document.getElementById("chat-launcher");
             const chatModal = document.getElementById("chat-modal");
             const closeChat = document.getElementById("close-chat");
-            // Open modal on chat icon click
+
+            localStorage.setItem('teachers', '<%- JSON.stringify(teachers) %>');
+            localStorage.setItem('counselor', '<%- JSON.stringify(counselor) %>');
+            const teacherContacts = JSON.parse(localStorage.getItem('teachers'));
+            const counselorContacts = JSON.parse(localStorage.getItem('counselor'));
+
             chatIcon.addEventListener("click", () => {
-                chatModal.style.display = chatModal.style.display === "block" ? "none" : "block";
+                chatModal.classList.toggle("show");
+                loadContacts("teacher"); // default to teacher
+                setActiveTab("tab-teacher");
             });
-            // Close modal on close button click
+
             closeChat.addEventListener("click", () => {
                 chatModal.style.display = "none";
             });
-        });
 
-        // Tab switching
-        document.getElementById("tab-teacher").addEventListener("click", () => {
-            loadContacts("teacher");
-            setActiveTab("tab-teacher");
-        });
-
-        document.getElementById("tab-counselor").addEventListener("click", () => {
-            loadContacts("counselor");
-            setActiveTab("tab-counselor");
-        });
-
-        function setActiveTab(tabId) {
-            document.querySelectorAll(".chat-tab").forEach(tab => tab.style.background = "#f1f1f1");
-            document.getElementById(tabId).style.background = "#fff";
-        }
-
-        chatIcon.addEventListener("click", () => {
-            chatModal.classList.toggle("show");
-            loadContacts("teacher"); // default to teacher
-            setActiveTab("tab-teacher");
-        });
-        const teacherContacts = JSON.stringify(teachers);
-        const counselorContacts = JSON.stringify(counselor);
-
-        console.log("teacherContacts:", teacherContacts);
-        console.log("counselorContacts:", counselorContacts);
-
-        function loadContacts(type) {
-            const contacts = type === "teacher" ? teacherContacts : counselorContacts;
-            const container = document.getElementById("chat-contacts");
-
-            container.innerHTML = ""; // Clear previous list
-
-            contacts.forEach(contact => {
-                const button = document.createElement("button");
-                button.textContent = contact.teacherName || contact.counselorName;
-                button.classList.add("contact-button");
-                button.style.display = "block";
-                button.style.marginBottom = "5px";
-                button.style.padding = "8px";
-                button.style.borderRadius = "5px";
-                button.style.border = "1px solid #ccc";
-                button.style.backgroundColor = "#f9f9f9";
-                button.style.cursor = "pointer";
-
-                button.addEventListener("click", () => {
-                    openChat(contact, type); // you'll build this function next
-                });
-
-                container.appendChild(button);
+            document.getElementById("tab-teacher").addEventListener("click", () => {
+                loadContacts("teacher");
+                setActiveTab("tab-teacher");
             });
-        }
 
-        function openChat(contact, type) {
-            const chatBox = document.getElementById("chat-box");
-            const contactName = contact.teacherName || contact.counselorName;
+            document.getElementById("tab-counselor").addEventListener("click", () => {
+                loadContacts("counselor");
+                setActiveTab("tab-counselor");
+            });
 
-            chatBox.innerHTML = `
-                <div style="margin-bottom: 10px; font-weight: bold;">
-                    Chat with ${contactName}
-                </div>
-                <div id="chat-messages" style="height: 250px; overflow-y: auto; border: 1px solid #ddd; padding: 5px; margin-bottom: 10px;"></div>
-            `;
+            function setActiveTab(tabId) {
+                document.querySelectorAll(".chat-tab").forEach(tab => tab.style.background = "#f1f1f1");
+                document.getElementById(tabId).style.background = "#fff";
+            }
 
-            // Store selected contact (if needed for message sending later)
-            chatBox.dataset.receiverId = contact.teacherID || contact.counselorID;
-            chatBox.dataset.receiverRole = type;
-        }
+            function loadContacts(type) {
+                const contacts = type === "teacher" ? teacherContacts : counselorContacts;
+                const container = document.getElementById("chat-contacts");
+
+                container.innerHTML = ""; // Clear previous list
+
+                contacts.forEach(contact => {
+                    const button = document.createElement("button");
+                    button.textContent = contact.teacherName || contact.counselorName;
+                    button.classList.add("contact-button");
+                    button.style.display = "block";
+                    button.style.marginBottom = "5px";
+                    button.style.padding = "8px";
+                    button.style.borderRadius = "5px";
+                    button.style.border = "1px solid #ccc";
+                    button.style.backgroundColor = "#f9f9f9";
+                    button.style.cursor = "pointer";
+
+                    button.addEventListener("click", () => {
+                        openChat(contact, type);
+                    });
+
+                    container.appendChild(button);
+                });
+            }
+
+            function openChat(contact, type) {
+                const chatBox = document.getElementById("chat-box");
+                const contactName = contact.teacherName || contact.counselorName;
+
+                chatBox.innerHTML = `
+                    <div style="margin-bottom: 10px; font-weight: bold;">
+                        Chat with ${contactName}
+                    </div>
+                    <div id="chat-messages" style="height: 250px; overflow-y: auto; border: 1px solid #ddd; padding: 5px; margin-bottom: 10px;"></div>
+                `;
+
+                chatBox.dataset.receiverId = contact.teacherID || contact.counselorID;
+                chatBox.dataset.receiverRole = type;
+            }
+
+            const socket = io();
+            const sendButton = document.getElementById("sendButton");
+            const messageInput = document.getElementById("messageInput");
+            const senderId = localStorage.getItem('userID');
+
+            sendButton.addEventListener("click", () => {
+                const message = messageInput.value.trim();
+                if (message !== "") {
+                    const chatBox = document.getElementById("chat-box");
+                    const receiverId = chatBox.dataset.receiverId;
+                    const receiverRole = chatBox.dataset.receiverRole;
+
+                    const messageData = {
+                        senderId,
+                        receiverId,
+                        receiverRole, // optional, in case you want it for routing
+                        content: message,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    socket.emit("send_message", messageData);
+                    messageInput.value = "";
+                }
+            });
+
+            socket.on("receive_message", (data) => {
+                // Append to message list in UI
+                const chatBox = document.getElementById("chatMessages");
+                const msgElement = document.createElement("div");
+                msgElement.textContent = `${data.senderId === senderId ? 'You' : 'Them'}: ${data.content}`;
+                chatBox.appendChild(msgElement);
+            });
+        });
 
         // TODO: Add logic to fetch chat history and connect to socket.io
 
@@ -309,6 +337,7 @@
     <script src="https://cdn.botpress.cloud/webchat/v2.3/inject.js"></script>
     <script src="https://files.bpcontent.cloud/2025/03/09/15/20250309154125-ROQMQ6F2.js"></script>
 
+    <script src="/socket.io/socket.io.js"></script>
 
 </body>
 </html>

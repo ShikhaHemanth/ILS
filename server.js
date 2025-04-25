@@ -9,9 +9,7 @@ const { encryptPasswords } = require('./encrypt');
 const { loginUser } = require('./businessLogic');
 const { connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, 
     getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, getStudentByUserId, saveMood, getTeachersbyStudentId, 
-    getCounselorbyStudentId } = require('./dataAccess');
-const { getTeacherIdbyUserId, getStudentsbyTeacherId } = require('./dataAccess')
-const { getCounselorbyStudentId } = require('./dataAccess')
+    getCounselorbyStudentId, saveMessage, getStudentsByTeacherId, getTeacherbyUserId } = require('./dataAccess');
 
 // Set up multer to store files in uploads folder
 const storage = multer.diskStorage({
@@ -45,6 +43,20 @@ async function startServer() {
 
     const http = require('http').createServer(app);
     const io = require('socket.io')(http);
+
+    io.on('connection', (socket) => {
+        socket.on('send_message', async (data) => {
+          try {
+            // Save to DB
+            await saveMessage(data.senderId, data.receiverId, data.content, data.timestamp);
+      
+            // Emit to receiver if connected
+            io.emit("receive_message", data); // You can filter by socket ID or room
+          } catch (err) {
+            console.error("Error saving message:", err);
+          }
+        });
+      });
 
     // Session setup
     app.use(session({
@@ -120,7 +132,7 @@ async function startServer() {
                 console.error("Unexpected data format:", subjects);
                 return res.status(500).send("Server error: subjects data is invalid");
             }
-            res.render('student/student_dashboard', { subjects, 
+            res.render('student/student_dashboard', { userID, subjects, 
                 completedAssignments: assignments.filter(a => a.completed).length,
                 totalAssignments: assignments.length, 
                 assignments, student, currentMood, teachers, counselor }); // Pass to EJS
@@ -259,27 +271,26 @@ async function startServer() {
         console.log('Database connection successful.');
         
         // Start the server only after the database connection
-        app.listen(4000, () => {
+        http.listen(4000, () => {
             console.log('Server running on http://localhost:4000');
         });
     } catch (error) {
         console.error('Error connecting to the database:', error);
     }
-}
 
-// Aryas workspace
     // Protected Route
-    app.get('/teacher_dashboard', isAuthenticated, async(req, res) => {
+    app.get('/teacher_dashboard', isAuthenticated, async (req, res) => {
         if (!req.session.userID) {
             return res.redirect('/login'); // Ensure user is logged in
         }
-        const userID = req.session.userID; // Get student ID from session
-        const teacherid = await getTeacherIdbyUserId(userID); // Fetch subjects
-        const students =await getStudentsbyTeacherId(teacherid)
+    
         try {
-            res.render('teacher/teacher_dashboard', { students, teachername }); 
+            const userID = req.session.userID;
+            const teacher = await getTeacherbyUserId(userID);
+            const students = await getStudentsByTeacherId(teacher.teacherid);
+            res.render('teacher/teacher_dashboard', { students, teacher }); 
         } catch (error) {
-            console.error(error);
+            console.error("Error loading teacher dashboard:", error);
             res.status(500).send("Error loading dashboard");
         }
     });
@@ -287,14 +298,16 @@ async function startServer() {
 
 // Sakshis workspace 
 
-app.get('/counselor_dashboard', isAuthenticated, (req, res) => {
-    if (!req.session.userID) {
-        return res.redirect('/login'); // Ensure user is logged in
-    }
-    const userID = req.session.userID; // Get student ID from session
-    
-    res.render('counselor/counselor_dashboard')
-});
+    app.get('/counselor_dashboard', isAuthenticated, (req, res) => {
+        if (!req.session.userID) {
+            return res.redirect('/login'); // Ensure user is logged in
+        }
+        const userID = req.session.userID; // Get student ID from session
+        
+        res.render('counselor/counselor_dashboard')
+    });
+}
+
 
 // Run setup before starting the server
 setup();

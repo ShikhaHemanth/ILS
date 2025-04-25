@@ -260,51 +260,69 @@ async function getCounselorbyStudentId(studentId) {
     }
 }
 
-// Aryas worspace
-async function getStudentsbyTeacherId(teacherId) {
+async function saveMessage (senderId, receiverId, content, timestamp) {
     try {
         return new Promise((resolve, reject) => {
-            const query = `
-                SELECT c.counselorID, u.name AS counselorName
-                FROM Students s
-                JOIN Counselors c ON s.counselorID = c.counselorID
-                JOIN Users u ON c.userID = u.userID
-                WHERE s.studentID = ?
-            `;
-            db.query(query, [teacherId], (error, results) => {
+            const query = `INSERT INTO Messages (senderId, receiverId, content, timestamp) VALUES (?, ?, ?, ?)`;
+            db.query(query, [senderId, receiverId, content, timestamp], (error, results) => {
                 if (error) {
-                    console.error("Error fetching counselor for student:", error);
+                    console.error("Error saving message:", error);
                     return reject(error);
                 }
                 resolve(results);
             });
         });
     } catch (error) {
-        console.error("Error in getCounselorsbyStudentId:", error);
+        console.error("Error in saveMessage:", error);
         throw error;
     }
 }
 
-async function getTeacherIdbyUserId(userId) {
+// Aryas worspace
+async function getStudentsByTeacherId(teacherId) {
     try {
         return new Promise((resolve, reject) => {
             const query = `
-                SELECT c.counselorID, u.name AS counselorName
-                FROM Students s
-                JOIN Counselors c ON s.counselorID = c.counselorID
-                JOIN Users u ON c.userID = u.userID
-                WHERE s.studentID = ?
+                SELECT s.studentID, u.name AS studentName
+                FROM Student_Teachers st
+                JOIN Students s ON st.studentID = s.studentID
+                JOIN Users u ON s.userID = u.userID
+                WHERE st.teacherID = ?
             `;
+
             db.query(query, [teacherId], (error, results) => {
                 if (error) {
-                    console.error("Error fetching counselor for student:", error);
+                    console.error("Error fetching students for teacher:", error);
                     return reject(error);
                 }
+                console.log("Data access", results);
                 resolve(results);
             });
         });
     } catch (error) {
-        console.error("Error in getCounselorsbyStudentId:", error);
+        console.error("Error in getStudentsByTeacherId:", error);
+        throw error;
+    }
+}
+
+async function getTeacherbyUserId(userId) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = ` select t.teacherid, u.name
+                FROM teachers t
+                JOIN users u ON t.userid = u.userid
+                WHERE u.userid = ?
+            `;
+            db.query(query, [userId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching teacherid for teacher:", error);
+                    return reject(error);
+                }
+                resolve(results[0]);
+            });
+        });
+    } catch (error) {
+        console.error("Error in getTeacherIdbyUserId:", error);
         throw error;
     }
 }
@@ -315,7 +333,4 @@ async function getTeacherIdbyUserId(userId) {
 
 module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
-    getCounselorbyStudentId };
-module.exports = { getTeacherIdbyUserId, getStudentsbyTeacherId};
-
-module.exports = { getCounselorbyStudentId};
+    getCounselorbyStudentId, saveMessage, getTeacherbyUserId, getStudentsByTeacherId};
