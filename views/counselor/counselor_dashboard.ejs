@@ -159,14 +159,22 @@
     <div class="content">
       <!-- Left Section Cards -->
       <div class="left-section">
-        <h2 class="section-title">Welcome, Counselor!</h2>
+        <h2 class="section-title">Welcome, Counselor, <%= counselorName %>!</h2>
         <p class="sections-label">YOUR STUDENTS</p>
 
-        <ul class="section-card-list">
-          <li><div class="section-card"><a href="">Student 1</a></div></li>
-          <!-- <li><div class="section-card"><a href="/teacher_dashboard/section2">Class 6B<br>Math</a></div></li>
-          <li><div class="section-card"><a href="/teacher_dashboard/section3">Class 7C<br>Science</a></div></li> -->
-        </ul>
+        <% if (students.length === 0) { %>
+          <p>No students assigned to you yet.</p>
+      <% } else { %>
+          <ul class="section-card-list">
+              <% students.forEach(student => { %>
+                  <li>
+                      <div class="section-card">
+                          <a href="/counselor_dashboard/student_info/<%= student.studentID %>"><%= student.name %></a>
+                      </div>
+                  </li>
+              <% }) %>
+          </ul>
+      <% } %>
       </div>
 
       <!-- Reminder Checklist -->

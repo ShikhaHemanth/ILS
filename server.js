@@ -9,7 +9,8 @@ const { encryptPasswords } = require('./encrypt');
 const { loginUser } = require('./businessLogic');
 const { getMessagesBetweenUsers, connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, 
     getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, getStudentByUserId, saveMood, getTeachersbyStudentId, 
-    getCounselorbyStudentId, saveMessage, getStudentsByTeacherId, getTeacherbyUserId } = require('./dataAccess');
+    getCounselorbyStudentId, saveMessage, getStudentsByTeacherId, getTeacherbyUserId, getCounselorByUserId, 
+    getStudentsByCounselorID } = require('./dataAccess');
 
 // Set up multer to store files in uploads folder
 const storage = multer.diskStorage({
@@ -255,7 +256,45 @@ async function startServer() {
     });
 
     app.get('/teacher_dashboard', isAuthenticated, (req, res) => res.render('teacher/teacher_dashboard'));
-    app.get('/counselor_dashboard', isAuthenticated, (req, res) => res.render('counselor/counselor_dashboard'));
+
+    app.get('/counselor_dashboard', isAuthenticated, async (req, res) => {
+        try {
+            // Fetch the counselor data including counselorID
+            const counselorData = await getCounselorByUserId(req.session.userID);
+            if (!counselorData) {
+                return res.status(404).send("Counselor not found.");
+            }
+    
+            const counselorName = counselorData.name;
+    
+            // Now fetch the list of students assigned to this counselor
+            const students = await getStudentsByCounselorID(counselorData.counselorID);
+    
+            res.render('counselor/counselor_dashboard', { counselorName, students });
+        } catch (error) {
+            console.error("Error fetching counselor data:", error);
+            res.status(500).send("Error loading counselor dashboard");
+        }
+    });
+    
+    app.get('/counselor_dashboard/student_info/:studentID', isAuthenticated, async (req, res) => {
+        try {
+            const studentID = req.params.studentID; // Get the studentID from the URL
+    
+            // Fetch the student's information using the studentID
+            const student = await getStudentByUserId(studentID);  // Assuming this function retrieves student data
+            console.log(student)
+            if (!student) {
+                return res.status(404).send("Student not found.");
+            }
+    
+            res.render('counselor/student_info_conselor', { student });  // Render the student info page with the student's data
+        } catch (error) {
+            console.error("Error fetching student info:", error);
+            res.status(500).send("Error loading student information");
+        }
+    });    
+    
     app.get('/parent_dashboard', isAuthenticated, (req, res) => res.render('parent/parent_dashboard'));
 
     // app.get('/student_dashboard/:subjectName/activity/feedback', isAuthenticated, async (req, res) => {
