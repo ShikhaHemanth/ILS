@@ -37,7 +37,7 @@ async function getUserByEmail(email) {
 
 async function getUserByUserId(userID) {
     return new Promise((resolve, reject) => {
-        const query = 'SELECT email, name, role FROM Users WHERE userID = ?';
+        const query = 'SELECT userID, email, name, role FROM Users WHERE userID = ?';
         db.query(query, [userID], (error, results) => {
             if (error) {
                 console.error("Error retrieving user:", error);
@@ -400,4 +400,5 @@ async function getTeacherbyUserId(userId) {
 
 module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
-    getCounselorbyStudentId,getCounselorByUserId, getMessagesBetweenUsers, getStudentsByCounselorID, getTeacherbyUserId, saveMessage, getStudentsByTeacherId };
+    getCounselorbyStudentId,getCounselorByUserId, getMessagesBetweenUsers, getStudentsByCounselorID, getTeacherbyUserId, 
+    saveMessage, getStudentsByTeacherId };
