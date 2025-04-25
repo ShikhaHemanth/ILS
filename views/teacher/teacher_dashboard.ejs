@@ -123,7 +123,7 @@
               <ul class="section-card-list">
                   <% students.forEach(student => { %>
                       <li>
-                              <a href="/teacher_dashboard/student_info/<%= student.studentName %>">
+                              <a href="/teacher_dashboard/student_info/<%= student.studentID %>/<%= student.studentName %>">
                                 <div class="section-card">
                                   <%= student.studentName %>
                                 </div>
