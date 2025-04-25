@@ -5,333 +5,146 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <!-- Bootstrap Bundle (includes Popper.js) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/student/css/dashboard.css">
+
     <style>
-        body {
-            background-color: #f8f9fa;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .dashboard {
-            background: white;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #a7c7e7;
-            border-radius: 8px;
-            font-size: 20px;
-            height: 60px;
-        }
-        .header img {
-            height: 100%;
-        }
-
-        .dropdown button {
-            margin-right: 10px;
-        }
-        .content {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-top: 20px;
-        }
-
-        .left-section {
-            flex: 1;
-            padding-left: 30px;
-            font-size: 40px;
-            padding-top: 20px;
-        }
-
-        .subjects {
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            gap: 50px;
-        }
-
-        .subject-cards {
-            list-style-type: none;
-            padding: 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .subject-cards li {
-            margin: 0;
-        }
-
-        .subject-cards a{
-            text-decoration: none;
-            color: black;
-        }
-        .subject-card {
-            width: 150px;
-            height: 160px;
-            background-color: #F0F9FF;
-            border-radius: 15px;
-            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-align: center;
-            padding: 10px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .subject-card:hover {
-            transform: scale(1.05);
-            box-shadow: 4px 4px 15px rgba(0,0,0,0.2);
-            background-color: #DBEAFE;
-        }
-
-        .subject-card img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin-bottom: 10px;
-        }
-
-        .subject-card span {
-            font-weight: bold;
-            color: #1E40AF;
-            font-size: 16px;
-        }
-
-        .task-card {
-            background: #a7c7e7;
-            padding: 20px;
-            border-radius: 8px;
-            color: white;
-            flex: 0.3;
-        }
-
-        .task-card a {
-            color: white;
-            text-decoration: none;
-            font-size: 20px;
-        }
-
-        .task-card a:hover {
-            text-decoration: underline;
-        }
-        
-        .animated-bar {
-            position: relative;
-            overflow: hidden;
-            background-color: #198754; /* Bootstrap bg-success */
-        }
-
-        .animated-bar::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 100%;
-            background-image: linear-gradient(
-                45deg,
-                rgba(255, 255, 255, 0.2) 25%,
-                transparent 25%,
-                transparent 50%,
-                rgba(255, 255, 255, 0.2) 50%,
-                rgba(255, 255, 255, 0.2) 75%,
-                transparent 75%,
-                transparent
-            );
-            background-size: 40px 40px;
-            animation: moveStripes 1s linear infinite;
-        }
-
-        @keyframes moveStripes {
-            from {
-                background-position: 0 0;
-            }
-            to {
-                background-position: 40px 0;
-            }
-        }
-
-        .progress {
-            width: 90%;
-        }
-
-        .progress-bar {
-            height: 15px; /* Thinner bar */
-            background-color: #3B82F6; /* Solid blue progress */
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .goal-text {
-            text-align: center;
-            font-size: 20px;
-            color: #F59E0B;
-            font-weight: bold;
-        }
-
-        .prize-text {
-            font-size: 14px;
-            color: #FF6F61;
-            margin-top: 5px;
-            font-weight: bold;
-            width: 90%;
-        }
-
-        .fun-character {
-            position: absolute;
-            top: -40px; /* Move it higher */
-            left: 0; /* Default starting position*/
-            transform: translateX(-50%); /* Adjust centering */
-            width: 40px;
-            height: 40px;
-            background-image: url('/graphics/giftbox.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            transition: left 0.5s ease;
-        }
-
         #progress-bar {
             height: 100%;
             width: <%= totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0 %>%; 
         }
-
-        #congrats-popup {
-            width: 100%;
-            box-sizing: border-box;
-            animation: pop 0.6s ease;
-            color: #1F2937;
-            background-color: #F0FDF4;
-            padding: 12px;
-            font-size: 18px;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        @keyframes pop {
-            0% {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
     </style>
+
 </head>
 <body>
-    <div class="dashboard container-fluid">
-        <div class="header">
-            <img src="/graphics/Logo.png" alt="Website Logo">
-            <p class="fw-bold">Student Dashboard</p>
-            <!-- Settings Dropdown -->
-            <div class="dropdown">
-                <button class="btn btn-light dropdown-toggle" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    ⚙️
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
-                    <li><a class="dropdown-item" href="#" id="logout">Logout</a></li>
-                </ul>
+    <div class="header">
+        <img src="/graphics/Logo.png" alt="Website Logo">
+        <p class="fw-bold">Student Dashboard</p>
+        <!-- Settings Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-light dropdown-toggle" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                ⚙️
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
+                <li><a class="dropdown-item" href="#" id="logout">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="left-section">
+            <div class="d-flex align-items-center">
+                <div style="font-style: oblique;">
+                    <p class="ms-3 fw-bold" style="font-size: 22px;">👋 Hi <%= student.name %>! Ready to learn and earn stars today?</p>
+                </div>
+            </div>
+
+            <!-- Progress Bar Section -->
+            <div class="progress mt-3">
+                <div id="progress-bar" class="progress-bar bg-success animated-bar" role="progressbar"
+                        aria-valuenow="<%= totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0 %>"
+                        aria-valuemin="0" 
+                        aria-valuemax="100">
+                    <%= totalAssignments > 0 ? Math.round((completedAssignments / totalAssignments) * 100) : 0 %>%
+                </div>
+            </div>
+            <div class="fun-character" id="fun-character"></div>
+
+            <div class="prize-text">
+                <% if ((completedAssignments/ totalAssignments)==1) { %>
+                    <div id="congrats-popup">
+                        🎉 Yay! You've finished all assignments! You have unlocked a new video! 🎁
+                    </div>
+                <% } else { %>
+                    <div class="goal-text">
+                        🌟 You're <%= Math.round((completedAssignments / totalAssignments) * 100) %>% done! Keep going!
+                    </div>
+                    <div class="prize-text">🌟 Complete all your assignments to win a special prize! 🎁</div>
+                <% } %>
+                </div>
+
+            <div style="padding-top: 15px; font-size: 30px;">
+                <p class="mt-3 fw-bold">SUBJECTS</p>
+            </div>
+
+            <div class="subjects">
+                <% if (subjects.length > 0) { %>
+                    <ul class="subject-cards">
+                        <% subjects.forEach(subject => { %>
+                            <li>
+                            <a href="/student_dashboard/<%= subject.subjectName.toLowerCase() %>">
+                                <div class="subject-card">
+                                <img src="/graphics/<%= subject.subjectName.toLowerCase() %>.jpg" alt="<%= subject.subjectName %>">
+                                <span><%= subject.subjectName %></span>
+                                </div>
+                            </a>
+                            </li>
+                        <% }) %>
+                    </ul>
+                <% } else { %>
+                    <p>No academic subjects assigned.</p>
+                <% } %>
             </div>
         </div>
 
-        <div class="content">
-            <div class="left-section">
-                <div class="d-flex align-items-center">
-                    <div style="font-style: oblique;">
-                        <p class="ms-3 fw-bold" style="font-size: 22px;">👋 Hi <%= student.name %>! Ready to learn and earn stars today?</p>
-                    </div>
-                </div>
-
-                <!-- Progress Bar Section -->
-                <div class="progress mt-3">
-                    <div id="progress-bar" class="progress-bar bg-success animated-bar" role="progressbar"
-                         aria-valuenow="<%= totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0 %>"
-                         aria-valuemin="0" 
-                         aria-valuemax="100">
-                        <%= totalAssignments > 0 ? Math.round((completedAssignments / totalAssignments) * 100) : 0 %>%
-                    </div>
-                </div>
-                <div class="fun-character" id="fun-character"></div>
-
-                <div class="prize-text">
-                    <% if ((completedAssignments/ totalAssignments)==1) { %>
-                        <div id="congrats-popup">
-                            🎉 Yay! You've finished all assignments! You have unlocked a new video! 🎁
-                        </div>
-                    <% } else { %>
-                        <div class="goal-text">
-                            🌟 You're <%= Math.round((completedAssignments / totalAssignments) * 100) %>% done! Keep going!
-                        </div>
-                        <div class="prize-text">🌟 Complete all your assignments to win a special prize! 🎁</div>
-                    <% } %>
-                  </div>
-
-                <div style="padding-top: 15px; font-size: 30px;">
-                    <p class="mt-3 fw-bold">SUBJECTS</p>
-                </div>
-
-                <div class="subjects">
-                    <% if (subjects.length > 0) { %>
-                        <ul class="subject-cards">
-                            <% subjects.forEach(subject => { %>
-                              <li>
-                                <a href="/student_dashboard/<%= subject.subjectName.toLowerCase() %>">
-                                  <div class="subject-card">
-                                    <img src="/graphics/<%= subject.subjectName.toLowerCase() %>.jpg" alt="<%= subject.subjectName %>">
-                                    <span><%= subject.subjectName %></span>
-                                  </div>
-                                </a>
-                              </li>
-                            <% }) %>
-                        </ul>
-                    <% } else { %>
-                        <p>No academic subjects assigned.</p>
-                    <% } %>
-                </div>
-            </div>
-
+        <div class="right-column">
             <div class="task-card">
                 <div style="font-size: 25px;">
                     <p class="mb-0 fw-bold">🧠 Task List</p>
                 </div>
-                <div style="padding-top: 15px;">
-                    <%
-                        const today = new Date();
-                        const filteredAssignments = assignments.filter(a =>
-                            a.completed === 0 &&
-                            new Date(a.duedate) > today
-                        );
-                        filteredAssignments.forEach(task => { %>
-                            <div><a href="/student_dashboard/<%= task.subjectName %>/<%= task.assignmentId %>"><%= task.subjectName %>: <%= task.title %></a></div>
-                        <%
+                <%
+                    const today = new Date();
+                    const futureAssignments = assignments.filter(a => new Date(a.duedate) > today);
+        
+                    if (futureAssignments.length > 0) {
+                        futureAssignments.forEach(task => {
+                            const isCompleted = task.completed === 1;
+                %>
+                <div>
+                    <a href="/student_dashboard/<%= task.subjectName %>/<%= task.assignmentId %>" 
+                        class="<%= task.completed === 1 ? 'completed-task' : 'incomplete-task' %>">
+                        <%= task.subjectName %>: <%= task.title %>
+                    </a>
+                    </div>
+                <% 
                         });
-                
-                        if (!filteredAssignments) { 
-                    %>
-                        <div><p>No pending assignments 🎉</p></div>
-                    <% } %>
+                    } else { 
+                %>
+                    <div><p>No upcoming assignments 🎉</p></div>
+                <% } %>
+            </div>
+
+            <div id="mood-checkin" style="margin-top: 30px;"> 
+                <h3>How are you feeling today?</h3>
+                <div id="emoji-list" style="display: flex; gap: 10px;">
+                    <span class="emoji <%= currentMood === 'happy' ? 'selected' : '' %>" data-mood="happy" title="Happy">😊</span>
+                    <span class="emoji <%= currentMood === 'tired' ? 'selected' : '' %>" data-mood="tired" title="Tired">😴</span>
+                    <span class="emoji <%= currentMood === 'frustrated' ? 'selected' : '' %>" data-mood="frustrated" title="Frustrated">😤</span>
+                    <span class="emoji <%= currentMood === 'sad' ? 'selected' : '' %>" data-mood="sad" title="Sad">😢</span>
+                    <span class="emoji <%= currentMood === 'excited' ? 'selected' : '' %>" data-mood="excited" title="Excited">🤩</span>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="chat-launcher">
+        <span class="material-icons">forum</span>
+    </div>
+    <div id="chat-modal">
+        <div style="display: flex; border-bottom: 1px solid #ccc;">
+            <button id="tab-teacher" class="chat-tab">Teachers</button>
+            <button id="tab-counselor" class="chat-tab">Counselor</button>
+            <button id="close-chat" class="material-icons" style="font-size: 20px; ">close</button>
+        </div>
+        <div id="chat-contacts"></div>
+        <div id="chat-box"></div>
+        <form id="chat-form">
+            <input type="text" id="chat-input" placeholder="Type a message..." />
+            <button type="submit" style="padding: 5px 10px;">Send</button>
+        </form>
     </div>
 
     <script>
@@ -354,6 +167,109 @@
         }
         // Add event listener for the pageshow event
         window.addEventListener('pageshow', handlePageShow);
+
+        let selectedMood = null;
+
+        document.querySelectorAll('.emoji').forEach(emoji => {
+            emoji.addEventListener('click', () => {
+                document.querySelectorAll('.emoji').forEach(e => e.classList.remove('selected'));
+                emoji.classList.add('selected');
+                selectedMood = emoji.getAttribute('data-mood');
+            });
+        });
+
+        window.addEventListener('beforeunload', async (event) => {
+            if (selectedMood) {
+                navigator.sendBeacon('/student/savemood', new Blob([JSON.stringify({ mood: selectedMood })], {
+                    type: 'application/json'
+                }));
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const chatIcon = document.getElementById("chat-launcher");
+            const chatModal = document.getElementById("chat-modal");
+            const closeChat = document.getElementById("close-chat");
+            // Open modal on chat icon click
+            chatIcon.addEventListener("click", () => {
+                chatModal.style.display = chatModal.style.display === "block" ? "none" : "block";
+            });
+            // Close modal on close button click
+            closeChat.addEventListener("click", () => {
+                chatModal.style.display = "none";
+            });
+        });
+
+        // Tab switching
+        document.getElementById("tab-teacher").addEventListener("click", () => {
+            loadContacts("teacher");
+            setActiveTab("tab-teacher");
+        });
+
+        document.getElementById("tab-counselor").addEventListener("click", () => {
+            loadContacts("counselor");
+            setActiveTab("tab-counselor");
+        });
+
+        function setActiveTab(tabId) {
+            document.querySelectorAll(".chat-tab").forEach(tab => tab.style.background = "#f1f1f1");
+            document.getElementById(tabId).style.background = "#fff";
+        }
+
+        chatIcon.addEventListener("click", () => {
+            chatModal.classList.toggle("show");
+            loadContacts("teacher"); // default to teacher
+            setActiveTab("tab-teacher");
+        });
+        const teacherContacts = JSON.stringify(teachers);
+        const counselorContacts = JSON.stringify(counselor);
+
+        console.log("teacherContacts:", teacherContacts);
+        console.log("counselorContacts:", counselorContacts);
+
+        function loadContacts(type) {
+            const contacts = type === "teacher" ? teacherContacts : counselorContacts;
+            const container = document.getElementById("chat-contacts");
+
+            container.innerHTML = ""; // Clear previous list
+
+            contacts.forEach(contact => {
+                const button = document.createElement("button");
+                button.textContent = contact.teacherName || contact.counselorName;
+                button.classList.add("contact-button");
+                button.style.display = "block";
+                button.style.marginBottom = "5px";
+                button.style.padding = "8px";
+                button.style.borderRadius = "5px";
+                button.style.border = "1px solid #ccc";
+                button.style.backgroundColor = "#f9f9f9";
+                button.style.cursor = "pointer";
+
+                button.addEventListener("click", () => {
+                    openChat(contact, type); // you'll build this function next
+                });
+
+                container.appendChild(button);
+            });
+        }
+
+        function openChat(contact, type) {
+            const chatBox = document.getElementById("chat-box");
+            const contactName = contact.teacherName || contact.counselorName;
+
+            chatBox.innerHTML = `
+                <div style="margin-bottom: 10px; font-weight: bold;">
+                    Chat with ${contactName}
+                </div>
+                <div id="chat-messages" style="height: 250px; overflow-y: auto; border: 1px solid #ddd; padding: 5px; margin-bottom: 10px;"></div>
+            `;
+
+            // Store selected contact (if needed for message sending later)
+            chatBox.dataset.receiverId = contact.teacherID || contact.counselorID;
+            chatBox.dataset.receiverRole = type;
+        }
+
+        // TODO: Add logic to fetch chat history and connect to socket.io
 
     // Chatbase based chatbot
 

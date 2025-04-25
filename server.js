@@ -7,7 +7,9 @@ const fs = require('fs');
 
 const { encryptPasswords } = require('./encrypt');
 const { loginUser } = require('./businessLogic');
-const { connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent } = require('./dataAccess');
+const { connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, 
+    getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, getStudentByUserId, saveMood, getTeachersbyStudentId, 
+    getCounselorbyStudentId } = require('./dataAccess');
 
 // Set up multer to store files in uploads folder
 const storage = multer.diskStorage({
@@ -39,6 +41,9 @@ async function setup() {
 async function startServer() {
     const app = express();
 
+    const http = require('http').createServer(app);
+    const io = require('socket.io')(http);
+
     // Session setup
     app.use(session({
         secret: 'your_secret_key',
@@ -57,7 +62,7 @@ async function startServer() {
 
     // Middleware to check authentication
     function isAuthenticated(req, res, next) {
-        if (req.session.userId) {
+        if (req.session.userID) {
             return next();
         } else {
             res.redirect('/');
@@ -80,7 +85,7 @@ async function startServer() {
             const result = await loginUser(email, password);
             const userData = await getUserByEmail(email);
             if (result.success) {
-                req.session.userId = userData.userID; // Store user ID in session
+                req.session.userID = userData.userID; // Store user ID in session
                 return res.json({ success: true, redirectUrl: result.redirectUrl });
             } else {
                 return res.json({ success: false, message: result.message });
@@ -93,14 +98,22 @@ async function startServer() {
 
     // Protected Route
     app.get('/student_dashboard', isAuthenticated, async(req, res) => {
-        if (!req.session.userId) {
+        if (!req.session.userID) {
             return res.redirect('/login'); // Ensure user is logged in
         }
-        const userID = req.session.userId; // Get student ID from session
+        const userID = req.session.userID; // Get student ID from session
         try {
-            const subjects = await getSubjectsForStudent(userID); // Fetch subjects
-            const assignments = await getAssignmentsForStudent(userID);
+            const studentID = await getStudentByUserId(userID);
+                if (!studentID) {
+                    console.log("No student found for userID:", userID);
+                    return [];
+                }
+            const subjects = await getSubjectsForStudent(studentID); // Fetch subjects
+            const assignments = await getAssignmentsForStudent(studentID);
             const student = await getUserByUserId(userID);
+            const currentMood = req.session.mood || null;
+            const teachers = await getTeachersbyStudentId(studentID);
+            const counselor = await getCounselorbyStudentId(studentID);
             if (!Array.isArray(subjects)) {  // Ensure subjects is an array
                 console.error("Unexpected data format:", subjects);
                 return res.status(500).send("Server error: subjects data is invalid");
@@ -108,20 +121,47 @@ async function startServer() {
             res.render('student/student_dashboard', { subjects, 
                 completedAssignments: assignments.filter(a => a.completed).length,
                 totalAssignments: assignments.length, 
-                assignments,
-                student }); // Pass to EJS
+                assignments, student, currentMood, teachers, counselor }); // Pass to EJS
         } catch (error) {
             console.error(error);
             res.status(500).send("Error loading dashboard");
         }
     });
 
+    app.post('/student/savemood', async (req, res) => {
+        const userID = req.session.userID;
+        const mood = req.body.mood;
+
+        if (!userID || !mood) {
+            return res.status(400).json({ success: false, message: "Missing user or mood" });
+        }
+
+        try {
+            const studentID = await getStudentByUserId(userID);
+            if (!studentID) {
+                console.log("No student found for userID:", userID);
+                return [];
+            }
+            await saveMood(studentID, mood);
+            req.session.mood = mood; // Save in session
+            res.json({ success: true });
+        } catch (err) {
+            console.error('Error saving mood:', err);
+            res.status(500).json({ success: false, message: 'Internal error' });
+        }
+    });
+
     app.get('/student_dashboard/:subjectName', isAuthenticated, async (req, res) => {
-        const userId = req.session.userId; // assuming student is logged in
+        const userID = req.session.userID; // assuming student is logged in
         const subjectName = req.params.subjectName;
 
         try {
-            const assignments = await getAssignmentsForStudent(userId);
+            const studentID = await getStudentByUserId(userID);
+                if (!studentID) {
+                    console.log("No student found for userID:", userID);
+                    return [];
+                }
+            const assignments = await getAssignmentsForStudent(studentID);
             res.render('student/student_subject', { subjectName, assignments });
         } catch (error) {
             console.error(error);
@@ -131,10 +171,10 @@ async function startServer() {
 
     app.get('/student_dashboard/:subjectName/:assignmentId', isAuthenticated, async (req, res) => {
         const subjectName = req.params.subjectName;
-        const assignmentId = req.params.assignmentId;
+        const assignmentID = req.params.assignmentId;
     
         try {
-            const assignmentDetails = await getAssignmentByAssignmentId(assignmentId);
+            const assignmentDetails = await getAssignmentByAssignmentId(assignmentID);
             res.render('student/student_activity', { subjectName, assignment: assignmentDetails[0] });
         } catch (error) {
             console.error(error);
@@ -143,14 +183,19 @@ async function startServer() {
     });
 
     app.get('/student_dashboard/:subjectName/activity/submission', isAuthenticated, async (req, res) => {
-        const userId = req.session.userId; // assuming student is logged in
+        const userID = req.session.userID; // assuming student is logged in
         const subjectName = req.params.subjectName;
         try {
-            const assignments = await getAssignmentsForStudent(userId);
+            const studentID = await getStudentByUserId(userID);
+                if (!studentID) {
+                    console.log("No student found for userID:", userID);
+                    return [];
+                }
+            const assignments = await getAssignmentsForStudent(studentID);
             const filteredAssignments = assignments.filter(a =>
                 a.subjectName.toLowerCase() === subjectName.toLowerCase()
             );
-            const submissions = await getSubmissionsByStudent(userId);
+            const submissions = await getSubmissionsByStudent(studentID);
             res.render('student/student_submission', { subjectName, assignments: filteredAssignments, submissions });
         } catch (error) {
             console.error(error);
@@ -160,7 +205,7 @@ async function startServer() {
     
     app.post('/student_dashboard/:subjectName/activity/submission/upload', upload.single('file'), async (req, res) => {
         const assignmentID = req.body.assignmentID;
-        const userID = req.session.userId; // or use token decoding
+        const userID = req.session.userID; // or use token decoding
 
         if (!req.file) {
             return res.status(400).json({ success: false, message: "No file uploaded" });
@@ -185,28 +230,33 @@ async function startServer() {
     app.get('/counselor_dashboard', isAuthenticated, (req, res) => res.render('counselor/counselor_dashboard'));
     app.get('/parent_dashboard', isAuthenticated, (req, res) => res.render('parent/parent_dashboard'));
 
-    app.get('/student_dashboard/:subjectName/activity/feedback', isAuthenticated, async (req, res) => {
-        const userId = req.session.userId; // assuming student is logged in
-        const subjectName = req.params.subjectName;
-        try {
-            const assignments = await getAssignmentsForStudent(userId);
-            const filteredAssignments = assignments.filter(a =>
-                a.subjectName.toLowerCase() === subjectName.toLowerCase()
-            );
-            const submissions = await getSubmissionsByStudent(userId);
-            res.render('student/student_submission', { subjectName, assignments: filteredAssignments, submissions });
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Error loading submission dashboard');
-        }
-    })
+    // app.get('/student_dashboard/:subjectName/activity/feedback', isAuthenticated, async (req, res) => {
+    //     const userID = req.session.userID; // assuming student is logged in
+    //     const subjectName = req.params.subjectName;
+    //     try {
+    //         const studentID = await getStudentByUserId(userID);
+    //             if (!studentID) {
+    //                 console.log("No student found for userID:", userID);
+    //                 return [];
+    //             }
+    //         const assignments = await getAssignmentsForStudent(studentID);
+    //         const filteredAssignments = assignments.filter(a =>
+    //             a.subjectName.toLowerCase() === subjectName.toLowerCase()
+    //         );
+    //         const submissions = await getSubmissionsByStudent(userID);
+    //         res.render('student/student_submission', { subjectName, assignments: filteredAssignments, submissions });
+    //     } catch (error) {
+    //         console.error(error);
+    //         res.status(500).send('Error loading submission dashboard');
+    //     }
+    // })
 
     // Protected Route
     app.get('/teacher_dashboard', isAuthenticated, async(req, res) => {
-        if (!req.session.userId) {
+        if (!req.session.userID) {
             return res.redirect('/login'); // Ensure user is logged in
         }
-        const userID = req.session.userId; // Get student ID from session
+        const userID = req.session.userID; // Get student ID from session
         try {
             
             res.render('teacher/teacher_dashboard'); // Pass to EJS

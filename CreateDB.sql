@@ -10,16 +10,19 @@ DROP TABLE IF EXISTS Quizzes;
 DROP TABLE IF EXISTS Learning_plans;
 DROP TABLE IF EXISTS Assessments;
 DROP TABLE IF EXISTS Progress_reports;
+DROP TABLE IF EXISTS moodcheckins;
+DROP TABLE IF EXISTS subjectcontent;
 DROP TABLE IF EXISTS Feedback;
 DROP TABLE IF EXISTS Submissions;
 DROP TABLE IF EXISTS Student_Assignments;
 DROP TABLE IF EXISTS Assignments;
+DROP TABLE IF EXISTS Student_Teachers;
 DROP TABLE IF EXISTS Student_Subjects;
-DROP TABLE IF EXISTS Counselors;
 DROP TABLE IF EXISTS Teachers;
 DROP TABLE IF EXISTS Subjects;
 DROP TABLE IF EXISTS Parents;
 DROP TABLE IF EXISTS Students;
+DROP TABLE IF EXISTS Counselors;
 DROP TABLE IF EXISTS Users;
 
 -- Create tables
@@ -32,11 +35,19 @@ CREATE TABLE Users (
     is_pwd_encrypted BOOLEAN DEFAULT FALSE
 );
 
+CREATE TABLE Counselors (
+    counselorID INT AUTO_INCREMENT PRIMARY KEY,
+    userID INT,
+    FOREIGN KEY (userID) REFERENCES Users(userID)
+);
+
 CREATE TABLE Students (
     studentID INT AUTO_INCREMENT PRIMARY KEY,
     userID INT,
     gradeLevel INT,
-    FOREIGN KEY (userID) REFERENCES Users(userID)
+    counselorID INT,
+    FOREIGN KEY (userID) REFERENCES Users(userID),
+    FOREIGN KEY (counselorID) REFERENCES Counselors(counselorID)
 );
 
 CREATE TABLE Parents (
@@ -60,18 +71,20 @@ CREATE TABLE Teachers (
     FOREIGN KEY (subjectID) REFERENCES Subjects(subjectID) 
 );
 
-CREATE TABLE Counselors (
-    counselorID INT AUTO_INCREMENT PRIMARY KEY,
-    userID INT,
-    FOREIGN KEY (userID) REFERENCES Users(userID)
-);
-
 CREATE TABLE Student_Subjects (
     studentID INT,
     subjectID INT,
     PRIMARY KEY (studentID, subjectID),
     FOREIGN KEY (studentID) REFERENCES Students(studentID) ON DELETE CASCADE,
     FOREIGN KEY (subjectID) REFERENCES Subjects(subjectID) ON DELETE CASCADE
+);
+
+CREATE TABLE Student_Teachers (
+    studentID INT,
+    teacherID INT,
+    PRIMARY KEY (studentID, teacherID),
+    FOREIGN KEY (studentID) REFERENCES Students(studentID) ON DELETE CASCADE,
+    FOREIGN KEY (teacherID) REFERENCES teachers(teacherID) ON DELETE CASCADE
 );
 
 CREATE TABLE Assignments (
@@ -111,6 +124,22 @@ CREATE TABLE Feedback (
     grade DECIMAL(5,2),
     feedback TEXT,
     FOREIGN KEY (submissionID) REFERENCES Submissions(submissionID)
+);
+
+CREATE TABLE SubjectContent (
+    contentId INT PRIMARY KEY AUTO_INCREMENT,
+    fileName VARCHAR(255),
+    uploadDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    contentType VARCHAR(50),  -- e.g., 'pdf', 'video', 'link', 'text'
+    studentId INT REFERENCES Students(studentId),
+    subjectId INT REFERENCES Subjects(subjectId)
+);
+
+CREATE TABLE MoodCheckins (
+    moodId INT PRIMARY KEY AUTO_INCREMENT,
+    studentId INT REFERENCES Students(studentId),
+    mood VARCHAR(50),  -- e.g., 'happy', 'tired', 'frustrated', etc.
+    checkinTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Progress_reports (
@@ -163,13 +192,15 @@ CREATE TABLE Chat_rooms (
 );
 
 CREATE TABLE Messages (
-    messageID INT AUTO_INCREMENT PRIMARY KEY,
-    chatRoomID INT,
-    userID INT,
+    messageId INT PRIMARY KEY AUTO_INCREMENT,
+    chatRoomId INT,
+    senderId INT,
+    receiverId INT,
     content TEXT,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (chatRoomID) REFERENCES Chat_rooms(chatRoomID),
-    FOREIGN KEY (userID) REFERENCES Users(userID)
+    FOREIGN KEY (senderId) REFERENCES Users(userID),
+    FOREIGN KEY (receiverId) REFERENCES Users(userID)
 );
 
 CREATE TRIGGER mark_assignment_completed
@@ -182,17 +213,24 @@ WHERE studentID = NEW.studentID AND assignmentID = NEW.assignmentID;
 -- Insert data into Users
 INSERT INTO Users (userID, name, email, password, role) VALUES
 (1, 'Alice Johnson', 'alice@ils.edu', 'password123', 'student'),
-(2, 'Bob Smith', 'bob@ils.edu', 'password456', 'teacher'),
-(3, 'Charlie Davis', 'charlie@ils.edu', 'password789', 'parent'),
-(4, 'Dana White', 'dana@ils.edu', 'password321', 'counselor'),
+(2, 'Mr. Bob Smith', 'bob@ils.edu', 'password456', 'teacher'),
+(3, 'Mr. Charlie Davis', 'charlie@ils.edu', 'password789', 'parent'),
+(4, 'Ms. Dana White', 'dana@ils.edu', 'password321', 'counselor'),
 (5, 'Eve Black', 'eve@ils.edu', 'password123', 'student'),
-(6, 'Steven Hawk', 'steven@ils.edu', 'password789', 'parent'),
-(7, 'Jane Austin', 'jane@ils.edu', 'password456', 'teacher');
+(6, 'Mr. Steven Hawk', 'steven@ils.edu', 'password789', 'parent'),
+(7, 'Ms. Jane Austin', 'jane@ils.edu', 'password456', 'teacher'),
+(8, 'Ms. Zara Mane', 'zara@ils.edu', 'password321', 'counselor'),
+(9, 'Mr. Peter Sanders', 'peter@ils.edu', 'password456', 'teacher');
+
+-- Insert data into Counselors
+INSERT INTO Counselors (counselorID, userID) VALUES
+(1, 4),
+(2, 8);
 
 -- Insert data into Students
-INSERT INTO Students (studentID, userID, gradeLevel) VALUES
-(1, 1, 4),
-(2, 5, 6);
+INSERT INTO Students (studentID, userID, gradeLevel, counselorID) VALUES
+(1, 1, 4, 1),
+(2, 5, 6, 2);
 
 -- Insert data into Parents
 INSERT INTO Parents (parentID, userID, studentID) VALUES
@@ -208,17 +246,20 @@ INSERT INTO Subjects (subjectID, subjectName) VALUES
 -- Insert data into Teachers
 INSERT INTO Teachers (teacherID, userID, subjectID) VALUES
 (1, 2, 1),
-(2, 7, 2);
-
--- Insert data into Counselors
-INSERT INTO Counselors (counselorID, userID) VALUES
-(1, 4);
+(2, 7, 2),
+(3, 9, 3);
 
 INSERT INTO Student_Subjects (studentID, subjectID) VALUES
 (1, 1),
 (1, 2),
 (2, 1),
 (2, 3); 
+
+INSERT INTO Student_Teachers (studentID, teacherID) VALUES
+(1, 1),
+(1, 2),
+(2, 1),
+(2, 3);
 
 -- Insert data into Assignments
 INSERT INTO Assignments (assignmentID, subjectID, title, description, dueDate) VALUES
@@ -277,25 +318,25 @@ INSERT INTO Alerts (alertID, userID, message, dateCreated) VALUES
 (2, 2, 'Quiz results updated', '2025-02-11 14:00:00');
 
 -- Insert chat rooms for one-on-one conversations
-INSERT INTO Chat_rooms (chatRoomID, user1ID, user2ID) VALUES
-(1, 1, 2),  -- Student (Alice) <-> Teacher (Bob)
-(2, 1, 4),  -- Student (Alice) <-> Counselor (Dana)
-(3, 3, 2),  -- Parent (Charlie) <-> Teacher (Bob)
-(4, 3, 4),  -- Parent (Charlie) <-> Counselor (Dana)
-(5, 5, 2),  -- Student (Eve) <-> Teacher (Bob)
-(6, 5, 4);  -- Student (Eve) <-> Counselor (Dana)
+-- INSERT INTO Chat_rooms (chatRoomID, user1ID, user2ID) VALUES
+-- (1, 1, 2),  -- Student (Alice) <-> Teacher (Bob)
+-- (2, 1, 4),  -- Student (Alice) <-> Counselor (Dana)
+-- (3, 3, 2),  -- Parent (Charlie) <-> Teacher (Bob)
+-- (4, 3, 4),  -- Parent (Charlie) <-> Counselor (Dana)
+-- (5, 5, 2),  -- Student (Eve) <-> Teacher (Bob)
+-- (6, 5, 4);  -- Student (Eve) <-> Counselor (Dana)
 
--- Insert messages exchanged in different chat rooms
-INSERT INTO Messages (messageID, chatRoomID, userID, content, timestamp) VALUES
-(1, 1, 1, "Hello, Professor! I have a question about the homework.", '2025-02-12 09:30:00'),
-(2, 1, 2, "Sure, Alice! What do you need help with?", '2025-02-12 09:31:00'),
-(3, 2, 1, "Hi Counselor Dana, I need some advice.", '2025-02-12 10:00:00'),
-(4, 2, 4, "Of course, Alice! What is on your mind?", '2025-02-12 10:02:00'),
-(5, 3, 3, "Hello, Mr. Bob. How is my child doing in math?", '2025-02-12 10:45:00'),
-(6, 3, 2, "Hi Charlie! Your child is making good progress but needs some extra practice.", '2025-02-12 10:50:00'),
-(7, 4, 3, "Counselor Dana, do you think my child needs extra support?", '2025-02-13 08:30:00'),
-(8, 4, 4, "Yes, we should discuss an adaptive learning plan.", '2025-02-13 08:35:00'),
-(9, 5, 5, "Hey Professor, I need help with the physics lab.", '2025-02-14 15:00:00'),
-(10, 5, 2, "Sure Eve, let us go through it together.", '2025-02-14 15:05:00'),
-(11, 6, 5, "Counselor Dana, I struggle with time management.", '2025-02-14 16:30:00'),
-(12, 6, 4, "That is okay, Eve. We can create a personalized plan for you.", '2025-02-14 16:35:00');
+-- -- Insert messages exchanged in different chat rooms
+-- INSERT INTO Messages (messageID, chatRoomID, userID, content, timestamp) VALUES
+-- (1, 1, 1, "Hello, Professor! I have a question about the homework.", '2025-02-12 09:30:00'),
+-- (2, 1, 2, "Sure, Alice! What do you need help with?", '2025-02-12 09:31:00'),
+-- (3, 2, 1, "Hi Counselor Dana, I need some advice.", '2025-02-12 10:00:00'),
+-- (4, 2, 4, "Of course, Alice! What is on your mind?", '2025-02-12 10:02:00'),
+-- (5, 3, 3, "Hello, Mr. Bob. How is my child doing in math?", '2025-02-12 10:45:00'),
+-- (6, 3, 2, "Hi Charlie! Your child is making good progress but needs some extra practice.", '2025-02-12 10:50:00'),
+-- (7, 4, 3, "Counselor Dana, do you think my child needs extra support?", '2025-02-13 08:30:00'),
+-- (8, 4, 4, "Yes, we should discuss an adaptive learning plan.", '2025-02-13 08:35:00'),
+-- (9, 5, 5, "Hey Professor, I need help with the physics lab.", '2025-02-14 15:00:00'),
+-- (10, 5, 2, "Sure Eve, let us go through it together.", '2025-02-14 15:05:00'),
+-- (11, 6, 5, "Counselor Dana, I struggle with time management.", '2025-02-14 16:30:00'),
+-- (12, 6, 4, "That is okay, Eve. We can create a personalized plan for you.", '2025-02-14 16:35:00');
