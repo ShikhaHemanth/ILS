@@ -23,3 +23,21 @@
 .dropdown button {
     margin-right: 10px;
 }
+
+.nav-links {
+    display: flex;
+    gap: 300px;
+}
+.nav-links .active{
+    background: #bfd6ed;
+    border-radius: 5px;
+}
+.nav-links div {
+    padding: 5px;
+    color: black;
+    font-weight: bold;
+}
+.nav-links div:hover {
+    background: #bfd6ed;
+    border-radius: 5px;
+}
