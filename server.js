@@ -326,13 +326,24 @@ async function startServer() {
         try {
             const userID = req.session.userID;
             const parent = await getParentByUserId(userID);
-            console.log(parent.name)
             const students = await getStudentsByParentId(parent.parentId);
-            console.log(students)
             res.render('parent/parent_dashboard', { students, parent });
         } catch (error) {
             console.error("Error loading parent dashboard:", error);
             res.status(500).send("Error loading dashboard");
+        }
+    });
+    app.get('/parent_dashboard/feedback', async (req, res) => {
+        // console.log("ROUTE HIT");
+        if (!req.session.userID) {
+            return res.redirect('/login'); // Ensure user is logged in
+        }
+
+        try {
+            res.render('parent/parent_feedback');
+        } catch (error) {
+            console.error("Error loading student feedback:", error);
+            res.status(500).send("Error loading feedback");
         }
     });
 
@@ -340,7 +351,7 @@ async function startServer() {
         res.render('student/whiteboard'); // assuming whiteboard.ejs exists in views/student
     });
 
-    app.get('/student_dashboard/:subjectName/activity/feedback', isAuthenticated, async (req, res) => {
+    app.get('/student_dashboard/:subjectName/activity/submission/feedback', isAuthenticated, async (req, res) => {
         const userID = req.session.userID; // assuming student is logged in
         const subjectName = req.params.subjectName;
         try {
@@ -354,7 +365,7 @@ async function startServer() {
                 a.subjectName.toLowerCase() === subjectName.toLowerCase()
             );
             const submissions = await getSubmissionsByStudent(userID);
-            res.render('student/student_submission', { subjectName, assignments: filteredAssignments, submissions });
+            res.render('student/student_feedback', { subjectName, assignments: filteredAssignments, submissions });
         } catch (error) {
             console.error(error);
             res.status(500).send('Error loading submission dashboard');
