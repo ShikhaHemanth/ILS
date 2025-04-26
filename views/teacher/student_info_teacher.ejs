@@ -450,8 +450,7 @@
           chatMessages.scrollTop = chatMessages.scrollHeight;
         });
     });
-    document.getElementById("my-sections").addEventListener("click", () => window.location.href="/teacher_dashboard");
-    document.getElementById("uploads").addEventListener("click", () => window.location.href="/teacher_dashboard/uploads");
+    document.getElementById("uploads").addEventListener("click", () => window.location.href="/teacher_dashboard/uploads/<%= studentid %>");
     document.getElementById("logout").addEventListener("click", () => {
       localStorage.removeItem("token");
       window.location.href="/login";
@@ -467,19 +466,6 @@
         setActiveLink('uploads');
     });
 
-    document.getElementById('reminders').addEventListener('click', function() {
-        showSection('learning-plan-content');
-        setActiveLink('reminders');
-    });
-
-    // Function to display the selected section
-    function showSection(sectionId) {
-        const sections = document.querySelectorAll('.content-section');
-        sections.forEach(function(section) {
-            section.style.display = 'none'; // Hide all sections
-        });
-        document.getElementById(sectionId).style.display = 'block'; // Show selected section
-    }
 
     // Function to set the active link
     function setActiveLink(activeLinkId) {
@@ -489,6 +475,10 @@
         });
         document.getElementById(activeLinkId).classList.add('active'); // Add active class to clicked link
     }
+    
+    document.getElementById("back").addEventListener("click", function() {
+            window.location.href = "/teacher_dashboard";
+        });
 </script>
 </body>
 </html>
