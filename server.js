@@ -10,7 +10,8 @@ const { loginUser } = require('./businessLogic');
 const { getMessagesBetweenUsers, connectToDatabase, getUserByUserId, getUserByEmail, getSubjectsForStudent, getAssignmentsForStudent, 
     getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, getStudentByUserId, saveMood, getTeachersbyStudentId, 
     getCounselorbyStudentId, saveMessage, getStudentsByTeacherId, getTeacherbyUserId, getCounselorByUserId,
-    getStudentsByCounselorID, getUserIdByStudentId, getParentByUserId, getStudentsByParentId, getCompletedAssignments, getYetToCompleteAssignments } = require('./dataAccess');
+    getStudentsByCounselorID, getUserIdByStudentId, getParentByUserId, getStudentsByParentId, getCompletedAssignments, getYetToCompleteAssignments,
+    getLearningPlansByStudentId } = require('./dataAccess');
 // Set up multer to store files in uploads folder
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -309,12 +310,26 @@ async function startServer() {
                 return res.status(404).send("Student not found.");
             }
     
-            res.render('counselor/student_info_conselor', { userID, student, counselor, teachers });  // Render the student info page with the student's data
+            res.render('counselor/student_info_conselor', {userID, student, counselor, teachers });  // Render the student info page with the student's data
         } catch (error) {
             console.error("Error fetching student info:", error);
             res.status(500).send("Error loading student information");
         }
-    });    
+    });
+    
+    app.get('/counselor_dashboard/student_info/learning_plan/:userID', isAuthenticated, async (req, res) => {
+        try {
+            const studentID = req.params.userID;
+            // Fetch learning plans for this student
+            const learningPlans = await getLearningPlansByStudentId(studentID);
+    
+            // Render the learning plans page for the student
+            res.render('counselor/learning_plan', { learningPlans, studentID });
+        } catch (error) {
+            console.error("Error fetching learning plans:", error);
+            res.status(500).send("Error loading learning plans");
+        }
+    });
     
     app.get('/parent_dashboard', async (req, res) => {
         // console.log("ROUTE HIT");

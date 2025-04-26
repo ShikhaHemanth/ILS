@@ -538,9 +538,18 @@ async function uploadAssignment(studentID, subjectID, fileName, contentType, upl
     }
 }
 
+async function getLearningPlansByStudentId(studentID) {
+    return new Promise((resolve, reject) => {
+        db.query('SELECT * FROM Learning_plans WHERE studentID = ?', [studentID], (error, results) => {
+            if (error) reject(error);
+            resolve(results);
+        });
+    });
+}
+
 
 module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
     getCounselorbyStudentId,getCounselorByUserId, getMessagesBetweenUsers, getStudentsByCounselorID, getTeacherbyUserId, 
     saveMessage, getStudentsByTeacherId, getUserIdByStudentId, getParentByUserId, getStudentsByParentId, getUploadedAssignments, 
-    uploadAssignment, getCompletedAssignments, getYetToCompleteAssignments };
+    uploadAssignment, getCompletedAssignments, getYetToCompleteAssignments, getLearningPlansByStudentId };
