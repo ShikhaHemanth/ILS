@@ -547,9 +547,19 @@ async function getLearningPlansByStudentId(studentID) {
     });
 }
 
+async function addLearningPlan(adaptiveFeatures, progressSummary, studentID) {
+    return new Promise((resolve, reject) => {
+        db.query('INSERT INTO Learning_plans (adaptiveFeatures, progressSummary, studentID) VALUES (?, ?, ?)', 
+            [adaptiveFeatures, progressSummary, studentID], (error, results) => {
+                if (error) reject(error);
+                resolve(results);
+            });
+    });
+}
+
 
 module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStudentByUserId, getSubjectsForStudent, 
     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
     getCounselorbyStudentId,getCounselorByUserId, getMessagesBetweenUsers, getStudentsByCounselorID, getTeacherbyUserId, 
     saveMessage, getStudentsByTeacherId, getUserIdByStudentId, getParentByUserId, getStudentsByParentId, getUploadedAssignments, 
-    uploadAssignment, getCompletedAssignments, getYetToCompleteAssignments, getLearningPlansByStudentId };
+    uploadAssignment, getCompletedAssignments, getYetToCompleteAssignments, getLearningPlansByStudentId,addLearningPlan };

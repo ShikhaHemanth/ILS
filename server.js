@@ -317,9 +317,10 @@ async function startServer() {
         }
     });
     
-    app.get('/counselor_dashboard/student_info/learning_plan/:userID', isAuthenticated, async (req, res) => {
+    app.get('/counselor_dashboard/student_info/learning_plan/:studentID', isAuthenticated, async (req, res) => {
         try {
-            const studentID = req.params.userID;
+            const studentID = req.params.studentID;
+            console.log(studentID)
             // Fetch learning plans for this student
             const learningPlans = await getLearningPlansByStudentId(studentID);
     
@@ -328,6 +329,21 @@ async function startServer() {
         } catch (error) {
             console.error("Error fetching learning plans:", error);
             res.status(500).send("Error loading learning plans");
+        }
+    });
+
+    app.post('/counselor_dashboard/student_info/learning_plan/add_learning_plan/:studentID', isAuthenticated, async (req, res) => {
+        try {
+            const { adaptiveFeatures, progressSummary, studentID } = req.body;
+            
+            // Save the learning plan to the database
+            await addLearningPlan(adaptiveFeatures, progressSummary, studentID);
+            
+            // Redirect back to the student's learning plan page
+            res.redirect(`counselor/learning_plan/adaptive/${studentID}`);
+        } catch (error) {
+            console.error("Error submitting learning plan:", error);
+            res.status(500).send("Error submitting learning plan");
         }
     });
     
