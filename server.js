@@ -11,7 +11,8 @@ const { getMessagesBetweenUsers, connectToDatabase, getUserByUserId, getUserByEm
     getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, getStudentByUserId, saveMood, getTeachersbyStudentId, 
     getCounselorbyStudentId, saveMessage, getStudentsByTeacherId, getTeacherbyUserId, getCounselorByUserId,
     getStudentsByCounselorID, getUserIdByStudentId, getParentByUserId, getStudentsByParentId, getCompletedAssignments, getYetToCompleteAssignments,
-    getLearningPlansByStudentId } = require('./dataAccess');
+    getLearningPlansByStudentId, getUploadedAssignments, 
+    getSubjectIdByTeacherId} = require('./dataAccess');
 // Set up multer to store files in uploads folder
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -426,7 +427,7 @@ async function startServer() {
                 userId, 
                 teacher, 
                 student, 
-                counselor 
+                counselor, studentid
             });
         } catch (error) {
             console.error("Error loading teacher dashboard:", error);
@@ -435,23 +436,24 @@ async function startServer() {
     });
 
     
-    app.get('/teacher_dashboard/uploads/:studentname', isAuthenticated, async (req, res) => {
+    app.get('/teacher_dashboard/uploads/:studentid', isAuthenticated, async (req, res) => {
         if (!req.session.userID) {
             return res.redirect('/login'); // Ensure user is logged in
         }
         try {
-            const studentname = req.params.studentname;
-            
+            const studentid = req.params.studentid;
+            const studentUserId = await getUserIdByStudentId(studentid);
+            const student = await getUserByUserId(studentUserId);
             // Get the teacher's ID
             const teacher = await getTeacherbyUserId(req.session.userID);
             const teacherId = teacher.teacherid;
+            const assignments = await getUploadedAssignments(studentid, teacherId)
+            const subjectId = await getSubjectIdByTeacherId(teacherId);
 
             // Fetch uploaded assignments
-            const uploadedAssignments = await getUploadedAssignments(studentname, teacherId);
 
-            res.render('teacher/uploads', {
-                studentname, 
-                uploadedAssignments
+            res.render('teacher/upload', {
+                student, teacherId, assignments, subjectId
             });
         } catch (error) {
             console.error("Error loading uploads:", error);

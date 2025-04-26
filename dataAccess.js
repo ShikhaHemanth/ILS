@@ -492,17 +492,23 @@ async function getYetToCompleteAssignments(studentname, teacherId) {
     }
 }
 
-async function getUploadedAssignments(studentname, teacherId) {
+async function getUploadedAssignments(studentid, teacherId) {
     try {
         return new Promise((resolve, reject) => {
             const query = `
-                SELECT sc.fileName, sc.contentType, sc.uploadDate, sub.subjectName
-                FROM SubjectContent sc
-                JOIN Subjects sub ON sc.subjectId = sub.subjectID
-                WHERE sc.studentId = (SELECT studentID FROM Students WHERE userID = (SELECT userID FROM Users WHERE name = ?))
-                AND sc.subjectId IN (SELECT subjectID FROM Teachers WHERE teacherID = ?)
+                SELECT 
+                    a.assignmentID,
+                    a.title,
+                    a.description,
+                    a.dueDate,
+                    sa.completed
+                FROM Assignments a
+                JOIN Student_Assignments sa ON a.assignmentID = sa.assignmentID
+                JOIN Teachers t ON a.subjectID = t.subjectID
+                WHERE sa.studentID = ?
+                AND t.teacherID = ?
             `;
-            db.query(query, [studentname, teacherId], (error, results) => {
+            db.query(query, [studentid, teacherId], (error, results) => {
                 if (error) {
                     console.error("Error fetching uploaded assignments:", error);
                     return reject(error);
@@ -512,6 +518,25 @@ async function getUploadedAssignments(studentname, teacherId) {
         });
     } catch (error) {
         console.error("Error in getUploadedAssignments:", error);
+        throw error;
+    }
+}
+async function getSubjectIdByTeacherId(teacherId) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT subjectid FROM teachers where teacherid=?;
+            `;
+            db.query(query, [teacherId], (error, results) => {
+                if (error) {
+                    console.error("Error fetching subjectId:", error);
+                    return reject(error);
+                }
+                resolve(results); // Resolve with the uploaded assignments
+            });
+        });
+    } catch (error) {
+        console.error("Error in getsubjectidbyteacherid:", error);
         throw error;
     }
 }
@@ -538,6 +563,7 @@ async function uploadAssignment(studentID, subjectID, fileName, contentType, upl
     }
 }
 
+
 async function getLearningPlansByStudentId(studentID) {
     return new Promise((resolve, reject) => {
         db.query('SELECT * FROM Learning_plans WHERE studentID = ?', [studentID], (error, results) => {
@@ -552,4 +578,5 @@ module.exports = { connectToDatabase, getUserByUserId, getUserByEmail, getStuden
     getAssignmentsForStudent, getAssignmentByAssignmentId, saveSubmission, getSubmissionsByStudent, saveMood, getTeachersbyStudentId, 
     getCounselorbyStudentId,getCounselorByUserId, getMessagesBetweenUsers, getStudentsByCounselorID, getTeacherbyUserId, 
     saveMessage, getStudentsByTeacherId, getUserIdByStudentId, getParentByUserId, getStudentsByParentId, getUploadedAssignments, 
-    uploadAssignment, getCompletedAssignments, getYetToCompleteAssignments, getLearningPlansByStudentId };
+    uploadAssignment, getCompletedAssignments, getYetToCompleteAssignments, getLearningPlansByStudentId, getUploadedAssignments,
+    getSubjectIdByTeacherId };
