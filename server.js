@@ -477,12 +477,15 @@ async function startServer() {
         }
     });
 
-    app.get('/teacher_dashboard/learning_plan', isAuthenticated, async (req, res) => {
+    app.get('/teacher_dashboard/learning_plan/:studentid', isAuthenticated, async (req, res) => {
         if (!req.session.userID) {
             return res.redirect('/login'); // Ensure user is logged in
         }
+        const studentid = req.params.studentid;
+        const studentUserId = await getUserIdByStudentId(studentid);
+        const student = await getUserByUserId(studentUserId.userid);
         try {
-            res.render('teacher/coming_soon');
+            res.render('teacher/coming_soon', {studentid, student});
         } catch (error) {
             console.error("Error loading learning plan:", error);
             res.status(500).send("Error loading learning plan");
