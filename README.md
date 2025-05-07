@@ -26,3 +26,16 @@ For signing in as a student:
 15. Once all the student tasks are done, you can click the back button on the top left to return to dashboard and you will see the progress bar is full with a congratulations message.
 16. To log out, press the settings dropdown on the top right and click logout.
 
+For signing in as a teacher:
+1. Input the email: bob@ils.edu and password: password456
+2. Once you press login, you will see the teacher dashboard. You can see the name of the teacher displayed and the list of students they teach.
+3. Click on a student name - Alice Johnson
+4. you will be direct to a student status page that tells you the assignments Alice has completed and assignments that Alice did not complete.
+5. On the navbar at the top you will see three options student status, Uploads and Learning plan. Student status is where you are cuurently
+6. Next, click on uploads.
+7. You will be redirected to a page that shows the assignments that the teacher uploaded.
+8. Next, when you click learning plan in the navbar, you will be redirected to a page that says "coming soon"
+9. To log out, press the settings dropdown on the top right and click logout.
+
+
+
