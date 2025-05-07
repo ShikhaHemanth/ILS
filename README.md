@@ -8,7 +8,7 @@ For starting the website:
 5. Once the code is running, open a browser and navigate to http://localhost:4000 
 6. Click Login
 
-For signing in as a student:
+For logging in as a student:
 1. Input the email: alice@ils.edu and password: password123
 2. Once you press login, you will see the student dashboard. You can see your progress in completing all your assignments, your list of activities to do and the subjects you are enrolled in. There is also a mood board to select a depiction of what you are feeling at the moment.
 3. Select an emoji in the mood board to best depict your feeling at the moment.
@@ -26,7 +26,18 @@ For signing in as a student:
 15. Once all the student tasks are done, you can click the back button on the top left to return to dashboard and you will see the progress bar is full with a congratulations message.
 16. To log out, press the settings dropdown on the top right and click logout.
 
-Counselor Sign-In Instructions
+For signing in as a teacher:
+1. Input the email: bob@ils.edu and password: password456
+2. Once you press login, you will see the teacher dashboard. You can see the name of the teacher displayed and the list of students they teach.
+3. Click on a student name - Alice Johnson
+4. you will be direct to a student status page that tells you the assignments Alice has completed and assignments that Alice did not complete.
+5. On the navbar at the top you will see three options student status, Uploads and Learning plan. Student status is where you are cuurently
+6. Next, click on uploads.
+7. You will be redirected to a page that shows the assignments that the teacher uploaded.
+8. Next, when you click learning plan in the navbar, you will be redirected to a page that says "coming soon"
+9. To log out, press the settings dropdown on the top right and click logout.
+
+For logging in as a counsellor:
 1. Input the email: zara@ils.edu and password: password321
 2. Once you press login, you will see your personal platform with your name displayed at the top.
 3. Use the Reminder Checklist to mark off tasks as you complete them. You can check or uncheck items based on your current progress.
@@ -35,11 +46,8 @@ Counselor Sign-In Instructions
 6. On this screen, click the chat icon to view your conversations with that child.
 7. To view the suggested learning plans for the student, click the Learning Plan button.
 8. Once your tasks are done, you can click the back or home button in the learning plan and progress report pages on the top header to return to your dashboard.
-9. To log out, press the settings dropdown on the top right and click logout.
 
-
-
-Parent Sign-In Instructions
+For logging in as a parent:
 1. Input the email: steven@ils.edu and password: password789
 2. Once you press login, you will see your personal platform with your name at the top and your child’s name displayed as well.
 3. On the same screen, you can view your child's progress through the Tableau dashboard screenshot embedded on the page.
@@ -47,4 +55,4 @@ Parent Sign-In Instructions
 5. To review assignment feedback, click the Feedback button.
 6. You will then see all assignments assigned to your child along with the corresponding feedback from teachers.
 7. Once you're done reviewing, click the back or dashboard button on the top header to return to the dashboard.
-8. To log out, press the settings dropdown on the top right and click logout.
+8. To log out, press the settings dropdown on the top right and click logout.
