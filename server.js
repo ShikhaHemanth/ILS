@@ -482,7 +482,7 @@ async function startServer() {
             return res.redirect('/login'); // Ensure user is logged in
         }
         try {
-            res.render('teacher/learning_plan');
+            res.render('teacher/coming_soon');
         } catch (error) {
             console.error("Error loading learning plan:", error);
             res.status(500).send("Error loading learning plan");
