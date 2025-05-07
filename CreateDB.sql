@@ -4,12 +4,7 @@ USE individualized_learning;
 
 -- Drop tables in reverse order of dependency
 DROP TABLE IF EXISTS Messages;
-DROP TABLE IF EXISTS Chat_rooms;
-DROP TABLE IF EXISTS Alerts;
-DROP TABLE IF EXISTS Quizzes;
 DROP TABLE IF EXISTS Learning_plans;
-DROP TABLE IF EXISTS Assessments;
-DROP TABLE IF EXISTS Progress_reports;
 DROP TABLE IF EXISTS moodcheckins;
 DROP TABLE IF EXISTS subjectcontent;
 DROP TABLE IF EXISTS Feedback;
@@ -131,32 +126,18 @@ CREATE TABLE SubjectContent (
     fileName VARCHAR(255),
     uploadDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     contentType VARCHAR(50),  -- e.g., 'pdf', 'video', 'link', 'text'
-    studentId INT REFERENCES Students(studentId),
-    subjectId INT REFERENCES Subjects(subjectId)
+    studentId INT,
+    subjectId INT,
+    foreign key (studentId) REFERENCES Students(studentId),
+    foreign key (subjectId) REFERENCES Subjects(subjectId)
 );
 
 CREATE TABLE MoodCheckins (
     moodId INT PRIMARY KEY AUTO_INCREMENT,
-    studentId INT REFERENCES Students(studentId),
+    studentId INT,
     mood VARCHAR(50),  -- e.g., 'happy', 'tired', 'frustrated', etc.
-    checkinTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE Progress_reports (
-    reportID INT AUTO_INCREMENT PRIMARY KEY,
-    studentID INT,
-    generatedDate DATE,
-    details TEXT,
-    FOREIGN KEY (studentID) REFERENCES Students(studentID)
-);
-
-CREATE TABLE Assessments (
-    assessmentID INT AUTO_INCREMENT PRIMARY KEY,
-    studentID INT,
-    counselorID INT,
-    results TEXT,
-    FOREIGN KEY (studentID) REFERENCES Students(studentID),
-    FOREIGN KEY (counselorID) REFERENCES Counselors(counselorID)
+    checkinTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    foreign key (studentId) REFERENCES Students(studentId)
 );
 
 CREATE TABLE Learning_plans (
@@ -167,38 +148,12 @@ CREATE TABLE Learning_plans (
     FOREIGN KEY (studentID) REFERENCES Students(studentID)
 );
 
-CREATE TABLE Quizzes (
-    quizID INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255),
-    description TEXT,
-    learningPlanID INT,
-    FOREIGN KEY (learningPlanID) REFERENCES Learning_plans(learningPlanID)
-);
-
-CREATE TABLE Alerts (
-    alertID INT AUTO_INCREMENT PRIMARY KEY,
-    userID INT,
-    message TEXT,
-    dateCreated TIMESTAMP,
-    FOREIGN KEY (userID) REFERENCES Users(userID)
-);
-
-CREATE TABLE Chat_rooms (
-    chatRoomID INT AUTO_INCREMENT PRIMARY KEY,
-    user1ID INT,
-    user2ID INT,
-    FOREIGN KEY (user1ID) REFERENCES Users(userID),
-    FOREIGN KEY (user2ID) REFERENCES Users(userID)
-);
-
 CREATE TABLE Messages (
     messageId INT PRIMARY KEY AUTO_INCREMENT,
-    chatRoomId INT,
     senderId INT,
     receiverId INT,
     content TEXT,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (chatRoomID) REFERENCES Chat_rooms(chatRoomID),
     FOREIGN KEY (senderId) REFERENCES Users(userID),
     FOREIGN KEY (receiverId) REFERENCES Users(userID)
 );
@@ -264,15 +219,15 @@ INSERT INTO Student_Teachers (studentID, teacherID) VALUES
 -- Insert data into Assignments
 INSERT INTO Assignments (assignmentID, subjectID, title, description, dueDate) VALUES
 -- Math - Grade 4
-(1, 1, 'Basic Algebra', 'Solve simple equations like 2x + 3 = 7', '2025-05-01'),
+(1, 1, 'Basic Algebra', 'Solve simple equations like 2x + 3 = 7', '2025-07-01'),
 -- Math - Grade 6
-(2, 1, 'Advanced Geometry', 'Solve problems on angles, triangles, and area', '2025-05-03'),
+(2, 1, 'Advanced Geometry', 'Solve problems on angles, triangles, and area', '2025-07-03'),
 -- Math - Grade 4
-(3, 1, 'Bar Graph Practice', 'Interpret bar graphs and answer questions', '2025-05-04'),
+(3, 1, 'Bar Graph Practice', 'Interpret bar graphs and answer questions', '2025-07-04'),
 -- Science - Grade 4
-(4, 2, 'Animal Classification', 'Classify animals into mammals, reptiles, etc.', '2025-05-05'),
+(4, 2, 'Animal Classification', 'Classify animals into mammals, reptiles, etc.', '2025-07-05'),
 -- English - Grade 6
-(5, 3, 'Compare Two Poems', 'Write a short essay comparing themes in two poems', '2025-05-06');
+(5, 3, 'Compare Two Poems', 'Write a short essay comparing themes in two poems', '2025-07-06');
 
 -- Insert data into Student_Assignments
 INSERT INTO Student_Assignments (studentID, assignmentID) VALUES
@@ -292,27 +247,8 @@ INSERT INTO Feedback (submissionID, grade, feedback) VALUES
 (1, 85.0, 'Good work'),
 (2, 90.0, 'Excellent report');
 
--- Insert data into Progress_reports
-INSERT INTO Progress_reports (reportID, studentID, generatedDate, details) VALUES
-(1, 1, '2025-02-15', 'Progress is good.'),
-(2, 2, '2025-02-16', 'Needs improvement in some areas.');
-
--- Insert data into Assessments
-INSERT INTO Assessments (assessmentID, studentID, counselorID, results) VALUES
-(1, 1, 1, 'Assessment results are satisfactory.'),
-(2, 2, 1, 'Needs additional practice.');
-
 -- Insert data into Learning_plans
 INSERT INTO Learning_plans (learningPlanID, studentID, adaptiveFeatures, progressSummary) VALUES
 (1, 1, 'Adaptive learning enabled', 'Shows steady progress'),
 (2, 2, 'Needs personalized content', 'Requires improvement in problem-solving');
 
--- Insert data into Quizzes
-INSERT INTO Quizzes (quizID, title, description, learningPlanID) VALUES
-(1, 'Math Quiz', 'Basic algebra', 1),
-(2, 'Science Quiz', 'Physics basics', 2);
-
--- Insert data into Alerts
-INSERT INTO Alerts (alertID, userID, message, dateCreated) VALUES
-(1, 1, 'New assignment added', '2025-02-10 10:00:00'),
-(2, 2, 'Quiz results updated', '2025-02-11 14:00:00');
