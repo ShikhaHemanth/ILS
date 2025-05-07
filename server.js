@@ -460,7 +460,6 @@ async function startServer() {
             const studentid = req.params.studentid;
             const studentUserId = await getUserIdByStudentId(studentid);
             const student = await getUserByUserId(studentUserId);
-            console.log(student)
             // Get the teacher's ID 
             const teacher = await getTeacherbyUserId(req.session.userID);
             const teacherId = teacher.teacherid;
