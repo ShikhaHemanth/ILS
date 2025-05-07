@@ -202,9 +202,9 @@
     <div class="header">
       <button class="btn btn-light" id="back">&#8592;</button>
       <div class="nav-links">
-        <div id="my-sections" class="active">Student Status</div>
+        <div id="student-details" class="active">Student Status</div>
         <div id="uploads">Uploads</div>
-        <div id="reminders">Learning plan</div>
+        <div id="plans">Learning plan</div>
       </div>
       <div class="dropdown">
         <button class="btn btn-light dropdown-toggle" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">⚙️</button>
@@ -450,22 +450,19 @@
           chatMessages.scrollTop = chatMessages.scrollHeight;
         });
     });
-    document.getElementById("uploads").addEventListener("click", () => window.location.href="/teacher_dashboard/uploads/<%= studentid %>");
+    document.getElementById("student-details").addEventListener("click", () => {
+        window.location.href = "/teacher_dashboard/student_info/<%= studentid %>/<%= student.name %>";
+    });
+    document.getElementById("uploads").addEventListener("click", () => {
+      window.location.href="/teacher_dashboard/uploads/<%= studentid %>"
+    });
+    document.getElementById("plans").addEventListener("click", () => {
+      window.location.href="/teacher_dashboard/learning_plan/<%= studentid %>"
+    });
     document.getElementById("logout").addEventListener("click", () => {
       localStorage.removeItem("token");
       window.location.href="/login";
     });
-    // Event listeners for navigation links
-    document.getElementById('my-sections').addEventListener('click', function() {
-        showSection('student-status-content');
-        setActiveLink('my-sections');
-    });
-
-    document.getElementById('uploads').addEventListener('click', function() {
-        showSection('uploads-content');
-        setActiveLink('uploads');
-    });
-
 
     // Function to set the active link
     function setActiveLink(activeLinkId) {

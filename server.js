@@ -477,6 +477,17 @@ async function startServer() {
         }
     });
 
+    app.get('/teacher_dashboard/learning_plan', isAuthenticated, async (req, res) => {
+        if (!req.session.userID) {
+            return res.redirect('/login'); // Ensure user is logged in
+        }
+        try {
+            res.render('teacher/coming_soon');
+        } catch (error) {
+            console.error("Error loading learning plan:", error);
+            res.status(500).send("Error loading learning plan");
+        }
+    });
 
     // Connect to database and start server
     try {
