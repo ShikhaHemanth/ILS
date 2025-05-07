@@ -459,8 +459,8 @@ async function startServer() {
         try {
             const studentid = req.params.studentid;
             const studentUserId = await getUserIdByStudentId(studentid);
-            const student = await getUserByUserId(studentUserId);
-            // Get the teacher's ID
+            const student = await getUserByUserId(studentUserId.userid);
+            // Get the teacher's ID 
             const teacher = await getTeacherbyUserId(req.session.userID);
             const teacherId = teacher.teacherid;
             const assignments = await getUploadedAssignments(studentid, teacherId)
@@ -469,7 +469,7 @@ async function startServer() {
             // Fetch uploaded assignments
 
             res.render('teacher/upload', {
-                student, teacherId, assignments, subjectId
+                studentid, student, teacherId, assignments, subjectId
             });
         } catch (error) {
             console.error("Error loading uploads:", error);
@@ -477,6 +477,17 @@ async function startServer() {
         }
     });
 
+    app.get('/teacher_dashboard/learning_plan', isAuthenticated, async (req, res) => {
+        if (!req.session.userID) {
+            return res.redirect('/login'); // Ensure user is logged in
+        }
+        try {
+            res.render('teacher/coming_soon');
+        } catch (error) {
+            console.error("Error loading learning plan:", error);
+            res.status(500).send("Error loading learning plan");
+        }
+    });
 
     // Connect to database and start server
     try {
