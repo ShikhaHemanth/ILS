@@ -239,10 +239,10 @@ async function startServer() {
         const subjectName = req.params.subjectName;
         try {
             const studentID = await (userID);
-                if (!studentID) {
-                    console.log("No student found for userID:", userID);
-                    return [];
-                }
+            if (!studentID) {
+                console.log("No student found for userID:", userID);
+                return [];
+            }
             const assignments = await getAssignmentsForStudent(studentID);
             const filteredAssignments = assignments.filter(a =>
                 a.subjectName.toLowerCase() === subjectName.toLowerCase()
@@ -476,17 +476,6 @@ async function startServer() {
             res.status(500).send("Error loading uploads");
         }
     });
-
-// Sakshis workspace 
-
-// app.get('/counselor_dashboard', isAuthenticated, (req, res) => {
-//     if (!req.session.userID) {
-//         return res.redirect('/login'); // Ensure user is logged in
-//     }
-//     const userID = req.session.userID; // Get student ID from session
-    
-//     res.render('counselor/counselor_dashboard')
-// });
 
 
     // Connect to database and start server

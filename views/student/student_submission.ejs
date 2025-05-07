@@ -81,6 +81,10 @@
             white-space: nowrap;
         }
 
+        .space {
+            margin-top: 50px;
+        }
+
     </style>
 </head>
 <body>
@@ -109,6 +113,7 @@
                     const due = new Date(assignment.duedate);
                     const today = new Date();
                     const isPastDue = today > due; %>
+                    <div class="space"></div>
                     <div class="assignment-row">
                         <div class="assignment-info">
                           <p><%= assignment.title %> — Due: <%= new Date(assignment.duedate).toLocaleDateString() %></p>
@@ -125,9 +130,9 @@
                       </div>
 
                     <% const userSubmission = submissions.find(sub => sub.assignmentID === assignment.assignmentId); %>
-                    <% if (userSubmission && userSubmission.fileURL) { %>
+                    <% if (userSubmission && userSubmission.uploadsFileName) { %>
                         <div class="file-name">
-                            Already uploaded: <strong><%= userSubmission.fileURL %></strong>
+                            Already uploaded: <strong><%= userSubmission.uploadsFileName %></strong>
                             <button type="button" id="clearFile" class="btn btn-sm">❌</button>
                         </div>
                     <% } %>
@@ -179,6 +184,24 @@
         // Add event listener for the pageshow event
         window.addEventListener('pageshow', handlePageShow);
 
+        
+        document.getElementById("content").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/<%= subjectName %>";
+        });
+        document.getElementById("submissions").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/<%= subjectName %>/activity/submission";
+        });
+        document.getElementById("feedback").addEventListener("click", function() {
+            window.location.href = "/student_dashboard/<%= subjectName %>/activity/submission/feedback";
+        });
+        document.getElementById("back").addEventListener("click", function() {
+            window.location.href = "/student_dashboard";
+        });
+        document.getElementById("logout").addEventListener("click", function() {
+            localStorage.removeItem('token'); // Remove the token
+            window.location.href = "/login";  // Redirect to login page
+        });
+        
         let currentAssignmentID = null;
         function openUploadModal(assignmentId) {
             document.getElementById("clearFile").style.display = "none";
@@ -289,23 +312,6 @@
             fileNameDisplay.textContent = "No file chosen";
             document.getElementById("clearFile").style.display = "none";
         }
-
-        document.getElementById("content").addEventListener("click", function() {
-            window.location.href = "/student_dashboard/<%= subjectName %>";
-        });
-        document.getElementById("submissions").addEventListener("click", function() {
-            window.location.href = "/student_dashboard/<%= subjectName %>/activity/submission";
-        });
-        document.getElementById("feedback").addEventListener("click", function() {
-            window.location.href = "/student_dashboard/<%= subjectName %>/activity/submission/feedback";
-        });
-        document.getElementById("back").addEventListener("click", function() {
-            window.location.href = "/student_dashboard";
-        });
-        document.getElementById("logout").addEventListener("click", function() {
-            localStorage.removeItem('token'); // Remove the token
-            window.location.href = "/login";  // Redirect to login page
-        });
     </script>
 </body>
 </html>
