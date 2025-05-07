@@ -114,6 +114,10 @@
 
   <!-- Scripts -->
   <script>
+    document.getElementById("back").addEventListener("click", () => {
+    window.location.href = "/parent_dashboard"; // Update this path if necessary
+  });
+  
     document.getElementById("logout").addEventListener("click", () => {
       localStorage.removeItem("token");
       window.location.href = "/login";

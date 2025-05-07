@@ -26,3 +26,25 @@ For signing in as a student:
 15. Once all the student tasks are done, you can click the back button on the top left to return to dashboard and you will see the progress bar is full with a congratulations message.
 16. To log out, press the settings dropdown on the top right and click logout.
 
+Counselor Sign-In Instructions
+1. Input the email: zara@ils.edu and password: password321
+2. Once you press login, you will see your personal platform with your name displayed at the top.
+3. Use the Reminder Checklist to mark off tasks as you complete them. You can check or uncheck items based on your current progress.
+4. You will also see a list of children you are a counselor for, displayed as buttons.
+5. Click on a child’s name to view their detailed progress report.
+6. On this screen, click the chat icon to view your conversations with that child.
+7. To view the suggested learning plans for the student, click the Learning Plan button.
+8. Once your tasks are done, you can click the back or home button in the learning plan and progress report pages on the top header to return to your dashboard.
+9. To log out, press the settings dropdown on the top right and click logout.
+
+
+
+Parent Sign-In Instructions
+1. Input the email: steven@ils.edu and password: password789
+2. Once you press login, you will see your personal platform with your name at the top and your child’s name displayed as well.
+3. On the same screen, you can view your child's progress through the Tableau dashboard screenshot embedded on the page.
+4. To ask questions or get support, click the chatbot icon on the screen. The chatbot conversation can be refreshed using the refresh icon on the chatbot       header. Clicking the icon again will reduce the chatbot to not be seen anymore.
+5. To review assignment feedback, click the Feedback button.
+6. You will then see all assignments assigned to your child along with the corresponding feedback from teachers.
+7. Once you're done reviewing, click the back or dashboard button on the top header to return to the dashboard.
+8. To log out, press the settings dropdown on the top right and click logout.

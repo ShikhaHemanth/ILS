@@ -217,7 +217,14 @@
     
     <script>
     document.getElementById("logout").addEventListener("click",()=>{localStorage.removeItem("token");window.location.href="/login"});
-    document.getElementById("my-sections").addEventListener("click", function() {window.location.href = "/student_info";});
+    document.getElementById("my-sections").addEventListener("click", () => {
+    window.location.href = "/counselor_dashboard"; // Redirect to the dashboard
+  });
+
+  // Back button functionality
+  document.getElementById("back").addEventListener("click", () => {
+    window.location.href = "/counselor_dashboard"; // Redirect to the dashboard
+  });
     </script>
 </body>
 </html>
