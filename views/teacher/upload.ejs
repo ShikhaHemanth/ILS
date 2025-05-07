@@ -73,7 +73,9 @@
         </div>
     </div>
     <script>
-        // document.getElementById("my-sections").addEventListener("click", () => window.location.href="");
+        document.getElementById("my-sections").addEventListener("click", () => {
+            window.location.href = "/teacher_dashboard/student_info/<%= studentid %>/<%= student.name %>";
+        });
         document.getElementById("back").addEventListener("click", function() {
             window.location.href = "/teacher_dashboard";
         });

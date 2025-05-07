@@ -460,7 +460,8 @@ async function startServer() {
             const studentid = req.params.studentid;
             const studentUserId = await getUserIdByStudentId(studentid);
             const student = await getUserByUserId(studentUserId);
-            // Get the teacher's ID
+            console.log(student)
+            // Get the teacher's ID 
             const teacher = await getTeacherbyUserId(req.session.userID);
             const teacherId = teacher.teacherid;
             const assignments = await getUploadedAssignments(studentid, teacherId)
@@ -469,7 +470,7 @@ async function startServer() {
             // Fetch uploaded assignments
 
             res.render('teacher/upload', {
-                student, teacherId, assignments, subjectId
+                studentid, student, teacherId, assignments, subjectId
             });
         } catch (error) {
             console.error("Error loading uploads:", error);
